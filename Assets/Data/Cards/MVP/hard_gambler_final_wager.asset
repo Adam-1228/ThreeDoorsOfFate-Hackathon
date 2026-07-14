@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: hard_gambler_final_wager
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: hard_gambler_final_wager
+  displayName: "\uCD5C\uD6C4\uC758 \uD310\uB3C8"
+  englishName: "\uCD5C\uD6C4\uC758 \uD310\uB3C8"
+  rulesText: "\uD53C\uD574 16. \uBCF4\uC720 \uAE08\uD654 30\uB9C8\uB2E4 \uCD94\uAC00
+    \uD53C\uD574 4."
+  cost: 2
+  category: 0
+  rarity: 1
+  source: 6
+  characterClass: 1
+  target: 2
+  illustration: {fileID: 21300000, guid: 7eaf15d1a3f42e841bd14a05d764e688, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: 7eaf15d1a3f42e841bd14a05d764e688, type: 3}
+  minimumRoom: 0
+  shopWeight: 1
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - hard
+  buildTags: 080000000000000002000000
+  effects:
+  - effectType: 0
+    timing: 0
+    condition: 0
+    amount: 16
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 

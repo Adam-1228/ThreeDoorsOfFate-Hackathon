@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: hard_attack_abyss_cleave
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: hard_attack_abyss_cleave
+  displayName: "\uC2EC\uC5F0 \uC808\uB2E8"
+  englishName: "\uC2EC\uC5F0 \uC808\uB2E8"
+  rulesText: "\uD53C\uD574 18. \uCDE8\uC57D 1. \uC801 \uCCB4\uB825\uC774 \uC808\uBC18
+    \uC774\uD558\uBA74 \uCD94\uAC00 \uD53C\uD574 6."
+  cost: 2
+  category: 0
+  rarity: 1
+  source: 6
+  characterClass: 0
+  target: 2
+  illustration: {fileID: 21300000, guid: e7eb0945c3db7044fba7ff4eac8171ae, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: e7eb0945c3db7044fba7ff4eac8171ae, type: 3}
+  minimumRoom: 0
+  shopWeight: 1
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - hard
+  buildTags: 0000000009000000
+  effects:
+  - effectType: 0
+    timing: 0
+    condition: 0
+    amount: 18
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 
+  - effectType: 10
+    timing: 0
+    condition: 0
+    amount: 1
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 
+  - effectType: 19
+    timing: 0
+    condition: 6
+    amount: 6
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: "\uC801 \uCCB4\uB825 50% \uC774\uD558"

@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: card_indomitable
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: card_indomitable
+  displayName: "\uBD88\uAD74"
+  englishName: "\uBD88\uAD74"
+  rulesText: "\uBC29\uC5B4\uB3C4 10. \uC774\uBC88 \uD134 \uC8FD\uC74C 1\uD68C \uBC29\uC9C0."
+  cost: 2
+  category: 1
+  rarity: 1
+  source: 2
+  characterClass: 0
+  target: 1
+  illustration: {fileID: 21300000, guid: 7f6d3e3876af79643a9859a7a5221f9c, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: 77ffee801ce16074197918ec321a6f3f, type: 3}
+  minimumRoom: 3
+  shopWeight: 2
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - defense
+  - rare
+  buildTags: 0100000007000000
+  effects:
+  - effectType: 1
+    timing: 0
+    condition: 0
+    amount: 10
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 
+  - effectType: 16
+    timing: 0
+    condition: 0
+    amount: 1
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 

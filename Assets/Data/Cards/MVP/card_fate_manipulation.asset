@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: card_fate_manipulation
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: card_fate_manipulation
+  displayName: "\uC6B4\uBA85 \uC870\uC791"
+  englishName: "\uC6B4\uBA85 \uC870\uC791"
+  rulesText: "\uD589\uC6B4\uC744 6\uC73C\uB85C \uBC14\uAFB8\uACE0 \uCE74\uB4DC 1\uC7A5
+    \uBF51\uAE30."
+  cost: 2
+  category: 2
+  rarity: 1
+  source: 2
+  characterClass: 0
+  target: 1
+  illustration: {fileID: 21300000, guid: 83eb8e979c4331547ac3549e1be20185, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: a0b6569a24a20c2458e90a2edba9213b, type: 3}
+  minimumRoom: 3
+  shopWeight: 4
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - skill
+  - rare
+  buildTags: 0500000002000000
+  effects:
+  - effectType: 17
+    timing: 0
+    condition: 0
+    amount: 6
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 
+  - effectType: 3
+    timing: 0
+    condition: 0
+    amount: 1
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 

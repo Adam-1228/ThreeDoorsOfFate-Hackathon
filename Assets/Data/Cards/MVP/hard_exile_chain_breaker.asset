@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: hard_exile_chain_breaker
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: hard_exile_chain_breaker
+  displayName: "\uC0AC\uC2AC \uD30C\uC1C4\uC790"
+  englishName: "\uC0AC\uC2AC \uD30C\uC1C4\uC790"
+  rulesText: "\uD53C\uD574 24. \uBE5A\uC774 \uC788\uC73C\uBA74 \uCDE8\uC57D 2 \uCD94\uAC00."
+  cost: 2
+  category: 0
+  rarity: 1
+  source: 6
+  characterClass: 3
+  target: 2
+  illustration: {fileID: 21300000, guid: fa5fc1e829abf1f40998c1e2d3c42537, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: fa5fc1e829abf1f40998c1e2d3c42537, type: 3}
+  minimumRoom: 0
+  shopWeight: 1
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - hard
+  buildTags: 060000000000000003000000
+  effects:
+  - effectType: 0
+    timing: 0
+    condition: 0
+    amount: 24
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 
+  - effectType: 10
+    timing: 0
+    condition: 10
+    amount: 2
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: "\uBE5A \uBCF4\uC720"

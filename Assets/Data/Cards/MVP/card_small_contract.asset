@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: card_small_contract
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: card_small_contract
+  displayName: "\uC791\uC740 \uACC4\uC57D"
+  englishName: "\uC791\uC740 \uACC4\uC57D"
+  rulesText: "\uCCB4\uB825 3\uC744 \uC783\uACE0 \uD589\uB3D9\uB825 1\uC744 \uC5BB\uB294\uB2E4."
+  cost: 0
+  category: 2
+  rarity: 0
+  source: 0
+  characterClass: 0
+  target: 1
+  illustration: {fileID: 21300000, guid: 2abb2324018d3b141a3743403ee5093b, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: e629ee6161013394d8f4b1c650f913f3, type: 3}
+  minimumRoom: 0
+  shopWeight: 1
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - skill
+  - common
+  buildTags: 0500000003000000
+  effects:
+  - effectType: 8
+    timing: 0
+    condition: 0
+    amount: 3
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 
+  - effectType: 7
+    timing: 0
+    condition: 0
+    amount: 1
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 

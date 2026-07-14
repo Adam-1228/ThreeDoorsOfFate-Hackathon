@@ -1,0 +1,950 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!29 &1
+OcclusionCullingSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_OcclusionBakeSettings:
+    smallestOccluder: 5
+    smallestHole: 0.25
+    backfaceThreshold: 100
+  m_SceneGUID: 00000000000000000000000000000000
+  m_OcclusionCullingData: {fileID: 0}
+--- !u!104 &2
+RenderSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 10
+  m_Fog: 0
+  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_FogMode: 3
+  m_FogDensity: 0.01
+  m_LinearFogStart: 0
+  m_LinearFogEnd: 300
+  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
+  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  m_AmbientIntensity: 1
+  m_AmbientMode: 3
+  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
+  m_SkyboxMaterial: {fileID: 0}
+  m_HaloStrength: 0.5
+  m_FlareStrength: 1
+  m_FlareFadeSpeed: 3
+  m_HaloTexture: {fileID: 0}
+  m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
+  m_DefaultReflectionMode: 0
+  m_DefaultReflectionResolution: 128
+  m_ReflectionBounces: 1
+  m_ReflectionIntensity: 1
+  m_CustomReflection: {fileID: 0}
+  m_Sun: {fileID: 0}
+  m_UseRadianceAmbientProbe: 0
+--- !u!157 &3
+LightmapSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
+  m_GISettings:
+    serializedVersion: 2
+    m_BounceScale: 1
+    m_IndirectOutputScale: 1
+    m_AlbedoBoost: 1
+    m_EnvironmentLightingMode: 0
+    m_EnableBakedLightmaps: 0
+    m_EnableRealtimeLightmaps: 0
+  m_LightmapEditorSettings:
+    serializedVersion: 12
+    m_Resolution: 2
+    m_BakeResolution: 40
+    m_AtlasSize: 1024
+    m_AO: 0
+    m_AOMaxDistance: 1
+    m_CompAOExponent: 1
+    m_CompAOExponentDirect: 0
+    m_ExtractAmbientOcclusion: 0
+    m_Padding: 2
+    m_LightmapParameters: {fileID: 0}
+    m_LightmapsBakeMode: 1
+    m_TextureCompression: 1
+    m_ReflectionCompression: 2
+    m_MixedBakeMode: 2
+    m_BakeBackend: 2
+    m_PVRSampling: 1
+    m_PVRDirectSampleCount: 32
+    m_PVRSampleCount: 512
+    m_PVRBounces: 2
+    m_PVREnvironmentSampleCount: 256
+    m_PVREnvironmentReferencePointCount: 2048
+    m_PVRFilteringMode: 1
+    m_PVRDenoiserTypeDirect: 1
+    m_PVRDenoiserTypeIndirect: 1
+    m_PVRDenoiserTypeAO: 1
+    m_PVRFilterTypeDirect: 0
+    m_PVRFilterTypeIndirect: 0
+    m_PVRFilterTypeAO: 0
+    m_PVREnvironmentMIS: 1
+    m_PVRCulling: 1
+    m_PVRFilteringGaussRadiusDirect: 1
+    m_PVRFilteringGaussRadiusIndirect: 1
+    m_PVRFilteringGaussRadiusAO: 1
+    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
+    m_PVRFilteringAtrousPositionSigmaIndirect: 2
+    m_PVRFilteringAtrousPositionSigmaAO: 1
+    m_ExportTrainingData: 0
+    m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
+  m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
+  m_LightingSettings: {fileID: 0}
+--- !u!196 &4
+NavMeshSettings:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_BuildSettings:
+    serializedVersion: 3
+    agentTypeID: 0
+    agentRadius: 0.5
+    agentHeight: 2
+    agentSlope: 45
+    agentClimb: 0.4
+    ledgeDropHeight: 0
+    maxJumpAcrossDistance: 0
+    minRegionArea: 2
+    manualCellSize: 0
+    cellSize: 0.16666667
+    manualTileSize: 0
+    tileSize: 256
+    buildHeightMesh: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
+    debug:
+      m_Flags: 0
+  m_NavMeshData: {fileID: 0}
+--- !u!114 &48997891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: UI/TrackedDeviceOrientation
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_ActionId: 9caa3d8a-6b2f-4e8e-8bad-6ede561bd9be
+--- !u!114 &137068932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: UI/ScrollWheel
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_ActionId: 0489e84a-4833-4c40-bfae-cea84b696689
+--- !u!1 &190826348
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 190826351}
+  - component: {fileID: 190826350}
+  - component: {fileID: 190826349}
+  m_Layer: 0
+  m_Name: Main Camera
+  m_TagString: MainCamera
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!81 &190826349
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190826348}
+  m_Enabled: 1
+--- !u!20 &190826350
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190826348}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.018, g: 0.019, b: 0.024, a: 1}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 50
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 1
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &190826351
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190826348}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &277758521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: UI/TrackedDevicePosition
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_ActionId: 24908448-c609-4bc3-a128-ea258674378a
+--- !u!114 &338732681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: UI/Cancel
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_ActionId: 15cef263-9014-4fd5-94d9-4e4a6234a6ef
+--- !u!114 &582887760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: UI/MiddleClick
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_ActionId: dad70c86-b58c-4b17-88ad-f5e53adf419e
+--- !u!114 &835145463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: UI/Point
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_ActionId: 32b35790-4ed0-4e9a-aa41-69ac6d629449
+--- !u!114 &1002379078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: UI/Submit
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_ActionId: 7607c7b6-cd76-4816-beef-bd0341cfe950
+--- !u!114 &1086531764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: UI/Click
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_ActionId: 3c7022bf-7922-4f7c-a998-c437916075ad
+--- !u!1 &1138453696
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1138453699}
+  - component: {fileID: 1138453698}
+  - component: {fileID: 1138453697}
+  m_Layer: 0
+  m_Name: EventSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1138453697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1138453696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_PointAction: {fileID: 835145463}
+  m_MoveAction: {fileID: 1746427336}
+  m_SubmitAction: {fileID: 1002379078}
+  m_CancelAction: {fileID: 338732681}
+  m_LeftClickAction: {fileID: 1086531764}
+  m_MiddleClickAction: {fileID: 582887760}
+  m_RightClickAction: {fileID: 2100974410}
+  m_ScrollWheelAction: {fileID: 137068932}
+  m_TrackedDevicePositionAction: {fileID: 277758521}
+  m_TrackedDeviceOrientationAction: {fileID: 48997891}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
+--- !u!114 &1138453698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1138453696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventSystem
+  m_FirstSelected: {fileID: 0}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!4 &1138453699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1138453696}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1746427336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: UI/Navigate
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_ActionId: c95b2375-e6d9-4b88-9c4c-c5e76515df4b
+--- !u!1 &2003612532
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2003612534}
+  - component: {fileID: 2003612533}
+  m_Layer: 0
+  m_Name: Three Doors Game
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2003612533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2003612532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2af6926eac54b4447825fef7eecf962c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Game.ThreeDoorsGameController
+  cardPool:
+  - {fileID: 11400000, guid: 46565c5395d7f7d4687231ca09d2e00d, type: 2}
+  - {fileID: 11400000, guid: 85124ae929bbb3a409af42cb0874575d, type: 2}
+  - {fileID: 11400000, guid: 35275a9861b464341b004397f3cfd8c3, type: 2}
+  - {fileID: 11400000, guid: b7c54359442424a4b9c460b132674f32, type: 2}
+  - {fileID: 11400000, guid: 48343bd1631ea224b80f28e2979453a9, type: 2}
+  - {fileID: 11400000, guid: 51984964bafca0f4f89f00614898ec7a, type: 2}
+  - {fileID: 11400000, guid: a0c804d976e776542947b4cf2a258a6d, type: 2}
+  - {fileID: 11400000, guid: 4ff1c4fbe1cb02f4e87cd8d70ec8084b, type: 2}
+  - {fileID: 11400000, guid: 06d5d02446dfb504ea45387d71b34a63, type: 2}
+  - {fileID: 11400000, guid: ad9c12ddad9f89240b64e66c844afc2e, type: 2}
+  - {fileID: 11400000, guid: 046d4d804e88d9440be4f33cece8a512, type: 2}
+  - {fileID: 11400000, guid: 8215816d3bec9f046808dcd7a6a1e2d1, type: 2}
+  - {fileID: 11400000, guid: 7897b14c6500ee64297dca4884e30874, type: 2}
+  - {fileID: 11400000, guid: 5f24971c4ebf051418ca13b92218e48d, type: 2}
+  - {fileID: 11400000, guid: ca209792986d16844adc3698856583a0, type: 2}
+  - {fileID: 11400000, guid: b06821f9aaa051743805459eab1c85ed, type: 2}
+  - {fileID: 11400000, guid: dd549630ab79ed44988bc62d44541f01, type: 2}
+  - {fileID: 11400000, guid: 5295814251bd1e640b3c5a196caa5813, type: 2}
+  - {fileID: 11400000, guid: 8f273f0f856851a47a24f32f322a0233, type: 2}
+  - {fileID: 11400000, guid: 8fdbd1d448e9b874ab71e869554f678f, type: 2}
+  - {fileID: 11400000, guid: 0607e277b2ac39445a5e05c50b96edad, type: 2}
+  - {fileID: 11400000, guid: 495040f4ef7381449b491b0c2e7e0b30, type: 2}
+  - {fileID: 11400000, guid: dfb41cb13d2ac3941b6ef8398d375768, type: 2}
+  - {fileID: 11400000, guid: e8f8a817f2d704842abb8511e7f7ed2c, type: 2}
+  - {fileID: 11400000, guid: 9427ac4c761c922459eccc1b4abda397, type: 2}
+  - {fileID: 11400000, guid: aced70962c124fe4f98634fb4ce50a60, type: 2}
+  - {fileID: 11400000, guid: 0a0fc3df82c63b443ba2364d306e665c, type: 2}
+  - {fileID: 11400000, guid: 8b756b5fd3cb5ec41b3ccac21d0d11cc, type: 2}
+  - {fileID: 11400000, guid: bd4d6fd423514e445b86d60e9e28d7f1, type: 2}
+  - {fileID: 11400000, guid: ca8bef3da2057a54fbd9fea2b1cf1ebb, type: 2}
+  - {fileID: 11400000, guid: f2d3a8cad209f3949995dd44480aa4de, type: 2}
+  - {fileID: 11400000, guid: c72794d1e34cabd4ebf4f3a5ebf405da, type: 2}
+  - {fileID: 11400000, guid: a0a30e421abb5ab42b6945fec20aaece, type: 2}
+  - {fileID: 11400000, guid: 4caf29244287faa4b97196eec6e125bd, type: 2}
+  - {fileID: 11400000, guid: d8b26b7a5a0366c4fb116be524b6e436, type: 2}
+  - {fileID: 11400000, guid: aef4511613cd26e4d93b3566cb7b0c14, type: 2}
+  - {fileID: 11400000, guid: 3a20b793e0d19bd43a03ce0f7aa4a189, type: 2}
+  - {fileID: 11400000, guid: f121fa15c1ff17140a8d55cbb00c4c0c, type: 2}
+  - {fileID: 11400000, guid: 3d1ae39658f517047b9d591f6d15a8cc, type: 2}
+  - {fileID: 11400000, guid: 6f70b7aa4a735e1449ea2420539ad1ba, type: 2}
+  - {fileID: 11400000, guid: 79fcd5cb024a71140a1863117a501a6b, type: 2}
+  - {fileID: 11400000, guid: 5bc650bff3a61324d9d40caad53a4b80, type: 2}
+  - {fileID: 11400000, guid: 7a0af990ebfc6c044a8688be42f99ca1, type: 2}
+  - {fileID: 11400000, guid: 53fb7858f8c7de0499b417b8e27c6fbc, type: 2}
+  - {fileID: 11400000, guid: a871a514da73eee42bdc7b96868fb513, type: 2}
+  - {fileID: 11400000, guid: c389ff4e5ff15934994d0c5ec0dad63a, type: 2}
+  - {fileID: 11400000, guid: a25217b0fe985c54e9f591cacea906da, type: 2}
+  - {fileID: 11400000, guid: 09729a6a3546516438803d2b9fc6b2dc, type: 2}
+  - {fileID: 11400000, guid: 9070b639d3d9ccb41b7563774ea8127e, type: 2}
+  - {fileID: 11400000, guid: 64b32f770de18224f90f5222be0f75d5, type: 2}
+  - {fileID: 11400000, guid: 9b2173b966d2ef242a1612eb89a9f24b, type: 2}
+  - {fileID: 11400000, guid: 98ad3d0fc2ad7a04a82efef1c6649f7d, type: 2}
+  - {fileID: 11400000, guid: 44a22aa5ab9f62641a087416aa376016, type: 2}
+  - {fileID: 11400000, guid: c1cd5090badfe0740a8e64c9d071a5ec, type: 2}
+  - {fileID: 11400000, guid: cbdd093aac174c149ba30eeb0ae5635e, type: 2}
+  - {fileID: 11400000, guid: 4b583e54165ce654e80a444122ad5032, type: 2}
+  - {fileID: 11400000, guid: 02c8aa3eeea0ee84b93f01cc19857964, type: 2}
+  - {fileID: 11400000, guid: 22f0f0bf977af6e438e3bcb9d123608a, type: 2}
+  - {fileID: 11400000, guid: bafd73402eab89c4faabe9f7e15339b1, type: 2}
+  - {fileID: 11400000, guid: c288b1a46d5344f44a7795ccc0f8c8a6, type: 2}
+  - {fileID: 11400000, guid: 5688fbb38877e414397b014b3a97e423, type: 2}
+  - {fileID: 11400000, guid: 1af71c3507a48714188ffe816e3c1a0d, type: 2}
+  - {fileID: 11400000, guid: b4d6df276a6dd51419d5c58d071a381b, type: 2}
+  - {fileID: 11400000, guid: c49182b51fdf1c84088bd36cb6750dc3, type: 2}
+  - {fileID: 11400000, guid: f8d53c370acf1cc41b575576c4679beb, type: 2}
+  - {fileID: 11400000, guid: d18139172d3d8524eb0b9637ddc30b9d, type: 2}
+  - {fileID: 11400000, guid: 222f7878d5429434c9451182b6fbd811, type: 2}
+  - {fileID: 11400000, guid: 70b905213b5c6c84f8430a4bdf06fb74, type: 2}
+  - {fileID: 11400000, guid: ffa1232d98657944585eab6108285c33, type: 2}
+  - {fileID: 11400000, guid: c53c701df2fd04440890e05113f779aa, type: 2}
+  - {fileID: 11400000, guid: d3c7e6ae2cbbad745b5294bc90a33a44, type: 2}
+  - {fileID: 11400000, guid: 4754f633d10fbba4da4735a1d0f62a53, type: 2}
+  cardBackSprite: {fileID: 21300000, guid: be93786586ef540479385431a663a5c4, type: 3}
+  runModifierCatalog: {fileID: 4900000, guid: a27a914edd5824146bd6e4ed833f6081, type: 3}
+  runItemIcons:
+  - itemId: relic_cracked_gate_key
+    sprite: {fileID: 21300000, guid: a5c325f0abb2b1145942b27dfebdaadf, type: 3}
+  - itemId: relic_fate_coin
+    sprite: {fileID: 21300000, guid: 9eb5682e0ac43a645b1df167486d9522, type: 3}
+  - itemId: relic_broken_chain
+    sprite: {fileID: 21300000, guid: f2db2f9b5b4ac6444971de28bb1a0e26, type: 3}
+  - itemId: relic_black_candle
+    sprite: {fileID: 21300000, guid: 4ccbeee174c7a0c4bb83444d6a72ee4a, type: 3}
+  - itemId: relic_teal_hourglass
+    sprite: {fileID: 21300000, guid: 2ff72a79db11d454dbdacdc17452f47c, type: 3}
+  - itemId: relic_bone_dice
+    sprite: {fileID: 21300000, guid: 40797d1dff08ab94fa9f95958f6d512e, type: 3}
+  - itemId: relic_oracle_crystal
+    sprite: {fileID: 21300000, guid: 4c6f46e59bccc714daf435f104e93443, type: 3}
+  - itemId: relic_exile_brand
+    sprite: {fileID: 21300000, guid: d48ab4947de6dbf4fbed187e73796d62, type: 3}
+  - itemId: relic_gate_knocker
+    sprite: {fileID: 21300000, guid: 9d1a2145f7f03d64ab3a8e2805266bc8, type: 3}
+  - itemId: relic_debt_ledger
+    sprite: {fileID: 21300000, guid: 9c4edc5b0927317488cf41ba05674351, type: 3}
+  - itemId: blessing_star_seal
+    sprite: {fileID: 21300000, guid: 30117521abba44b42a0fe3803c1cd217, type: 3}
+  - itemId: blessing_mercy_hand
+    sprite: {fileID: 21300000, guid: 71d261dc509c93c4fad23636b39c0518, type: 3}
+  - itemId: blessing_sacred_flame
+    sprite: {fileID: 21300000, guid: b9af1b903f066554d942a3dd64c6e71f, type: 3}
+  - itemId: blessing_open_dawn_gate
+    sprite: {fileID: 21300000, guid: 115757db579ab9d4da767d308d580ae5, type: 3}
+  - itemId: blessing_silver_feather
+    sprite: {fileID: 21300000, guid: 24a3d4cafd970ed429987adfb916aeed, type: 3}
+  - itemId: blessing_purified_chain
+    sprite: {fileID: 21300000, guid: 59fd8de7613224c4db27f3b77aa7e9e8, type: 3}
+  - itemId: blessing_three_door_coin
+    sprite: {fileID: 21300000, guid: 030de8f2c3908564385de5b3a7660941, type: 3}
+  - itemId: blessing_lion_ward
+    sprite: {fileID: 21300000, guid: 09359861f5e97f943b478d6c5a7c29e0, type: 3}
+  - itemId: blessing_star_compass
+    sprite: {fileID: 21300000, guid: 5b1d0fac4dff79042951fe587997f448, type: 3}
+  - itemId: blessing_bottle_of_light
+    sprite: {fileID: 21300000, guid: 5cd649b02ea2bae438856e6a0c22fa8f, type: 3}
+  - itemId: curse_cracked_debt_coin
+    sprite: {fileID: 21300000, guid: b8ba7dc6e92f5994c8772320b1115f0e, type: 3}
+  - itemId: curse_thorn_crown
+    sprite: {fileID: 21300000, guid: e106532ef5f139944bf31405c447d1c0, type: 3}
+  - itemId: curse_sealed_debt_scroll
+    sprite: {fileID: 21300000, guid: d18198a4723ab2b4787c1556db8336c1, type: 3}
+  - itemId: curse_broken_mirror
+    sprite: {fileID: 21300000, guid: 5b602a2511fe7cb449562f13904d457a, type: 3}
+  - itemId: curse_red_contract_seal
+    sprite: {fileID: 21300000, guid: 11a78f05e6254f149be7e972777e2820, type: 3}
+  - itemId: curse_skeletal_key
+    sprite: {fileID: 21300000, guid: d42960c977348a14a9825599e79a322b, type: 3}
+  - itemId: curse_blood_candle
+    sprite: {fileID: 21300000, guid: c2d3e331051882a41898a890af07c8be, type: 3}
+  - itemId: curse_rusted_shackle
+    sprite: {fileID: 21300000, guid: 117da17370896c145a06e14ba4fb177e, type: 3}
+  - itemId: curse_watchers_eye
+    sprite: {fileID: 21300000, guid: 03c9899b21f393b47b52440292a63890, type: 3}
+  - itemId: curse_locked_blood_gate
+    sprite: {fileID: 21300000, guid: 3dd7691d194e94f45839d4e0f0e5b635, type: 3}
+  doorSprites:
+  - doorType: 0
+    sprite: {fileID: 21300000, guid: 2e42e23499f365243986c210a5943e44, type: 3}
+    hoverSprite: {fileID: 21300000, guid: 83724affc535400409c0336b39b0c44d, type: 3}
+  - doorType: 1
+    sprite: {fileID: 21300000, guid: bfc0d1bcde3a13f44876a7698ce1aaad, type: 3}
+    hoverSprite: {fileID: 21300000, guid: 06a9c12caa97b114ba15a361479c14b2, type: 3}
+  - doorType: 2
+    sprite: {fileID: 21300000, guid: d71fa1fb25b9ff84aafa33d1de8e183d, type: 3}
+    hoverSprite: {fileID: 21300000, guid: 1c6070e8222cbc747ae8e21bc7797525, type: 3}
+  - doorType: 3
+    sprite: {fileID: 21300000, guid: 7eac79619ea126944973057e9a48f674, type: 3}
+    hoverSprite: {fileID: 21300000, guid: 3e7c803acb742b6478339bd6efc65255, type: 3}
+  - doorType: 4
+    sprite: {fileID: 21300000, guid: 1d828b58277a9e74ba1d54a5bcce22d0, type: 3}
+    hoverSprite: {fileID: 21300000, guid: 4373ec81bad7d5640b391484c3bee987, type: 3}
+  - doorType: 5
+    sprite: {fileID: 21300000, guid: be0557997bd70f9408142f318a6e778a, type: 3}
+    hoverSprite: {fileID: 21300000, guid: d98dc70c42acd724fab0181f0c686be9, type: 3}
+  - doorType: 6
+    sprite: {fileID: 21300000, guid: 28ff982ad860faa4ab3f436eb9576e5b, type: 3}
+    hoverSprite: {fileID: 21300000, guid: d7712899357e38642bf9fbecab58123f, type: 3}
+  - doorType: 7
+    sprite: {fileID: 21300000, guid: e7168e6ef7dbe514fbf9ebd42d5e6a25, type: 3}
+    hoverSprite: {fileID: 21300000, guid: 0b26bae74400d9749b88ee4ee9bba960, type: 3}
+  easyBossDoorSprite: {fileID: 21300000, guid: 31b41589bfb5baf4fab0b93ac7dc94c1, type: 3}
+  easyBossDoorHoverSprite: {fileID: 21300000, guid: e002307967523ce43b5e3ced002e5bd4, type: 3}
+  normalBossDoorSprite: {fileID: 21300000, guid: db5c37d7b1056b3429ae1aeb9400bb1f, type: 3}
+  normalBossDoorHoverSprite: {fileID: 21300000, guid: 4ce64491f9e5bef48afedaa4335de07c, type: 3}
+  hardBossDoorSprite: {fileID: 21300000, guid: 0d7f46811e23aba4f87b4eb0e7004d5f, type: 3}
+  hardBossDoorHoverSprite: {fileID: 21300000, guid: b6e259d59790f6842830f511b3d016e2, type: 3}
+  mainMenuBackground: {fileID: 21300000, guid: a53456f6c8d87844e88acf45a2c0aba9, type: 3}
+  classSelectBackground: {fileID: 21300000, guid: e87b2af4644278d448042ea43bcd39ed, type: 3}
+  battleBackground: {fileID: 21300000, guid: 725c95ffaab6d9745b39bc947a061bfd, type: 3}
+  shopBackground: {fileID: 21300000, guid: c45c36a9362bd4f469ecdae16e1b8471, type: 3}
+  eventBackground: {fileID: 21300000, guid: 9543cfec8b1481345aadb380188be8e1, type: 3}
+  restBackground: {fileID: 21300000, guid: 65fff80b2e8fc1b459a5b88e086a792b, type: 3}
+  treasureBackground: {fileID: 21300000, guid: e6e68a66396103c418b89a6802fded8e, type: 3}
+  curseBackground: {fileID: 21300000, guid: 8d1e2894b385af44e873717b2891f9a6, type: 3}
+  rewardBackground: {fileID: 21300000, guid: f1ac8fbdd8381744a8e8cf30e7436d4a, type: 3}
+  bossBackground: {fileID: 21300000, guid: 14bdc9864616ef54eba005adb1628b20, type: 3}
+  gameOverLogoSprite: {fileID: 21300000, guid: 97f5ba30abb1368499ab96c7a09bd1d9, type: 3}
+  gameOverBackgroundSprites:
+  - {fileID: 21300000, guid: 74d183f5fcc24364bac98ccd74dd18d3, type: 3}
+  - {fileID: 21300000, guid: ee8f147eaf8c1ed4db8b88665a4d6fde, type: 3}
+  - {fileID: 21300000, guid: 8d8a33b4dbe70d6409fc0a4a4dbb7fe9, type: 3}
+  - {fileID: 21300000, guid: d8330727ce0e81646aecda15e638fcb2, type: 3}
+  - {fileID: 21300000, guid: 4189500f5ae19f44896f8909bea097b1, type: 3}
+  - {fileID: 21300000, guid: a80e8c245d0a0c54fba2b86ed31c2a3c, type: 3}
+  - {fileID: 21300000, guid: 4848379ae0f1d844a8bb1565e36212da, type: 3}
+  - {fileID: 21300000, guid: da564539b556b274abb33c66e1024272, type: 3}
+  - {fileID: 21300000, guid: 0d11bd216d89b574a98f35c4719b9a14, type: 3}
+  gameOverMessageSprites:
+  - {fileID: 21300000, guid: 9b6e44963a8b6a74bb944e673aa88ba3, type: 3}
+  - {fileID: 21300000, guid: ab6d61a1c4493e24ea22a4e914561495, type: 3}
+  - {fileID: 21300000, guid: 8a1922caa3c1b374db69c9e093fe66ec, type: 3}
+  - {fileID: 21300000, guid: 23de0f5c67e631f439dddbb68fad79eb, type: 3}
+  - {fileID: 21300000, guid: 0dc2845a31d548a408419cd69d129766, type: 3}
+  - {fileID: 21300000, guid: 273cbe566fd4ddc47b6d5d145d10b94c, type: 3}
+  - {fileID: 21300000, guid: 8ecbb4f67c891b2468fe67bbd4cd9cbc, type: 3}
+  - {fileID: 21300000, guid: d9be85e83bfd5974ca00a43037824bc6, type: 3}
+  - {fileID: 21300000, guid: 59aab9eba0f5b5849bbf0358bbc391c5, type: 3}
+  gameOverCrackOverlaySprite: {fileID: 21300000, guid: 5931bf9c7c6c0d94ab3c0628f58ed663, type: 3}
+  gamblerHiddenGameOverSprite: {fileID: 21300000, guid: f5890b4938794547a0f06edc61cbc507, type: 3}
+  oracleHiddenGameOverSprite: {fileID: 21300000, guid: 33251988cd724146a93607dc755d58ee, type: 3}
+  exileHiddenGameOverSprite: {fileID: 21300000, guid: b87db47fbc0b46059aa6f0138c70a57d, type: 3}
+  hiddenGameOverChance: 0.2
+  journeyEndingLogoSprite: {fileID: 21300000, guid: dc93223ed0f31ae408900d61a7ae5dab, type: 3}
+  journeyEndingBackgroundSprites:
+  - {fileID: 21300000, guid: 6199967bb896b0947ab60740ac6b6b32, type: 3}
+  - {fileID: 21300000, guid: 1ba06d50a663e3442bb3dda2bd060bc8, type: 3}
+  - {fileID: 21300000, guid: 66710a24fffb95848b14329b6e9f3d82, type: 3}
+  - {fileID: 21300000, guid: 040990f8bf1cf0f46866a548d9a69f3f, type: 3}
+  gamblerJourneyEndingLogoSprite: {fileID: 21300000, guid: 5cec26839be773f419b6534908f139b6, type: 3}
+  gamblerJourneyEndingBackgroundSprite: {fileID: 21300000, guid: 1b8da5b92b1a8ce46a850748a90ebe5b, type: 3}
+  oracleJourneyEndingLogoSprite: {fileID: 21300000, guid: 83ba8d0bb93baee468499770f3e9697f, type: 3}
+  oracleJourneyEndingBackgroundSprite: {fileID: 21300000, guid: c097154dcf24ad048a89d1a97cde4395, type: 3}
+  exileJourneyEndingLogoSprite: {fileID: 21300000, guid: c30826e4b0382154fb80860f0ec851a4, type: 3}
+  exileJourneyEndingBackgroundSprite: {fileID: 21300000, guid: 0224af3196fb3f744876aac7914d62f8, type: 3}
+  gamblerSelectSprite: {fileID: 21300000, guid: dfc90ab042d1dd44da766af1549c072a, type: 3}
+  gamblerSelectHoverSprite: {fileID: 21300000, guid: a227fab23bdfded488fbdf601475ed8f, type: 3}
+  oracleSelectSprite: {fileID: 21300000, guid: fd6062161749df043be524621a5cde5e, type: 3}
+  oracleSelectHoverSprite: {fileID: 21300000, guid: cf721e5604046fb4e8012ed723103245, type: 3}
+  exileSelectSprite: {fileID: 21300000, guid: 9144051280940e541a7f14f376515274, type: 3}
+  exileSelectHoverSprite: {fileID: 21300000, guid: 7ce1be9f42a27c14aafbc82e156bb423, type: 3}
+  shopkeeperSprite: {fileID: 21300000, guid: 50e5d5e18ff7fc04fb644446124a3a87, type: 3}
+  bossSprite: {fileID: 21300000, guid: 7fc71a9b910e34d4eaf7339b65b280e4, type: 3}
+  normalBossSprite: {fileID: 21300000, guid: 7cc426759713eec47a9bfdebe50c4992, type: 3}
+  hardBossSprite: {fileID: 21300000, guid: ee46d5230c7c94f4ab2159642d0aad02, type: 3}
+  debtClearBossSprite: {fileID: 21300000, guid: d74d7fb32c4aac1418a0543940b1828c, type: 3}
+  enemySprites:
+  - enemyId: monster_cave_lurker
+    sprite: {fileID: 21300000, guid: 6d2212d9631631a419b595f195230bf5, type: 3}
+  - enemyId: monster_debt_hound
+    sprite: {fileID: 21300000, guid: 5a68216fcd551f54f936ddbe64901964, type: 3}
+  - enemyId: monster_ash_gambler
+    sprite: {fileID: 21300000, guid: 9009e5b90e10a384dafa5d0c4810e792, type: 3}
+  - enemyId: monster_rune_thief
+    sprite: {fileID: 21300000, guid: fae673d807b83ac40b641114f57da5a4, type: 3}
+  - enemyId: monster_candle_warden
+    sprite: {fileID: 21300000, guid: 1b1ae3302872c4a48bc37b4966caf480, type: 3}
+  - enemyId: monster_contract_knight
+    sprite: {fileID: 21300000, guid: bda4f43f1eefe7f49b065a0e0374f1b3, type: 3}
+  - enemyId: monster_hollow_collector
+    sprite: {fileID: 21300000, guid: bfa212620ec39b64d8ebdafbc17fa2a8, type: 3}
+  - enemyId: monster_rift_spider
+    sprite: {fileID: 21300000, guid: ad707ee2d069ad847baa2a1718384a8b, type: 3}
+  - enemyId: monster_curse_bearer
+    sprite: {fileID: 21300000, guid: 75870e265be24b145bca264bf644b7c4, type: 3}
+  - enemyId: monster_gold_mimic
+    sprite: {fileID: 21300000, guid: 7cfcdd724c30f774186ffd6e8992580d, type: 3}
+  - enemyId: monster_abyss_bailiff
+    sprite: {fileID: 21300000, guid: 7a8ea2afcc4927b4094e5e9921c0b814, type: 3}
+  - enemyId: monster_ledger_moth
+    sprite: {fileID: 21300000, guid: a891de49b93d5704892b8378cb135932, type: 3}
+  - enemyId: monster_coin_sutured_husk
+    sprite: {fileID: 21300000, guid: 297befc4a0b314c43ad9dbbffa93422a, type: 3}
+  - enemyId: monster_broken_scale_acolyte
+    sprite: {fileID: 21300000, guid: 34f862b8a90324c4384b5f0987b6c8e4, type: 3}
+  - enemyId: monster_rift_lamprey
+    sprite: {fileID: 21300000, guid: 126da35fd854b4e47ac15bc0cbf2bd52, type: 3}
+  - enemyId: monster_contract_marionette
+    sprite: {fileID: 21300000, guid: 1cd7519358f266240a57cb6e891fa0fa, type: 3}
+  - enemyId: monster_oath_candle_revenant
+    sprite: {fileID: 21300000, guid: 4998917ba0420444abf91203aec794e4, type: 3}
+  - enemyId: monster_void_tax_scribe
+    sprite: {fileID: 21300000, guid: 55132a3669e0e2f45af60fe36446b757, type: 3}
+  - enemyId: monster_debt_pit_bruiser
+    sprite: {fileID: 21300000, guid: 1da3f73477501774e9a404c13fe7f802, type: 3}
+  - enemyId: monster_doorless_penitent
+    sprite: {fileID: 21300000, guid: 963623c49aa737a48b81b9eb644f9119, type: 3}
+  enemyHudFrameSprites:
+  - enemyId: monster_cave_lurker
+    sprite: {fileID: 21300000, guid: 0f0bb6be1d30f9e418fae156eacd90cb, type: 3}
+  - enemyId: monster_debt_hound
+    sprite: {fileID: 21300000, guid: 9e5bf0a1c7f9ddc48bb9f3da0d4ce54d, type: 3}
+  - enemyId: monster_ash_gambler
+    sprite: {fileID: 21300000, guid: 2ab93c96d564e56449b3b8f72050ef5a, type: 3}
+  - enemyId: monster_rune_thief
+    sprite: {fileID: 21300000, guid: 14d1257e75ded1f4fa69d93cb9c6053c, type: 3}
+  - enemyId: monster_candle_warden
+    sprite: {fileID: 21300000, guid: b623e01a6c8931e4ea5f659c335ecc2e, type: 3}
+  - enemyId: monster_contract_knight
+    sprite: {fileID: 21300000, guid: bb70d8a12fbbef64a9caedda8f0a04e3, type: 3}
+  - enemyId: monster_hollow_collector
+    sprite: {fileID: 21300000, guid: a25d55a6d9a3b1847bfe621d896708ae, type: 3}
+  - enemyId: monster_rift_spider
+    sprite: {fileID: 21300000, guid: a2a536ce4bd6c644e886908ca2bf0377, type: 3}
+  - enemyId: monster_curse_bearer
+    sprite: {fileID: 21300000, guid: 67787e9454868e743b0faa1e2565d66b, type: 3}
+  - enemyId: monster_gold_mimic
+    sprite: {fileID: 21300000, guid: da86fbf6387a3ee478e051e6ce94e12b, type: 3}
+  - enemyId: monster_abyss_bailiff
+    sprite: {fileID: 21300000, guid: 38cb8c4d9e4ab744ba694079ddd8c382, type: 3}
+  - enemyId: monster_ledger_moth
+    sprite: {fileID: 21300000, guid: 602841095fe3a094e9a7118d779f961f, type: 3}
+  - enemyId: monster_coin_sutured_husk
+    sprite: {fileID: 21300000, guid: 6f5f7c7bb98f668478f0167698a23f0d, type: 3}
+  - enemyId: monster_broken_scale_acolyte
+    sprite: {fileID: 21300000, guid: 6606fe78ba2b63f4cbaa2e5d87763a26, type: 3}
+  - enemyId: monster_rift_lamprey
+    sprite: {fileID: 21300000, guid: d56fd55a8395ab445a702051cb823b9e, type: 3}
+  - enemyId: monster_contract_marionette
+    sprite: {fileID: 21300000, guid: 1d45c5b0756555748803efea28687381, type: 3}
+  - enemyId: monster_oath_candle_revenant
+    sprite: {fileID: 21300000, guid: 2b0831ff8e0adcf4d908b1d0494b5512, type: 3}
+  - enemyId: monster_void_tax_scribe
+    sprite: {fileID: 21300000, guid: 6012aadeafc8b614f8d2f7e345f631a3, type: 3}
+  - enemyId: monster_debt_pit_bruiser
+    sprite: {fileID: 21300000, guid: 463e8e7c886256849874a6656020db10, type: 3}
+  - enemyId: monster_doorless_penitent
+    sprite: {fileID: 21300000, guid: 6ef00ad8810508c479dea8f38c4f76e3, type: 3}
+  - enemyId: boss_gatekeeper_third_door
+    sprite: {fileID: 21300000, guid: cf33e915e0d73874eaebd16305aa0ca1, type: 3}
+  - enemyId: boss_debt_adjudicator_normal
+    sprite: {fileID: 21300000, guid: 4a84a926dd747d2448e8158326f6f4a3, type: 3}
+  - enemyId: boss_usurer_of_the_abyss_hard
+    sprite: {fileID: 21300000, guid: 37db7309bec040346b074d0b2735bebf, type: 3}
+  - enemyId: boss_bottomless_creditor_special
+    sprite: {fileID: 21300000, guid: aa646407c351dc845b72527afeed1214, type: 3}
+  uiFontAsset: {fileID: 12800000, guid: 2fae2579ceba8b04c8b85b144197a994, type: 3}
+  panelSprite: {fileID: 21300000, guid: 87580af678eeacc4b95f0557a8baa508, type: 3}
+  statusPanelFrameSprite: {fileID: 21300000, guid: d3c9619ccbb1f6d41b3c49c00c752ced, type: 3}
+  statusSectionFrameSprite: {fileID: 21300000, guid: 28b739ed6443b2b4bb37744a9a16dea3, type: 3}
+  statusSectionWideFrameSprite: {fileID: 21300000, guid: 61388c845b0fbe74bbfe59d7842ecef9, type: 3}
+  statusSectionTallFrameSprite: {fileID: 21300000, guid: 529088a234141f44e8cac22a92f6fbed, type: 3}
+  statusSectionMediumFrameSprite: {fileID: 21300000, guid: 28b739ed6443b2b4bb37744a9a16dea3, type: 3}
+  statusHintFrameSprite: {fileID: 21300000, guid: b70a2b5834b46ed43b97a470f314fba5, type: 3}
+  statusCategoryCardFrameSprite: {fileID: 21300000, guid: 97e33fdd74a3567499ac54ab6ba9938e, type: 3}
+  shopCombinationPanelFrameSprite: {fileID: 21300000, guid: 9fb07a4566babad42afbb62fe1372699, type: 3}
+  buttonIdleSprite: {fileID: 21300000, guid: 463925c757f52f14da5a5423e138ffc1, type: 3}
+  buttonHoverSprite: {fileID: 21300000, guid: c9ddc0c21b37196498b490841cfabc5d, type: 3}
+  buttonPressedSprite: {fileID: 21300000, guid: 015dbe2a50400e140a5e4bf19c38e265, type: 3}
+  settingsPanelSprite: {fileID: 21300000, guid: cb3cb982730a5cc4d9316647219d0276, type: 3}
+  settingsButtonSprite: {fileID: 21300000, guid: 217d7cd99f4b732478eb441b0e9e54e9, type: 3}
+  settingsButtonHoverSprite: {fileID: 21300000, guid: 4d2cb5bc0d447764186fd5706bd94865, type: 3}
+  settingsButtonPressedSprite: {fileID: 21300000, guid: fb9c6521182548a4b8e650e2d9762622, type: 3}
+  settingsIconSprite: {fileID: 21300000, guid: 623ccd72f5e914346b5a9575a4b02df5, type: 3}
+  mainTitleLogoSprite: {fileID: 21300000, guid: f1de9c15bd267044fb37ebb7ecf3b787, type: 3}
+  topBarFrameSprite: {fileID: 21300000, guid: 9a075c478a2997c41b60b44887f9b3f2, type: 3}
+  runStatusPanelFrameSprite: {fileID: 21300000, guid: 7809298be0e481e4fa39d17ec9f0b19f, type: 3}
+  logPanelFrameSprite: {fileID: 21300000, guid: bb01974cee97b594bb2ec24915374c93, type: 3}
+  eventMessageFrameSprite: {fileID: 21300000, guid: 26ad069d5292e5e4aba9153e1d65f380, type: 3}
+  doorChoiceFrameSprite: {fileID: 21300000, guid: 1c4a887f5a546c841a1f8e4727a4ac69, type: 3}
+  enemyStatusFrameSprite: {fileID: 21300000, guid: 0cf09a1f4e135aa48a786172ea71ee9c, type: 3}
+  playerCombatStatusFrameSprite: {fileID: 21300000, guid: 7f931efb1111c89ca5cbf6df75ba5f5c, type: 3}
+  deckBoxFrameSprite: {fileID: 21300000, guid: 5a088f7cfb979f54da53c8b61a7b37d8, type: 3}
+  classBackButtonSprite: {fileID: 21300000, guid: 62b844941e29de243836f94ab108d0b4, type: 3}
+  classConfirmButtonSprite: {fileID: 21300000, guid: 06c8e1f92799a16438f59a3f0bd5d025, type: 3}
+  classInfoButtonSprite: {fileID: 21300000, guid: bb2d0e2f7bdf4d078d282dbd9f9cfb73, type: 3}
+  mainMenuButtonSprite: {fileID: 21300000, guid: edc9367b3de403248b7537611ace06d4, type: 3}
+  mainMenuButtonHoverSprite: {fileID: 21300000, guid: 0cc95145d329cc647b7224ee6c952456, type: 3}
+  mainMenuButtonPressedSprite: {fileID: 21300000, guid: 15d18bf59c180c849b5cd5ba1f39ed38, type: 3}
+  volumeSliderBarSprite: {fileID: 21300000, guid: 3eef17a3d797ea041944f2308d583030, type: 3}
+  mainOptionsPanelSprite: {fileID: 21300000, guid: 9565579393d198b44bc941747f4a526e, type: 3}
+  mainOptionToggleSprite: {fileID: 21300000, guid: ae41432523e13734c8a605e313678cd4, type: 3}
+  mainOptionToggleHoverSprite: {fileID: 21300000, guid: 28d2c16147568fd42b4960620c9f8d21, type: 3}
+  mainOptionTogglePressedSprite: {fileID: 21300000, guid: e0cb1690190894b45a6a36d30febda09, type: 3}
+  mainOptionSliderSprite: {fileID: 21300000, guid: 8d296f8e78167c44f802cc1b01f983cf, type: 3}
+  selectionFrameSprite: {fileID: 21300000, guid: 200a50a9796032446a715464125ebc91, type: 3}
+  survivorTitleBadgeSprite: {fileID: 21300000, guid: 9426c92dce353354b845fa7d164516a5, type: 3}
+  debtClearedTitleBadgeSprite: {fileID: 21300000, guid: 967b8f76dd48eec439cda31d310ee06b, type: 3}
+  healthBarFrameSprite: {fileID: 21300000, guid: 3f3e105ab49cfe8429acd8192bcfe66d, type: 3}
+  healthBarFillSprite: {fileID: 21300000, guid: 15ad80070da6f184e8db6020f53f4c85, type: 3}
+  attackCardFrameSprite: {fileID: 21300000, guid: 03f303b8a62d82c48a7d9bbe39526e55, type: 3}
+  defenseCardFrameSprite: {fileID: 21300000, guid: 610853dc331254142a9cb3fe2edf0cbf, type: 3}
+  skillCardFrameSprite: {fileID: 21300000, guid: 8ad03512a41053a43a252d2dd8e9d96b, type: 3}
+  victoryCrackOverlaySprite: {fileID: 21300000, guid: d67a17303e6df714f8e247062d1d158b, type: 3}
+  victoryImpactSprite: {fileID: 21300000, guid: 779d3992e1638a14592f7b6b306bfa96, type: 3}
+  victoryShardBurstSprite: {fileID: 21300000, guid: d514e20ac031f434684192ee63e3a0fc, type: 3}
+  victoryLogoSprite: {fileID: 21300000, guid: 974e74788490381448ad1d777db5adea, type: 3}
+  diceSprites:
+  - {fileID: 21300000, guid: d3febc9b50fa734448dff7a8561bf9ea, type: 3}
+  - {fileID: 21300000, guid: 248b86556cf8d8e449a43b71a9d7aad2, type: 3}
+  - {fileID: 21300000, guid: aaad0bf93ffde9f4c86449bfac500a95, type: 3}
+  - {fileID: 21300000, guid: 6faed008d14f05142a578064f724a56e, type: 3}
+  - {fileID: 21300000, guid: a64b157717efe834bab80c889c07da94, type: 3}
+  - {fileID: 21300000, guid: af7661a8523858d458da8d27fa7cd2f7, type: 3}
+  gamblerDiceSprites:
+  - {fileID: 21300000, guid: afb843a1636d4e44bb2940106c381723, type: 3}
+  - {fileID: 21300000, guid: ef71c7feea304a1479a86492f76359bb, type: 3}
+  - {fileID: 21300000, guid: 1855a8a0e6d6bcc4eafd0f36d3e88c4a, type: 3}
+  - {fileID: 21300000, guid: 139aeeea88dc1504fadfeb7c25d8d75a, type: 3}
+  - {fileID: 21300000, guid: 2ab1b9e480715a44d95b3ca20072f7b0, type: 3}
+  - {fileID: 21300000, guid: 9e8dd8822f27b5a4ab6296c08fce9975, type: 3}
+  oracleDiceSprites:
+  - {fileID: 21300000, guid: cc258e92b3670e64385a1a2ee3a86175, type: 3}
+  - {fileID: 21300000, guid: 073103db37fea9c408c2499021dc0d44, type: 3}
+  - {fileID: 21300000, guid: c86056bcddd65e84485c7d17f1d153b4, type: 3}
+  - {fileID: 21300000, guid: 2962c1a37e269c544935b00c001c46d0, type: 3}
+  - {fileID: 21300000, guid: 7250314aa82fadb43a7c016c04c3541a, type: 3}
+  - {fileID: 21300000, guid: 44f19652905503f4283b5d4310c89fc1, type: 3}
+  exileDiceSprites:
+  - {fileID: 21300000, guid: 01d9ba0a5769f514f8ec33f5015eb7a9, type: 3}
+  - {fileID: 21300000, guid: 21c99e21ea8a0cc45a91ee2e24cfd506, type: 3}
+  - {fileID: 21300000, guid: 9969110555dc6024e82252587ad036d4, type: 3}
+  - {fileID: 21300000, guid: 92c40a10a31fd9e47a5be98c2cffae64, type: 3}
+  - {fileID: 21300000, guid: 7806b6c1d53d4994d8753b252140654e, type: 3}
+  - {fileID: 21300000, guid: 66fae388c1b793146aafb87064b3cff5, type: 3}
+  gamblerDiceRollSprites:
+  - {fileID: 21300000, guid: 713249a52b32bdf49a8a887ebb4250f8, type: 3}
+  - {fileID: 21300000, guid: 4e510592b0abb94449ca36b37340965e, type: 3}
+  - {fileID: 21300000, guid: 44cdf888249abc046abfb2c864c0985a, type: 3}
+  - {fileID: 21300000, guid: 2c34543296d1e7645892cb75b083f685, type: 3}
+  - {fileID: 21300000, guid: cbbe4d50e2a8db642afd87cce90fc22b, type: 3}
+  - {fileID: 21300000, guid: 44340202858fd394090d8031cf06d88a, type: 3}
+  - {fileID: 21300000, guid: f4092b3766400a740bbdf98f2505510c, type: 3}
+  - {fileID: 21300000, guid: 2f737039cf1ab474ab418c69ce0c5b6e, type: 3}
+  - {fileID: 21300000, guid: 9f7f644249c0d384fba26d75dfd18491, type: 3}
+  - {fileID: 21300000, guid: 6701e613fb19a334a9dba52a1ebfabfe, type: 3}
+  - {fileID: 21300000, guid: 60a3137b495b6dc40a3980cd7c39211f, type: 3}
+  - {fileID: 21300000, guid: aefcbcb6370bdbf44a1a6b1e35e30fca, type: 3}
+  oracleDiceRollSprites:
+  - {fileID: 21300000, guid: 1f6bb7538c8593b4aa77ad5cd733cc30, type: 3}
+  - {fileID: 21300000, guid: c6adf00aee0bc1d4b8a48136ad362c0a, type: 3}
+  - {fileID: 21300000, guid: d857f64f12c11bd439694197283b709b, type: 3}
+  - {fileID: 21300000, guid: 29e7f4639388fb64b94f5113abf39ced, type: 3}
+  - {fileID: 21300000, guid: d78cfa9e987faa74d970518d1b7427cf, type: 3}
+  - {fileID: 21300000, guid: 98c54c448502c164aa7b9b858ba4d8b5, type: 3}
+  - {fileID: 21300000, guid: d336a86621ee513469399ac04da3558c, type: 3}
+  - {fileID: 21300000, guid: 76ee7ab84da7cdb47a2e13c7567ac26d, type: 3}
+  - {fileID: 21300000, guid: 43f7ce94c5a44ba4d9bcceb4c682298d, type: 3}
+  - {fileID: 21300000, guid: e5e04dbdac584854ca07c80cae1a0af4, type: 3}
+  - {fileID: 21300000, guid: 44978b09b8bf90c49817f5e7e8fd5446, type: 3}
+  - {fileID: 21300000, guid: b967e54e82af4e949a3ef583ff282d87, type: 3}
+  exileDiceRollSprites:
+  - {fileID: 21300000, guid: bd83465fab1525a469179ccdd21cc677, type: 3}
+  - {fileID: 21300000, guid: f26290e7673097a4c88e8f7589f0123e, type: 3}
+  - {fileID: 21300000, guid: 19a333ec50f5c8342898de4e320d7859, type: 3}
+  - {fileID: 21300000, guid: 35197341269b84144aa4e4bf0963ecbf, type: 3}
+  - {fileID: 21300000, guid: b5fc35ea3358a374ba66cb7357453565, type: 3}
+  - {fileID: 21300000, guid: 922b4a1a6a8341741addd73f9262be01, type: 3}
+  - {fileID: 21300000, guid: 433643c7401e5f94abd15335e885eaf2, type: 3}
+  - {fileID: 21300000, guid: 3cc2c73d1f295924ebd923ce2454cd6d, type: 3}
+  - {fileID: 21300000, guid: a8928dd1688725943989c27e7d3e6b32, type: 3}
+  - {fileID: 21300000, guid: 7f8fbd918d35d6442a677bcafade22e1, type: 3}
+  - {fileID: 21300000, guid: 8a7d78ca259f848458f4d2d22bc96de6, type: 3}
+  - {fileID: 21300000, guid: 923ae170bb539c8409d56eaf62ab0d93, type: 3}
+  mainMenuMusicClip: {fileID: 8300000, guid: ea63a4dc9dacc374eacb9e87e9444463, type: 3}
+  battleMusicClip: {fileID: 8300000, guid: e6da1d02c32fd64448f1465d24639897, type: 3}
+  nonCombatMusicClip: {fileID: 8300000, guid: d6e0d01052299f34da290c2fd5e07477, type: 3}
+  bossMusicClip: {fileID: 8300000, guid: dde9bd1e8c2ef94498566c2f169a34f9, type: 3}
+  deathMusicClip: {fileID: 8300000, guid: 5dacb935a4673724689732c6d61ab6e5, type: 3}
+  musicVolume: 0.46
+  sfxVolume: 0.86
+  attackImpactClips:
+  - {fileID: 8300000, guid: 45210ac601fddbe45a491c9e87777e94, type: 3}
+  - {fileID: 8300000, guid: ada6256dda6da074094da48432f466f6, type: 3}
+  - {fileID: 8300000, guid: c5b76b7bdaadfc24aaf37cd2ddc8760d, type: 3}
+  criticalImpactClip: {fileID: 8300000, guid: 9834702febd91e94285bc96d9b794db6, type: 3}
+  defenseImpactClips:
+  - {fileID: 8300000, guid: affc67565fbe2b446b024be774eb7cb4, type: 3}
+  - {fileID: 8300000, guid: 7a594047ef02e4143bc838d824fe12ef, type: 3}
+  blockedImpactClips:
+  - {fileID: 8300000, guid: 29132ea6cc38dab4d97efcb9d6256603, type: 3}
+  - {fileID: 8300000, guid: bb4f1d8103f16464b81b45c253c7c5e7, type: 3}
+  plateSettleClip: {fileID: 8300000, guid: cf4665bb8637f4c43a2fea5fdbe32591, type: 3}
+  prophecyDetailClip: {fileID: 8300000, guid: 00914988bd34ddd4d9122b5752bbc91d, type: 3}
+  traitDetailClip: {fileID: 8300000, guid: d970a2e5a6e842045933d0bf4aacebdc, type: 3}
+  comboDetailClip: {fileID: 8300000, guid: 955ae542eeaf1c34f998faaf74358361, type: 3}
+  curseDetailClip: {fileID: 8300000, guid: c253202fb4449c94794e4eab311a21cc, type: 3}
+  bossStartImpactClip: {fileID: 8300000, guid: 3eee362d2f26119468c2462e6320cf7d, type: 3}
+  bossVictoryImpactClip: {fileID: 8300000, guid: c4b7c2cdc3a9d414b806bbf6ce59dffa, type: 3}
+  combatFeedbackAttackSprite: {fileID: 21300000, guid: 42de809542fbe5749820933a5082f996, type: 3}
+  combatFeedbackDefenseSprite: {fileID: 21300000, guid: cf40c88d2deda5e4f81ae390fee4ad9b, type: 3}
+  combatFeedbackBlockedSprite: {fileID: 21300000, guid: 81fdd26b25127004f90918b9d488681f, type: 3}
+  combatFeedbackCriticalSprite: {fileID: 21300000, guid: 1103630f66016e740a5086827495c8a1, type: 3}
+  combatFeedbackProphecySprite: {fileID: 21300000, guid: d7e7312aadc01734a9acff1457f0cdd0, type: 3}
+  combatFeedbackTraitSprite: {fileID: 21300000, guid: f2f491004d8ec104092f11507aee4f07, type: 3}
+  combatFeedbackComboSprite: {fileID: 21300000, guid: 053116df2c0508446939c6782f0d1693, type: 3}
+  combatFeedbackCurseSprite: {fileID: 21300000, guid: be34f4ea2ff3a2a4a82d96ffb2836a01, type: 3}
+--- !u!4 &2003612534
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2003612532}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2100974410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: UI/RightClick
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_ActionId: 44b200b1-1557-4083-816c-b22cbdf77ddf
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 190826351}
+  - {fileID: 1138453699}
+  - {fileID: 2003612534}

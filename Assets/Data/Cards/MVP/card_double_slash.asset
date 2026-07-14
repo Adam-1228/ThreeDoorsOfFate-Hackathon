@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: card_double_slash
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: card_double_slash
+  displayName: "\uC5F0\uC18D \uBCA0\uAE30"
+  englishName: "\uC5F0\uC18D \uBCA0\uAE30"
+  rulesText: "\uD53C\uD574 4\uB97C \uB450 \uBC88 \uC900\uB2E4."
+  cost: 1
+  category: 0
+  rarity: 0
+  source: 1
+  characterClass: 0
+  target: 2
+  illustration: {fileID: 21300000, guid: 48651f18796e2a848b6026ab0f7daee4, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: 0187bec4f77d98e428427149d5ca9830, type: 3}
+  minimumRoom: 0
+  shopWeight: 1
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - attack
+  - common
+  buildTags: 00000000
+  effects:
+  - effectType: 0
+    timing: 0
+    condition: 0
+    amount: 4
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 
+  - effectType: 0
+    timing: 0
+    condition: 0
+    amount: 4
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 

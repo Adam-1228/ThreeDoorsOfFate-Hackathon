@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: hard_exile_no_return
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: hard_exile_no_return
+  displayName: "\uB3CC\uC544\uC624\uC9C0 \uC54A\uB294 \uAE38"
+  englishName: "\uB3CC\uC544\uC624\uC9C0 \uC54A\uB294 \uAE38"
+  rulesText: "\uC800\uC8FC \uB610\uB294 \uBE5A 1 \uAC10\uC18C. \uC131\uACF5\uD558\uBA74
+    \uD589\uB3D9\uB825 1 \uD68D\uB4DD."
+  cost: 0
+  category: 2
+  rarity: 1
+  source: 6
+  characterClass: 3
+  target: 1
+  illustration: {fileID: 21300000, guid: fc3af808f207b684ea89b2f9cdd638f4, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: fc3af808f207b684ea89b2f9cdd638f4, type: 3}
+  minimumRoom: 0
+  shopWeight: 1
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - hard
+  buildTags: 06000000030000000a000000
+  effects:
+  - effectType: 14
+    timing: 0
+    condition: 0
+    amount: 1
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 

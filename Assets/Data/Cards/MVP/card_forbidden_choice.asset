@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: card_forbidden_choice
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: card_forbidden_choice
+  displayName: "\uAE08\uC9C0\uB41C \uC120\uD0DD"
+  englishName: "\uAE08\uC9C0\uB41C \uC120\uD0DD"
+  rulesText: "\uCE74\uB4DC 3\uC7A5 \uBF51\uAE30. \uBE5A 1 \uC99D\uAC00."
+  cost: 1
+  category: 2
+  rarity: 1
+  source: 3
+  characterClass: 0
+  target: 1
+  illustration: {fileID: 21300000, guid: 388f5b836ee317941a80f82e42f321e4, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: d8829677dea7a924f9317fdcb5d92bfa, type: 3}
+  minimumRoom: 2
+  shopWeight: 1
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - skill
+  - rare
+  buildTags: 0500000003000000
+  effects:
+  - effectType: 3
+    timing: 0
+    condition: 0
+    amount: 3
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 
+  - effectType: 13
+    timing: 0
+    condition: 0
+    amount: 1
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 

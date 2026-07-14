@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: card_guard_stance
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: card_guard_stance
+  displayName: "\uACBD\uACC4 \uD0DC\uC138"
+  englishName: "\uACBD\uACC4 \uD0DC\uC138"
+  rulesText: "\uBC29\uC5B4\uB3C4 9. \uB2E4\uC74C \uD134\uAE4C\uC9C0 \uBC29\uC5B4\uB3C4
+    \uC720\uC9C0."
+  cost: 2
+  category: 1
+  rarity: 0
+  source: 1
+  characterClass: 0
+  target: 1
+  illustration: {fileID: 21300000, guid: f713aa90949a5af4bab13dcd480e1f7e, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: 214f658285c9853469d0b012ec69e62b, type: 3}
+  minimumRoom: 0
+  shopWeight: 1
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - defense
+  - common
+  buildTags: 01000000
+  effects:
+  - effectType: 1
+    timing: 0
+    condition: 0
+    amount: 9
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 
+  - effectType: 23
+    timing: 0
+    condition: 0
+    amount: 1
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 

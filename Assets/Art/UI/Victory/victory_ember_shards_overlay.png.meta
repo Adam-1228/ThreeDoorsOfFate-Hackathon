@@ -1,0 +1,5431 @@
+fileFormatVersion: 2
+guid: d514e20ac031f434684192ee63e3a0fc
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2653826226245611294
+    second: victory_ember_shards_overlay_0
+  - first:
+      213: -6250297589471964579
+    second: victory_ember_shards_overlay_1
+  - first:
+      213: 2969277216932891105
+    second: victory_ember_shards_overlay_2
+  - first:
+      213: -2044113042679151858
+    second: victory_ember_shards_overlay_3
+  - first:
+      213: 8955941593854299754
+    second: victory_ember_shards_overlay_4
+  - first:
+      213: 2668119980607324271
+    second: victory_ember_shards_overlay_5
+  - first:
+      213: 3120368079420320557
+    second: victory_ember_shards_overlay_6
+  - first:
+      213: 330403509845695675
+    second: victory_ember_shards_overlay_7
+  - first:
+      213: 8345631766315518150
+    second: victory_ember_shards_overlay_8
+  - first:
+      213: 2588864373603315297
+    second: victory_ember_shards_overlay_9
+  - first:
+      213: -3460811946513284022
+    second: victory_ember_shards_overlay_10
+  - first:
+      213: -3592570498016675610
+    second: victory_ember_shards_overlay_11
+  - first:
+      213: 8843629944950872342
+    second: victory_ember_shards_overlay_12
+  - first:
+      213: -243008454610678676
+    second: victory_ember_shards_overlay_13
+  - first:
+      213: -360750099103159574
+    second: victory_ember_shards_overlay_14
+  - first:
+      213: -5244031217971034471
+    second: victory_ember_shards_overlay_15
+  - first:
+      213: 2835662721353953744
+    second: victory_ember_shards_overlay_16
+  - first:
+      213: 8315152539674036373
+    second: victory_ember_shards_overlay_17
+  - first:
+      213: 4798478209212202473
+    second: victory_ember_shards_overlay_18
+  - first:
+      213: -5715621293691157117
+    second: victory_ember_shards_overlay_19
+  - first:
+      213: 3485648417463210024
+    second: victory_ember_shards_overlay_20
+  - first:
+      213: -4299473906552277763
+    second: victory_ember_shards_overlay_21
+  - first:
+      213: 8106997757984390132
+    second: victory_ember_shards_overlay_22
+  - first:
+      213: 8376472298946168637
+    second: victory_ember_shards_overlay_23
+  - first:
+      213: -9136258076838690073
+    second: victory_ember_shards_overlay_24
+  - first:
+      213: 9147993604182268392
+    second: victory_ember_shards_overlay_25
+  - first:
+      213: 8746588950640064483
+    second: victory_ember_shards_overlay_26
+  - first:
+      213: 7521552034236824456
+    second: victory_ember_shards_overlay_27
+  - first:
+      213: 262150126484897072
+    second: victory_ember_shards_overlay_28
+  - first:
+      213: 1845800648405775647
+    second: victory_ember_shards_overlay_29
+  - first:
+      213: 6612635930963974543
+    second: victory_ember_shards_overlay_30
+  - first:
+      213: 5023257024531183789
+    second: victory_ember_shards_overlay_31
+  - first:
+      213: 1029473568836205410
+    second: victory_ember_shards_overlay_32
+  - first:
+      213: -5360278581359402119
+    second: victory_ember_shards_overlay_33
+  - first:
+      213: 2109708859455547854
+    second: victory_ember_shards_overlay_34
+  - first:
+      213: 8203314504254276669
+    second: victory_ember_shards_overlay_35
+  - first:
+      213: 5330033965806094182
+    second: victory_ember_shards_overlay_36
+  - first:
+      213: 1966993164336068411
+    second: victory_ember_shards_overlay_37
+  - first:
+      213: 5030448417615890400
+    second: victory_ember_shards_overlay_38
+  - first:
+      213: -5080864742545979460
+    second: victory_ember_shards_overlay_39
+  - first:
+      213: 4848994008553275523
+    second: victory_ember_shards_overlay_40
+  - first:
+      213: -5174718587688548662
+    second: victory_ember_shards_overlay_41
+  - first:
+      213: 1739839871344991865
+    second: victory_ember_shards_overlay_42
+  - first:
+      213: 1546711698441168894
+    second: victory_ember_shards_overlay_43
+  - first:
+      213: -5775715108828600477
+    second: victory_ember_shards_overlay_44
+  - first:
+      213: 4152163770697123931
+    second: victory_ember_shards_overlay_45
+  - first:
+      213: -3638792398987762787
+    second: victory_ember_shards_overlay_46
+  - first:
+      213: -1905147516436987590
+    second: victory_ember_shards_overlay_47
+  - first:
+      213: -6036043172299403123
+    second: victory_ember_shards_overlay_48
+  - first:
+      213: 4178140584745677364
+    second: victory_ember_shards_overlay_49
+  - first:
+      213: 1893854789876319129
+    second: victory_ember_shards_overlay_50
+  - first:
+      213: 8389012168307158659
+    second: victory_ember_shards_overlay_51
+  - first:
+      213: 8722200433631604166
+    second: victory_ember_shards_overlay_52
+  - first:
+      213: -4089200508028933756
+    second: victory_ember_shards_overlay_53
+  - first:
+      213: -514975330865673400
+    second: victory_ember_shards_overlay_54
+  - first:
+      213: -9066841598197797657
+    second: victory_ember_shards_overlay_55
+  - first:
+      213: 8920190900817237183
+    second: victory_ember_shards_overlay_56
+  - first:
+      213: -3168180163591551681
+    second: victory_ember_shards_overlay_57
+  - first:
+      213: 5328948532880824943
+    second: victory_ember_shards_overlay_58
+  - first:
+      213: -8984962177226399879
+    second: victory_ember_shards_overlay_59
+  - first:
+      213: 162746484697224235
+    second: victory_ember_shards_overlay_60
+  - first:
+      213: 4685899914058071143
+    second: victory_ember_shards_overlay_61
+  - first:
+      213: -4513526822435004641
+    second: victory_ember_shards_overlay_62
+  - first:
+      213: 3376367411560853158
+    second: victory_ember_shards_overlay_63
+  - first:
+      213: -4394355178234681721
+    second: victory_ember_shards_overlay_64
+  - first:
+      213: 1345351971997213142
+    second: victory_ember_shards_overlay_65
+  - first:
+      213: 1539547309392470221
+    second: victory_ember_shards_overlay_66
+  - first:
+      213: -966363599501344368
+    second: victory_ember_shards_overlay_67
+  - first:
+      213: -7677921792773767543
+    second: victory_ember_shards_overlay_68
+  - first:
+      213: -3631364274945434488
+    second: victory_ember_shards_overlay_69
+  - first:
+      213: -5971287637720220149
+    second: victory_ember_shards_overlay_70
+  - first:
+      213: 3592581113990978619
+    second: victory_ember_shards_overlay_71
+  - first:
+      213: -244668397087402680
+    second: victory_ember_shards_overlay_72
+  - first:
+      213: 1676443663928264550
+    second: victory_ember_shards_overlay_73
+  - first:
+      213: 3712231931814225315
+    second: victory_ember_shards_overlay_74
+  - first:
+      213: 4528299299470375711
+    second: victory_ember_shards_overlay_75
+  - first:
+      213: 6702713829957962548
+    second: victory_ember_shards_overlay_76
+  - first:
+      213: 5188759872446038059
+    second: victory_ember_shards_overlay_77
+  - first:
+      213: -7088863954437759108
+    second: victory_ember_shards_overlay_78
+  - first:
+      213: 4537646269024132965
+    second: victory_ember_shards_overlay_79
+  - first:
+      213: -4788662069540578928
+    second: victory_ember_shards_overlay_80
+  - first:
+      213: -4897250784282797944
+    second: victory_ember_shards_overlay_81
+  - first:
+      213: 2318402105468913261
+    second: victory_ember_shards_overlay_82
+  - first:
+      213: 3050535615625587695
+    second: victory_ember_shards_overlay_83
+  - first:
+      213: -8123650887185935012
+    second: victory_ember_shards_overlay_84
+  - first:
+      213: 158626910594199807
+    second: victory_ember_shards_overlay_85
+  - first:
+      213: -2399965798440974866
+    second: victory_ember_shards_overlay_86
+  - first:
+      213: -8520074622649021777
+    second: victory_ember_shards_overlay_87
+  - first:
+      213: 1319112879950048627
+    second: victory_ember_shards_overlay_88
+  - first:
+      213: -4442022409699485929
+    second: victory_ember_shards_overlay_89
+  - first:
+      213: -4362468350729607672
+    second: victory_ember_shards_overlay_90
+  - first:
+      213: 9166297601364803145
+    second: victory_ember_shards_overlay_91
+  - first:
+      213: 675597836501754080
+    second: victory_ember_shards_overlay_92
+  - first:
+      213: 8175139797326711401
+    second: victory_ember_shards_overlay_93
+  - first:
+      213: 6067812072938600987
+    second: victory_ember_shards_overlay_94
+  - first:
+      213: 4979654229102559698
+    second: victory_ember_shards_overlay_95
+  - first:
+      213: -7203733709603032236
+    second: victory_ember_shards_overlay_96
+  - first:
+      213: -4101587645545183088
+    second: victory_ember_shards_overlay_97
+  - first:
+      213: 7898897782271251511
+    second: victory_ember_shards_overlay_98
+  - first:
+      213: -1647351393797204214
+    second: victory_ember_shards_overlay_99
+  - first:
+      213: -8757111762976445304
+    second: victory_ember_shards_overlay_100
+  - first:
+      213: -865485315656669460
+    second: victory_ember_shards_overlay_101
+  - first:
+      213: 7135911435745371073
+    second: victory_ember_shards_overlay_102
+  - first:
+      213: -771026014489869287
+    second: victory_ember_shards_overlay_103
+  - first:
+      213: -2986003172113182568
+    second: victory_ember_shards_overlay_104
+  - first:
+      213: 1971192743638781525
+    second: victory_ember_shards_overlay_105
+  - first:
+      213: 6032482270776272484
+    second: victory_ember_shards_overlay_106
+  - first:
+      213: 1586352411090895194
+    second: victory_ember_shards_overlay_107
+  - first:
+      213: -8944621818689873874
+    second: victory_ember_shards_overlay_108
+  - first:
+      213: 6280083783594906623
+    second: victory_ember_shards_overlay_109
+  - first:
+      213: 8247264787268790959
+    second: victory_ember_shards_overlay_110
+  - first:
+      213: 7204632202422405334
+    second: victory_ember_shards_overlay_111
+  - first:
+      213: -1556093168031125850
+    second: victory_ember_shards_overlay_112
+  - first:
+      213: -3581184664680420969
+    second: victory_ember_shards_overlay_113
+  - first:
+      213: -839852820254837473
+    second: victory_ember_shards_overlay_114
+  - first:
+      213: -2212779318968210753
+    second: victory_ember_shards_overlay_115
+  - first:
+      213: -661668495499126514
+    second: victory_ember_shards_overlay_116
+  - first:
+      213: 1114363238336362394
+    second: victory_ember_shards_overlay_117
+  - first:
+      213: 1890494012605535249
+    second: victory_ember_shards_overlay_118
+  - first:
+      213: -4098508957845442047
+    second: victory_ember_shards_overlay_119
+  - first:
+      213: 324080750530492636
+    second: victory_ember_shards_overlay_120
+  - first:
+      213: 4163325032879690623
+    second: victory_ember_shards_overlay_121
+  - first:
+      213: 3524114488113219624
+    second: victory_ember_shards_overlay_122
+  - first:
+      213: 7653881361663106681
+    second: victory_ember_shards_overlay_123
+  - first:
+      213: 1831464431162487301
+    second: victory_ember_shards_overlay_124
+  - first:
+      213: 177348905275180294
+    second: victory_ember_shards_overlay_125
+  - first:
+      213: -4651019060377170965
+    second: victory_ember_shards_overlay_126
+  - first:
+      213: 2880787081366969126
+    second: victory_ember_shards_overlay_127
+  - first:
+      213: 9007385559950153906
+    second: victory_ember_shards_overlay_128
+  - first:
+      213: -2835505413764423048
+    second: victory_ember_shards_overlay_129
+  - first:
+      213: 3793558677342915290
+    second: victory_ember_shards_overlay_130
+  - first:
+      213: -1474134997536583176
+    second: victory_ember_shards_overlay_131
+  - first:
+      213: -7320975309448131146
+    second: victory_ember_shards_overlay_132
+  - first:
+      213: -8646465041448289119
+    second: victory_ember_shards_overlay_133
+  - first:
+      213: 8490253721918687234
+    second: victory_ember_shards_overlay_134
+  - first:
+      213: 8313130320842162552
+    second: victory_ember_shards_overlay_135
+  - first:
+      213: -6899287825647510429
+    second: victory_ember_shards_overlay_136
+  - first:
+      213: -7050713404755590738
+    second: victory_ember_shards_overlay_137
+  - first:
+      213: -6068035741424112371
+    second: victory_ember_shards_overlay_138
+  - first:
+      213: 3895114995521025970
+    second: victory_ember_shards_overlay_139
+  - first:
+      213: -4111558621549683757
+    second: victory_ember_shards_overlay_140
+  - first:
+      213: -5477449032107098156
+    second: victory_ember_shards_overlay_141
+  - first:
+      213: -6645121908814188081
+    second: victory_ember_shards_overlay_142
+  - first:
+      213: -577754954651611171
+    second: victory_ember_shards_overlay_143
+  - first:
+      213: -127584961306805327
+    second: victory_ember_shards_overlay_144
+  - first:
+      213: 7846413159398497775
+    second: victory_ember_shards_overlay_145
+  - first:
+      213: -7242859482192400338
+    second: victory_ember_shards_overlay_146
+  - first:
+      213: -1214739059098638886
+    second: victory_ember_shards_overlay_147
+  - first:
+      213: 5567028452178094625
+    second: victory_ember_shards_overlay_148
+  - first:
+      213: 2612024227486012820
+    second: victory_ember_shards_overlay_149
+  - first:
+      213: -7369907240605949574
+    second: victory_ember_shards_overlay_150
+  - first:
+      213: 1150380167107185015
+    second: victory_ember_shards_overlay_151
+  - first:
+      213: -2662196977710861461
+    second: victory_ember_shards_overlay_152
+  - first:
+      213: 9192088343099555645
+    second: victory_ember_shards_overlay_153
+  - first:
+      213: -4718504037443172358
+    second: victory_ember_shards_overlay_154
+  - first:
+      213: 5412736074616626646
+    second: victory_ember_shards_overlay_155
+  - first:
+      213: 1407670826782305587
+    second: victory_ember_shards_overlay_156
+  - first:
+      213: -974739185376233615
+    second: victory_ember_shards_overlay_157
+  - first:
+      213: -1340337923619032173
+    second: victory_ember_shards_overlay_158
+  - first:
+      213: -4362618584404719432
+    second: victory_ember_shards_overlay_159
+  - first:
+      213: 323928726228959829
+    second: victory_ember_shards_overlay_160
+  - first:
+      213: 3643453374397617430
+    second: victory_ember_shards_overlay_161
+  - first:
+      213: -1989171838961751358
+    second: victory_ember_shards_overlay_162
+  - first:
+      213: -7977769841203100101
+    second: victory_ember_shards_overlay_163
+  - first:
+      213: 9040641452587346120
+    second: victory_ember_shards_overlay_164
+  - first:
+      213: -1997906612242543427
+    second: victory_ember_shards_overlay_165
+  - first:
+      213: 3340825324456470055
+    second: victory_ember_shards_overlay_166
+  - first:
+      213: -6992883409683111995
+    second: victory_ember_shards_overlay_167
+  - first:
+      213: 4399425351270614931
+    second: victory_ember_shards_overlay_168
+  - first:
+      213: -8577884537487406423
+    second: victory_ember_shards_overlay_169
+  - first:
+      213: 4930617829498942667
+    second: victory_ember_shards_overlay_170
+  - first:
+      213: 5813973593771048349
+    second: victory_ember_shards_overlay_171
+  - first:
+      213: -7779514648408016247
+    second: victory_ember_shards_overlay_172
+  - first:
+      213: -1213086588620761648
+    second: victory_ember_shards_overlay_173
+  - first:
+      213: 645231598832538376
+    second: victory_ember_shards_overlay_174
+  - first:
+      213: -8355881558577912835
+    second: victory_ember_shards_overlay_175
+  - first:
+      213: 1387529516111745181
+    second: victory_ember_shards_overlay_176
+  - first:
+      213: 7960033661676772146
+    second: victory_ember_shards_overlay_177
+  - first:
+      213: -3962374614077194783
+    second: victory_ember_shards_overlay_178
+  - first:
+      213: -8814381094710202713
+    second: victory_ember_shards_overlay_179
+  - first:
+      213: -7926107101130944784
+    second: victory_ember_shards_overlay_180
+  - first:
+      213: 2968007293317731317
+    second: victory_ember_shards_overlay_181
+  - first:
+      213: -4546850015124458582
+    second: victory_ember_shards_overlay_182
+  - first:
+      213: -5544590929819657296
+    second: victory_ember_shards_overlay_183
+  - first:
+      213: 5534580360519791804
+    second: victory_ember_shards_overlay_184
+  - first:
+      213: -2165062986332633871
+    second: victory_ember_shards_overlay_185
+  - first:
+      213: -5596780242435698682
+    second: victory_ember_shards_overlay_186
+  - first:
+      213: -4139636914202990659
+    second: victory_ember_shards_overlay_187
+  - first:
+      213: -5832144557075485795
+    second: victory_ember_shards_overlay_188
+  - first:
+      213: -1182515131183194284
+    second: victory_ember_shards_overlay_189
+  - first:
+      213: -3116950835687755359
+    second: victory_ember_shards_overlay_190
+  - first:
+      213: 6232672584153864602
+    second: victory_ember_shards_overlay_191
+  - first:
+      213: 3748971211654846701
+    second: victory_ember_shards_overlay_192
+  - first:
+      213: 8296669737069256410
+    second: victory_ember_shards_overlay_193
+  - first:
+      213: 9132455242544113792
+    second: victory_ember_shards_overlay_194
+  - first:
+      213: 8004980334290591135
+    second: victory_ember_shards_overlay_195
+  - first:
+      213: 5231160467493614057
+    second: victory_ember_shards_overlay_196
+  - first:
+      213: -1547268069151303919
+    second: victory_ember_shards_overlay_197
+  - first:
+      213: 1097533554710266966
+    second: victory_ember_shards_overlay_198
+  - first:
+      213: -4448102688046920525
+    second: victory_ember_shards_overlay_199
+  - first:
+      213: -8377212076655505999
+    second: victory_ember_shards_overlay_200
+  - first:
+      213: 3421604030241787664
+    second: victory_ember_shards_overlay_201
+  - first:
+      213: 7260634562708833384
+    second: victory_ember_shards_overlay_202
+  - first:
+      213: -5557349028970406002
+    second: victory_ember_shards_overlay_203
+  - first:
+      213: 1209612820999954153
+    second: victory_ember_shards_overlay_204
+  - first:
+      213: -8024961113745720163
+    second: victory_ember_shards_overlay_205
+  - first:
+      213: 4821136201262236241
+    second: victory_ember_shards_overlay_206
+  - first:
+      213: 3734306146987957940
+    second: victory_ember_shards_overlay_207
+  - first:
+      213: 5731784417065336275
+    second: victory_ember_shards_overlay_208
+  - first:
+      213: -4691152302616584950
+    second: victory_ember_shards_overlay_209
+  - first:
+      213: 2433765550607282476
+    second: victory_ember_shards_overlay_210
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 100
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 100
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 100
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 50
+    textureCompression: 2
+    compressionQuality: 85
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 50
+    textureCompression: 2
+    compressionQuality: 85
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_0
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 899
+        width: 30
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e0d3099b17bb2bd0800000000000000
+      internalID: -2653826226245611294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_1
+      rect:
+        serializedVersion: 2
+        x: 367
+        y: 885
+        width: 20
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d521b07357b7249a0800000000000000
+      internalID: -6250297589471964579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_2
+      rect:
+        serializedVersion: 2
+        x: 548
+        y: 902
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e902fa95edf43920800000000000000
+      internalID: 2969277216932891105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_3
+      rect:
+        serializedVersion: 2
+        x: 1144
+        y: 888
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e03cd52940ad1a3e0800000000000000
+      internalID: -2044113042679151858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_4
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 835
+        width: 34
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6ec4d2dd65e94c70800000000000000
+      internalID: 8955941593854299754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_5
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 881
+        width: 14
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f60c83e6cf0170520800000000000000
+      internalID: 2668119980607324271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_6
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 855
+        width: 40
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2be05e5c36cd4b20800000000000000
+      internalID: 3120368079420320557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_7
+      rect:
+        serializedVersion: 2
+        x: 503
+        y: 880
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bbc15ecdd34d59400800000000000000
+      internalID: 330403509845695675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_8
+      rect:
+        serializedVersion: 2
+        x: 851
+        y: 875
+        width: 16
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c8c379dfd3a1d370800000000000000
+      internalID: 8345631766315518150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_9
+      rect:
+        serializedVersion: 2
+        x: 1137
+        y: 875
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16e2a407e6e7de320800000000000000
+      internalID: 2588864373603315297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_10
+      rect:
+        serializedVersion: 2
+        x: 1314
+        y: 867
+        width: 23
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a44c5adeed9b8ffc0800000000000000
+      internalID: -3460811946513284022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_11
+      rect:
+        serializedVersion: 2
+        x: 1395
+        y: 875
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e8fa239a20a42ec0800000000000000
+      internalID: -3592570498016675610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_12
+      rect:
+        serializedVersion: 2
+        x: 1471
+        y: 877
+        width: 24
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 619ddc15492eaba70800000000000000
+      internalID: 8843629944950872342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_13
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 856
+        width: 20
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6c83891919a0acf0800000000000000
+      internalID: -243008454610678676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_14
+      rect:
+        serializedVersion: 2
+        x: 584
+        y: 872
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aeae44a32bb5efaf0800000000000000
+      internalID: -360750099103159574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_15
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 869
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99607cd24657937b0800000000000000
+      internalID: -5244031217971034471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_16
+      rect:
+        serializedVersion: 2
+        x: 1430
+        y: 859
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d1be19983c4a5720800000000000000
+      internalID: 2835662721353953744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_17
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 853
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5984574ed2b556370800000000000000
+      internalID: 8315152539674036373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_18
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 854
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9edbb82028e979240800000000000000
+      internalID: 4798478209212202473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_19
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 860
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38541ee47b80ea0b0800000000000000
+      internalID: -5715621293691157117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_20
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 765
+        width: 80
+        height: 101
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8201cc694c28f5030800000000000000
+      internalID: 3485648417463210024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_21
+      rect:
+        serializedVersion: 2
+        x: 932
+        y: 826
+        width: 50
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df4f3e6f2433554c0800000000000000
+      internalID: -4299473906552277763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_22
+      rect:
+        serializedVersion: 2
+        x: 1098
+        y: 50
+        width: 566
+        height: 811
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fb3c871287d18070800000000000000
+      internalID: 8106997757984390132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_23
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 825
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d370699ec253f3470800000000000000
+      internalID: 8376472298946168637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_24
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 840
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e28cb16fad753180800000000000000
+      internalID: -9136258076838690073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_25
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 795
+        width: 44
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e954d007b334fe70800000000000000
+      internalID: 9147993604182268392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_26
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 818
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e7f1472f40226970800000000000000
+      internalID: 8746588950640064483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_27
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 811
+        width: 23
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88b7d4869bbe16860800000000000000
+      internalID: 7521552034236824456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_28
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 805
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03db4fea62853a300800000000000000
+      internalID: 262150126484897072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_29
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 820
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f15796609e99d9910800000000000000
+      internalID: 1845800648405775647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_30
+      rect:
+        serializedVersion: 2
+        x: 858
+        y: 821
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f89971e085dc4cb50800000000000000
+      internalID: 6612635930963974543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_31
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 81
+        width: 472
+        height: 733
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da8baa246a136b540800000000000000
+      internalID: 5023257024531183789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_32
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 808
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26bb228a1cc694e00800000000000000
+      internalID: 1029473568836205410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_33
+      rect:
+        serializedVersion: 2
+        x: 534
+        y: 744
+        width: 45
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97320fcb7077c95b0800000000000000
+      internalID: -5360278581359402119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_34
+      rect:
+        serializedVersion: 2
+        x: 1040
+        y: 802
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec9a75ba701374d10800000000000000
+      internalID: 2109708859455547854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_35
+      rect:
+        serializedVersion: 2
+        x: 1076
+        y: 810
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d34c2ee141708d170800000000000000
+      internalID: 8203314504254276669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_36
+      rect:
+        serializedVersion: 2
+        x: 1640
+        y: 782
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66783a4f6a518f940800000000000000
+      internalID: 5330033965806094182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_37
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 753
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b377fd38cd92c4b10800000000000000
+      internalID: 1966993164336068411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_38
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 765
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e7cbe0fe2ebfc540800000000000000
+      internalID: 5030448417615890400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_39
+      rect:
+        serializedVersion: 2
+        x: 1086
+        y: 761
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb78dbcaf642d79b0800000000000000
+      internalID: -5080864742545979460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_40
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 750
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 380c0d51c561b4340800000000000000
+      internalID: 4848994008553275523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_41
+      rect:
+        serializedVersion: 2
+        x: 993
+        y: 748
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac686308cd4bf28b0800000000000000
+      internalID: -5174718587688548662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_42
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 732
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97e54991527252810800000000000000
+      internalID: 1739839871344991865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_43
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 732
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef7e68b4816077510800000000000000
+      internalID: 1546711698441168894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_44
+      rect:
+        serializedVersion: 2
+        x: 946
+        y: 736
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3672a66a5b988dfa0800000000000000
+      internalID: -5775715108828600477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_45
+      rect:
+        serializedVersion: 2
+        x: 1027
+        y: 660
+        width: 50
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5806a943f27f9930800000000000000
+      internalID: 4152163770697123931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_46
+      rect:
+        serializedVersion: 2
+        x: 1097
+        y: 721
+        width: 29
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9361fe9799608dc0800000000000000
+      internalID: -3638792398987762787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_47
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 716
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a314e0e7d6e8f85e0800000000000000
+      internalID: -1905147516436987590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_48
+      rect:
+        serializedVersion: 2
+        x: 721
+        y: 715
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d801c2217baab3ca0800000000000000
+      internalID: -6036043172299403123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_49
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 689
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 432b86f99bcbbf930800000000000000
+      internalID: 4178140584745677364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_50
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 691
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99300c6b5e2584a10800000000000000
+      internalID: 1893854789876319129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_51
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 682
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38ea064ce12cb6470800000000000000
+      internalID: 8389012168307158659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_52
+      rect:
+        serializedVersion: 2
+        x: 1005
+        y: 678
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6cdae5a051b7b0970800000000000000
+      internalID: 8722200433631604166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_53
+      rect:
+        serializedVersion: 2
+        x: 607
+        y: 670
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 489a69fadcd3047c0800000000000000
+      internalID: -4089200508028933756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_54
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 642
+        width: 48
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84b89af3aa07ad8f0800000000000000
+      internalID: -514975330865673400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_55
+      rect:
+        serializedVersion: 2
+        x: 475
+        y: 624
+        width: 31
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ec6fa8ca9b1c2280800000000000000
+      internalID: -9066841598197797657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_56
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 655
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb412e3fc52eacb70800000000000000
+      internalID: 8920190900817237183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_57
+      rect:
+        serializedVersion: 2
+        x: 601
+        y: 641
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f35cfac4dec5804d0800000000000000
+      internalID: -3168180163591551681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_58
+      rect:
+        serializedVersion: 2
+        x: 913
+        y: 625
+        width: 30
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6a53b8e47a34f940800000000000000
+      internalID: 5328948532880824943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_59
+      rect:
+        serializedVersion: 2
+        x: 947
+        y: 640
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97f991211800f4380800000000000000
+      internalID: -8984962177226399879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_60
+      rect:
+        serializedVersion: 2
+        x: 1072
+        y: 586
+        width: 55
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2452d8c011324200800000000000000
+      internalID: 162746484697224235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_61
+      rect:
+        serializedVersion: 2
+        x: 505
+        y: 608
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76cf6761529a70140800000000000000
+      internalID: 4685899914058071143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_62
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 624
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1f5098c44bbc51c0800000000000000
+      internalID: -4513526822435004641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_63
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 620
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ae2a45a5444bde20800000000000000
+      internalID: 3376367411560853158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_64
+      rect:
+        serializedVersion: 2
+        x: 789
+        y: 624
+        width: 20
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7866c686f3d1403c0800000000000000
+      internalID: -4394355178234681721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_65
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 609
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d1e3c49d76aba210800000000000000
+      internalID: 1345351971997213142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_66
+      rect:
+        serializedVersion: 2
+        x: 862
+        y: 595
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc02f3bfe129d5510800000000000000
+      internalID: 1539547309392470221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_67
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 567
+        width: 29
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 091cadf1d69c692f0800000000000000
+      internalID: -966363599501344368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_68
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 591
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98e3d701fca827590800000000000000
+      internalID: -7677921792773767543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_69
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 572
+        width: 47
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88c55d58e6dca9dc0800000000000000
+      internalID: -3631364274945434488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_70
+      rect:
+        serializedVersion: 2
+        x: 1004
+        y: 588
+        width: 22
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0e310ed789b12da0800000000000000
+      internalID: -5971287637720220149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_71
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 569
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3c95362d796bd130800000000000000
+      internalID: 3592581113990978619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_72
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 579
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84557df9363ca9cf0800000000000000
+      internalID: -244668397087402680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_73
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 561
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 667066251ace34710800000000000000
+      internalID: 1676443663928264550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_74
+      rect:
+        serializedVersion: 2
+        x: 509
+        y: 551
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a526a3164f748330800000000000000
+      internalID: 3712231931814225315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_75
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 554
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1bf49d8830c7de30800000000000000
+      internalID: 4528299299470375711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_76
+      rect:
+        serializedVersion: 2
+        x: 882
+        y: 560
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43b0eb147b2d40d50800000000000000
+      internalID: 6702713829957962548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_77
+      rect:
+        serializedVersion: 2
+        x: 952
+        y: 557
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2082fddc9d220840800000000000000
+      internalID: 5188759872446038059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_78
+      rect:
+        serializedVersion: 2
+        x: 999
+        y: 533
+        width: 27
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7f9aa6bacb4f9d90800000000000000
+      internalID: -7088863954437759108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_79
+      rect:
+        serializedVersion: 2
+        x: 479
+        y: 540
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56f5f8d7d35f8fe30800000000000000
+      internalID: 4537646269024132965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_80
+      rect:
+        serializedVersion: 2
+        x: 824
+        y: 550
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09995ab18314b8db0800000000000000
+      internalID: -4788662069540578928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_81
+      rect:
+        serializedVersion: 2
+        x: 829
+        y: 539
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88812d2cb58790cb0800000000000000
+      internalID: -4897250784282797944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_82
+      rect:
+        serializedVersion: 2
+        x: 1076
+        y: 540
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d660ef67e6e9c2020800000000000000
+      internalID: 2318402105468913261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_83
+      rect:
+        serializedVersion: 2
+        x: 511
+        y: 536
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: feb6a00eafda55a20800000000000000
+      internalID: 3050535615625587695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_84
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 534
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c55defd1f8ef24f80800000000000000
+      internalID: -8123650887185935012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_85
+      rect:
+        serializedVersion: 2
+        x: 852
+        y: 516
+        width: 23
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff0f8c1b55e833200800000000000000
+      internalID: 158626910594199807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_86
+      rect:
+        serializedVersion: 2
+        x: 971
+        y: 530
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee5c6d662db91bed0800000000000000
+      internalID: -2399965798440974866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_87
+      rect:
+        serializedVersion: 2
+        x: 669
+        y: 492
+        width: 35
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: faa4f21a54d92c980800000000000000
+      internalID: -8520074622649021777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_88
+      rect:
+        serializedVersion: 2
+        x: 916
+        y: 509
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37da014ec2e6e4210800000000000000
+      internalID: 1319112879950048627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_89
+      rect:
+        serializedVersion: 2
+        x: 1027
+        y: 526
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71799893724ca52c0800000000000000
+      internalID: -4442022409699485929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_90
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 513
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 806a0eaf5266573c0800000000000000
+      internalID: -4362468350729607672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_91
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 503
+        width: 25
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94e3dd27a1b353f70800000000000000
+      internalID: 9166297601364803145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_92
+      rect:
+        serializedVersion: 2
+        x: 981
+        y: 500
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e0a5bf17a4306900800000000000000
+      internalID: 675597836501754080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_93
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 406
+        width: 56
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96a41d8f45ee37170800000000000000
+      internalID: 8175139797326711401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_94
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 473
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1af4538ee2353450800000000000000
+      internalID: 6067812072938600987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_95
+      rect:
+        serializedVersion: 2
+        x: 861
+        y: 477
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d10ee553294b1540800000000000000
+      internalID: 4979654229102559698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_96
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 483
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 453ba9eab52370c90800000000000000
+      internalID: -7203733709603032236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_97
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 436
+        width: 51
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 098062c74cb3417c0800000000000000
+      internalID: -4101587645545183088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_98
+      rect:
+        serializedVersion: 2
+        x: 757
+        y: 383
+        width: 64
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 734166dcea58e9d60800000000000000
+      internalID: 7898897782271251511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_99
+      rect:
+        serializedVersion: 2
+        x: 1059
+        y: 470
+        width: 18
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a071978a2ae6329e0800000000000000
+      internalID: -1647351393797204214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_100
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 456
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88ce46daf3d787680800000000000000
+      internalID: -8757111762976445304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_101
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 446
+        width: 11
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce6a7f1e0bd2df3f0800000000000000
+      internalID: -865485315656669460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_102
+      rect:
+        serializedVersion: 2
+        x: 1015
+        y: 454
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c32044a4a9d70360800000000000000
+      internalID: 7135911435745371073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_103
+      rect:
+        serializedVersion: 2
+        x: 646
+        y: 443
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9140fb5cce3cc45f0800000000000000
+      internalID: -771026014489869287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_104
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 427
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 890110c7fe59f86d0800000000000000
+      internalID: -2986003172113182568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_105
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 412
+        width: 40
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55eca644b551b5b10800000000000000
+      internalID: 1971192743638781525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_106
+      rect:
+        serializedVersion: 2
+        x: 628
+        y: 426
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 466267fe9aea7b350800000000000000
+      internalID: 6032482270776272484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_107
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 420
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5148afec1bd30610800000000000000
+      internalID: 1586352411090895194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_108
+      rect:
+        serializedVersion: 2
+        x: 820
+        y: 419
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2818c6b8d15ed380800000000000000
+      internalID: -8944621818689873874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_109
+      rect:
+        serializedVersion: 2
+        x: 579
+        y: 416
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff39dd88de6572750800000000000000
+      internalID: 6280083783594906623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_110
+      rect:
+        serializedVersion: 2
+        x: 507
+        y: 398
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: faa6ebdc0ab247270800000000000000
+      internalID: 8247264787268790959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_111
+      rect:
+        serializedVersion: 2
+        x: 638
+        y: 349
+        width: 75
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d84abaf0defbf360800000000000000
+      internalID: 7204632202422405334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_112
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 405
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6aea71a1285a76ae0800000000000000
+      internalID: -1556093168031125850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_113
+      rect:
+        serializedVersion: 2
+        x: 515
+        y: 322
+        width: 64
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 799a5aa75831d4ec0800000000000000
+      internalID: -3581184664680420969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_114
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 395
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f15b9194f4e3854f0800000000000000
+      internalID: -839852820254837473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_115
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 385
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbaa196eee0aa41e0800000000000000
+      internalID: -2212779318968210753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_116
+      rect:
+        serializedVersion: 2
+        x: 1092
+        y: 393
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0915be420841d6f0800000000000000
+      internalID: -661668495499126514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_117
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 380
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a97facb0673077f00800000000000000
+      internalID: 1114363238336362394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_118
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 386
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1141b57c9426c3a10800000000000000
+      internalID: 1890494012605535249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_119
+      rect:
+        serializedVersion: 2
+        x: 860
+        y: 382
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 102bdd251db2f17c0800000000000000
+      internalID: -4098508957845442047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_120
+      rect:
+        serializedVersion: 2
+        x: 1003
+        y: 364
+        width: 26
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd879edb9bd5f7400800000000000000
+      internalID: 324080750530492636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_121
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 353
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7319452f0a17c930800000000000000
+      internalID: 4163325032879690623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_122
+      rect:
+        serializedVersion: 2
+        x: 813
+        y: 349
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 828cbc3947b28e030800000000000000
+      internalID: 3524114488113219624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_123
+      rect:
+        serializedVersion: 2
+        x: 909
+        y: 321
+        width: 35
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97e99e2eb8c083a60800000000000000
+      internalID: 7653881361663106681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_124
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 353
+        width: 26
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 502f336523baa6910800000000000000
+      internalID: 1831464431162487301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_125
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 332
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6054b34c3e1167200800000000000000
+      internalID: 177348905275180294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_126
+      rect:
+        serializedVersion: 2
+        x: 974
+        y: 342
+        width: 19
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bebc5a68ec2447fb0800000000000000
+      internalID: -4651019060377170965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_127
+      rect:
+        serializedVersion: 2
+        x: 1094
+        y: 339
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62b9962669c9af720800000000000000
+      internalID: 2880787081366969126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_128
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 311
+        width: 22
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b8dfcf8179a00d70800000000000000
+      internalID: 9007385559950153906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_129
+      rect:
+        serializedVersion: 2
+        x: 507
+        y: 319
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 872efdd69d246a8d0800000000000000
+      internalID: -2835505413764423048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_130
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 307
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ada00a5948d65a430800000000000000
+      internalID: 3793558677342915290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_131
+      rect:
+        serializedVersion: 2
+        x: 725
+        y: 317
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f15cd0b702da8be0800000000000000
+      internalID: -1474134997536583176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_132
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 271
+        width: 64
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bd40f68ebba66a90800000000000000
+      internalID: -7320975309448131146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_133
+      rect:
+        serializedVersion: 2
+        x: 1650
+        y: 318
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ac34a11bd5910880800000000000000
+      internalID: -8646465041448289119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_134
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 274
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 208c6ebd6c073d570800000000000000
+      internalID: 8490253721918687234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_135
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 211
+        width: 70
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87183516bfb2e5370800000000000000
+      internalID: 8313130320842162552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_136
+      rect:
+        serializedVersion: 2
+        x: 558
+        y: 290
+        width: 38
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36c5a1dc64ec040a0800000000000000
+      internalID: -6899287825647510429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_137
+      rect:
+        serializedVersion: 2
+        x: 781
+        y: 248
+        width: 21
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea14570c385d62e90800000000000000
+      internalID: -7050713404755590738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_138
+      rect:
+        serializedVersion: 2
+        x: 860
+        y: 254
+        width: 32
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0daa0c94a10acba0800000000000000
+      internalID: -6068035741424112371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_139
+      rect:
+        serializedVersion: 2
+        x: 1080
+        y: 238
+        width: 63
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b7f353837a3e0630800000000000000
+      internalID: 3895114995521025970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_140
+      rect:
+        serializedVersion: 2
+        x: 1639
+        y: 262
+        width: 23
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3db1659b73fc0f6c0800000000000000
+      internalID: -4111558621549683757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_141
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 264
+        width: 14
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dff2f540213cf3b0800000000000000
+      internalID: -5477449032107098156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_142
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 269
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc1f6ffc4d8c7c3a0800000000000000
+      internalID: -6645121908814188081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_143
+      rect:
+        serializedVersion: 2
+        x: 647
+        y: 274
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddfc4c80ee66bf7f0800000000000000
+      internalID: -577754954651611171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_144
+      rect:
+        serializedVersion: 2
+        x: 657
+        y: 233
+        width: 26
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bb30a6572aba3ef0800000000000000
+      internalID: -127584961306805327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_145
+      rect:
+        serializedVersion: 2
+        x: 1006
+        y: 271
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fedd5e6423f04ec60800000000000000
+      internalID: 7846413159398497775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_146
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 239
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e203adddca13c7b90800000000000000
+      internalID: -7242859482192400338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_147
+      rect:
+        serializedVersion: 2
+        x: 955
+        y: 221
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad522aff241642fe0800000000000000
+      internalID: -1214739059098638886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_148
+      rect:
+        serializedVersion: 2
+        x: 973
+        y: 232
+        width: 9
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12a6192c1ee024d40800000000000000
+      internalID: 5567028452178094625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_149
+      rect:
+        serializedVersion: 2
+        x: 1022
+        y: 234
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49594002236cf3420800000000000000
+      internalID: 2612024227486012820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_150
+      rect:
+        serializedVersion: 2
+        x: 1064
+        y: 223
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a716a108964d8b990800000000000000
+      internalID: -7369907240605949574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_151
+      rect:
+        serializedVersion: 2
+        x: 1075
+        y: 234
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7790411caa8f6ff00800000000000000
+      internalID: 1150380167107185015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_152
+      rect:
+        serializedVersion: 2
+        x: 602
+        y: 192
+        width: 14
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b63fc6524f9fd0bd0800000000000000
+      internalID: -2662196977710861461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_153
+      rect:
+        serializedVersion: 2
+        x: 1076
+        y: 219
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3f357275abd09f70800000000000000
+      internalID: 9192088343099555645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_154
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 197
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af704f0e391848eb0800000000000000
+      internalID: -4718504037443172358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_155
+      rect:
+        serializedVersion: 2
+        x: 866
+        y: 170
+        width: 46
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6dd577e28c6ed1b40800000000000000
+      internalID: 5412736074616626646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_156
+      rect:
+        serializedVersion: 2
+        x: 1039
+        y: 202
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33d2a07a82d098310800000000000000
+      internalID: 1407670826782305587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_157
+      rect:
+        serializedVersion: 2
+        x: 673
+        y: 191
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 177fef210e70972f0800000000000000
+      internalID: -974739185376233615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_158
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 175
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 393f3b782c9266de0800000000000000
+      internalID: -1340337923619032173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_159
+      rect:
+        serializedVersion: 2
+        x: 545
+        y: 167
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b80a0af28dd473c0800000000000000
+      internalID: -4362618584404719432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_160
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 123
+        width: 70
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5520c63d573de7400800000000000000
+      internalID: 323928726228959829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_161
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 150
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6151ba84a85209230800000000000000
+      internalID: 3643453374397617430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_162
+      rect:
+        serializedVersion: 2
+        x: 572
+        y: 152
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ca697560ca0564e0800000000000000
+      internalID: -1989171838961751358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_163
+      rect:
+        serializedVersion: 2
+        x: 722
+        y: 156
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b36c343f894494190800000000000000
+      internalID: -7977769841203100101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_164
+      rect:
+        serializedVersion: 2
+        x: 776
+        y: 151
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c8e323708fc67d70800000000000000
+      internalID: 9040641452587346120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_165
+      rect:
+        serializedVersion: 2
+        x: 1065
+        y: 152
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbc01e285820644e0800000000000000
+      internalID: -1997906612242543427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_166
+      rect:
+        serializedVersion: 2
+        x: 635
+        y: 141
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7266bd0aeeefc5e20800000000000000
+      internalID: 3340825324456470055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_167
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 108
+        width: 34
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cf9d1ab69944fe90800000000000000
+      internalID: -6992883409683111995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_168
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 135
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 397455e3c06ed0d30800000000000000
+      internalID: 4399425351270614931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_169
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 133
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9aa4fb2f57b35f880800000000000000
+      internalID: -8577884537487406423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_170
+      rect:
+        serializedVersion: 2
+        x: 853
+        y: 103
+        width: 45
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc4fd7adac21d6440800000000000000
+      internalID: 4930617829498942667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_171
+      rect:
+        serializedVersion: 2
+        x: 1080
+        y: 131
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9d79360e226fa050800000000000000
+      internalID: 5813973593771048349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_172
+      rect:
+        serializedVersion: 2
+        x: 487
+        y: 109
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98a31b815ac990490800000000000000
+      internalID: -7779514648408016247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_173
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 119
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d51873cc204a2fe0800000000000000
+      internalID: -1213086588620761648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_174
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 92
+        width: 45
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 803554678b254f800800000000000000
+      internalID: 645231598832538376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_175
+      rect:
+        serializedVersion: 2
+        x: 1062
+        y: 114
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df3e9bb6ef1f90c80800000000000000
+      internalID: -8355881558577912835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_176
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 64
+        width: 37
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d90d5335ebe714310800000000000000
+      internalID: 1387529516111745181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_177
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 92
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23b5564f078b77e60800000000000000
+      internalID: 7960033661676772146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_178
+      rect:
+        serializedVersion: 2
+        x: 526
+        y: 86
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ed37e43841d209c0800000000000000
+      internalID: -3962374614077194783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_179
+      rect:
+        serializedVersion: 2
+        x: 984
+        y: 48
+        width: 57
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ae21ee48170da580800000000000000
+      internalID: -8814381094710202713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_180
+      rect:
+        serializedVersion: 2
+        x: 1045
+        y: 97
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fe8369f59fc00290800000000000000
+      internalID: -7926107101130944784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_181
+      rect:
+        serializedVersion: 2
+        x: 1082
+        y: 91
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f3d8f878ea703920800000000000000
+      internalID: 2968007293317731317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_182
+      rect:
+        serializedVersion: 2
+        x: 1097
+        y: 98
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa3f681600856e0c0800000000000000
+      internalID: -4546850015124458582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_183
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 81
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bb1f330de7ad03b0800000000000000
+      internalID: -5544590929819657296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_184
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 77
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb4b2a1b387cecc40800000000000000
+      internalID: 5534580360519791804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_185
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 69
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f40c475fa624f1e0800000000000000
+      internalID: -2165062986332633871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_186
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 80
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60012b3c50e3452b0800000000000000
+      internalID: -5596780242435698682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_187
+      rect:
+        serializedVersion: 2
+        x: 386
+        y: 65
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db726d5c82e0d86c0800000000000000
+      internalID: -4139636914202990659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_188
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 74
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9ba9c4ec6f001fa0800000000000000
+      internalID: -5832144557075485795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_189
+      rect:
+        serializedVersion: 2
+        x: 647
+        y: 69
+        width: 57
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45f1d40e0ccd69fe0800000000000000
+      internalID: -1182515131183194284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_190
+      rect:
+        serializedVersion: 2
+        x: 1619
+        y: 48
+        width: 20
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a17970babd5eb4d0800000000000000
+      internalID: -3116950835687755359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_191
+      rect:
+        serializedVersion: 2
+        x: 475
+        y: 65
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a999ec371b6ee7650800000000000000
+      internalID: 6232672584153864602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_192
+      rect:
+        serializedVersion: 2
+        x: 491
+        y: 52
+        width: 23
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de85adf3475070430800000000000000
+      internalID: 3748971211654846701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_193
+      rect:
+        serializedVersion: 2
+        x: 611
+        y: 71
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ade1fb01b21b32370800000000000000
+      internalID: 8296669737069256410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_194
+      rect:
+        serializedVersion: 2
+        x: 1175
+        y: 38
+        width: 39
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 088eef248affcbe70800000000000000
+      internalID: 9132455242544113792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_195
+      rect:
+        serializedVersion: 2
+        x: 1438
+        y: 55
+        width: 22
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9dd06ba337671f60800000000000000
+      internalID: 8004980334290591135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_196
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 51
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e1f504bab0d89840800000000000000
+      internalID: 5231160467493614057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_197
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 56
+        width: 11
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1179eed83eff68ae0800000000000000
+      internalID: -1547268069151303919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_198
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 54
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 654c399f3f83b3f00800000000000000
+      internalID: 1097533554710266966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_199
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 58
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bcc08a1c2a2542c0800000000000000
+      internalID: -4448102688046920525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_200
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 56
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bd06da200a2ebb80800000000000000
+      internalID: -8377212076655505999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_201
+      rect:
+        serializedVersion: 2
+        x: 1297
+        y: 58
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01f4b90bcbafb7f20800000000000000
+      internalID: 3421604030241787664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_202
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 41
+        width: 18
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8640f229aa4f2c460800000000000000
+      internalID: 7260634562708833384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_203
+      rect:
+        serializedVersion: 2
+        x: 237
+        y: 43
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8f5b53908450e2b0800000000000000
+      internalID: -5557349028970406002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_204
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 46
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9eed57fa37869c010800000000000000
+      internalID: 1209612820999954153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_205
+      rect:
+        serializedVersion: 2
+        x: 930
+        y: 50
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9cfcd6926c91a090800000000000000
+      internalID: -8024961113745720163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_206
+      rect:
+        serializedVersion: 2
+        x: 938
+        y: 42
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1520302e4dd18e240800000000000000
+      internalID: 4821136201262236241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_207
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 33
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4be56cdc7abe2d330800000000000000
+      internalID: 3734306146987957940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_208
+      rect:
+        serializedVersion: 2
+        x: 522
+        y: 34
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3dd7c4c1f836b8f40800000000000000
+      internalID: 5731784417065336275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_209
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 32
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0d5847e5dda5eeb0800000000000000
+      internalID: -4691152302616584950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: victory_ember_shards_overlay_210
+      rect:
+        serializedVersion: 2
+        x: 1532
+        y: 34
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c21b786afd876c120800000000000000
+      internalID: 2433765550607282476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: class_exile_defense_oath_of_exile
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: class_exile_defense_oath_of_exile
+  displayName: "\uCD94\uBC29\uC790\uC758 \uB9F9\uC138"
+  englishName: "\uCD94\uBC29\uC790\uC758 \uB9F9\uC138"
+  rulesText: "\uBC29\uC5B4\uB3C4 10. \uC774\uBC88 \uD134 \uC8FD\uC74C 1\uD68C \uBC29\uC9C0."
+  cost: 2
+  category: 1
+  rarity: 0
+  source: 2
+  characterClass: 3
+  target: 1
+  illustration: {fileID: 21300000, guid: af224f17c36e07b4986c879586d3165b, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: af224f17c36e07b4986c879586d3165b, type: 3}
+  minimumRoom: 3
+  shopWeight: 4
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - defense
+  - common
+  buildTags: 0100000007000000
+  effects:
+  - effectType: 1
+    timing: 0
+    condition: 0
+    amount: 10
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 
+  - effectType: 16
+    timing: 0
+    condition: 0
+    amount: 1
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 

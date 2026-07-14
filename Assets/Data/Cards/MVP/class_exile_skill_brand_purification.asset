@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3ccaac71f9a5d4bb65171851e7049f, type: 3}
+  m_Name: class_exile_skill_brand_purification
+  m_EditorClassIdentifier: Assembly-CSharp::ThreeDoorsOfFate.Cards.CardData
+  cardId: class_exile_skill_brand_purification
+  displayName: "\uB099\uC778\uC758 \uC815\uD654"
+  englishName: "\uB099\uC778\uC758 \uC815\uD654"
+  rulesText: "\uBE5A 1 \uAC10\uC18C. \uBC29\uC5B4\uB3C4 4 \uD68D\uB4DD."
+  cost: 1
+  category: 2
+  rarity: 0
+  source: 3
+  characterClass: 3
+  target: 1
+  illustration: {fileID: 21300000, guid: e573fa003a534b44f84e7bea7421d883, type: 3}
+  fullCardSprite: {fileID: 21300000, guid: e573fa003a534b44f84e7bea7421d883, type: 3}
+  minimumRoom: 0
+  shopWeight: 1
+  exhaustsAfterUse: 0
+  oncePerCombat: 0
+  tags:
+  - skill
+  - common
+  buildTags: 0500000006000000
+  effects:
+  - effectType: 14
+    timing: 0
+    condition: 0
+    amount: 1
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 
+  - effectType: 1
+    timing: 0
+    condition: 0
+    amount: 4
+    secondaryAmount: 0
+    luckThreshold: 1
+    percentThreshold: 50
+    note: 

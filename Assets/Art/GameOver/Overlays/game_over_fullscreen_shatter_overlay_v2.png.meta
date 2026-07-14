@@ -1,0 +1,2556 @@
+fileFormatVersion: 2
+guid: 5931bf9c7c6c0d94ab3c0628f58ed663
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5393012279254353995
+    second: game_over_fullscreen_shatter_overlay_v2_0
+  - first:
+      213: -7107400671255334253
+    second: game_over_fullscreen_shatter_overlay_v2_1
+  - first:
+      213: 1203510593163317834
+    second: game_over_fullscreen_shatter_overlay_v2_2
+  - first:
+      213: -7603180574234482516
+    second: game_over_fullscreen_shatter_overlay_v2_3
+  - first:
+      213: 5456798027304296247
+    second: game_over_fullscreen_shatter_overlay_v2_4
+  - first:
+      213: -8142389895384106379
+    second: game_over_fullscreen_shatter_overlay_v2_5
+  - first:
+      213: -1453770801995460720
+    second: game_over_fullscreen_shatter_overlay_v2_6
+  - first:
+      213: -7424134311950522549
+    second: game_over_fullscreen_shatter_overlay_v2_7
+  - first:
+      213: 74802359192045115
+    second: game_over_fullscreen_shatter_overlay_v2_8
+  - first:
+      213: -4536132389721863375
+    second: game_over_fullscreen_shatter_overlay_v2_9
+  - first:
+      213: 4553177963706362595
+    second: game_over_fullscreen_shatter_overlay_v2_10
+  - first:
+      213: 731946703795989660
+    second: game_over_fullscreen_shatter_overlay_v2_11
+  - first:
+      213: -8762788772967081809
+    second: game_over_fullscreen_shatter_overlay_v2_12
+  - first:
+      213: 6315734270190582222
+    second: game_over_fullscreen_shatter_overlay_v2_13
+  - first:
+      213: -3560126320370437270
+    second: game_over_fullscreen_shatter_overlay_v2_14
+  - first:
+      213: -8254369923042263808
+    second: game_over_fullscreen_shatter_overlay_v2_15
+  - first:
+      213: -4041707166513941223
+    second: game_over_fullscreen_shatter_overlay_v2_16
+  - first:
+      213: -4720415769453105380
+    second: game_over_fullscreen_shatter_overlay_v2_17
+  - first:
+      213: -6018617155268003579
+    second: game_over_fullscreen_shatter_overlay_v2_18
+  - first:
+      213: 8318575771658964449
+    second: game_over_fullscreen_shatter_overlay_v2_19
+  - first:
+      213: 3547469995744305309
+    second: game_over_fullscreen_shatter_overlay_v2_20
+  - first:
+      213: 5688549979618265994
+    second: game_over_fullscreen_shatter_overlay_v2_21
+  - first:
+      213: 1011870057483232490
+    second: game_over_fullscreen_shatter_overlay_v2_22
+  - first:
+      213: 58038425917160864
+    second: game_over_fullscreen_shatter_overlay_v2_23
+  - first:
+      213: -3165806482702537003
+    second: game_over_fullscreen_shatter_overlay_v2_24
+  - first:
+      213: -2213658965394207980
+    second: game_over_fullscreen_shatter_overlay_v2_25
+  - first:
+      213: -7570053027733768400
+    second: game_over_fullscreen_shatter_overlay_v2_26
+  - first:
+      213: 7084266761435610598
+    second: game_over_fullscreen_shatter_overlay_v2_27
+  - first:
+      213: 2430041667062148294
+    second: game_over_fullscreen_shatter_overlay_v2_28
+  - first:
+      213: -5978778847567362917
+    second: game_over_fullscreen_shatter_overlay_v2_29
+  - first:
+      213: 246917305771323428
+    second: game_over_fullscreen_shatter_overlay_v2_30
+  - first:
+      213: 7414839735180228029
+    second: game_over_fullscreen_shatter_overlay_v2_31
+  - first:
+      213: 8243886616417078219
+    second: game_over_fullscreen_shatter_overlay_v2_32
+  - first:
+      213: -151758168072301195
+    second: game_over_fullscreen_shatter_overlay_v2_33
+  - first:
+      213: -5527196219634940562
+    second: game_over_fullscreen_shatter_overlay_v2_34
+  - first:
+      213: 1539208921920964773
+    second: game_over_fullscreen_shatter_overlay_v2_35
+  - first:
+      213: -5079612701491053410
+    second: game_over_fullscreen_shatter_overlay_v2_36
+  - first:
+      213: 3950922978685080014
+    second: game_over_fullscreen_shatter_overlay_v2_37
+  - first:
+      213: 4660989272416722335
+    second: game_over_fullscreen_shatter_overlay_v2_38
+  - first:
+      213: 9219858920408586917
+    second: game_over_fullscreen_shatter_overlay_v2_39
+  - first:
+      213: -1698184767727298706
+    second: game_over_fullscreen_shatter_overlay_v2_40
+  - first:
+      213: -1621572613487757921
+    second: game_over_fullscreen_shatter_overlay_v2_41
+  - first:
+      213: -3441477443943934274
+    second: game_over_fullscreen_shatter_overlay_v2_42
+  - first:
+      213: 6962714486604967686
+    second: game_over_fullscreen_shatter_overlay_v2_43
+  - first:
+      213: -7079353592633896680
+    second: game_over_fullscreen_shatter_overlay_v2_44
+  - first:
+      213: 8697278930350329106
+    second: game_over_fullscreen_shatter_overlay_v2_45
+  - first:
+      213: -1643617595631327658
+    second: game_over_fullscreen_shatter_overlay_v2_46
+  - first:
+      213: 7174676225676412613
+    second: game_over_fullscreen_shatter_overlay_v2_47
+  - first:
+      213: 3547560940886598664
+    second: game_over_fullscreen_shatter_overlay_v2_48
+  - first:
+      213: 2028468277570834894
+    second: game_over_fullscreen_shatter_overlay_v2_49
+  - first:
+      213: -2475071950885297918
+    second: game_over_fullscreen_shatter_overlay_v2_50
+  - first:
+      213: 3820641282833234580
+    second: game_over_fullscreen_shatter_overlay_v2_51
+  - first:
+      213: -8327065794402699735
+    second: game_over_fullscreen_shatter_overlay_v2_52
+  - first:
+      213: 107271695849634357
+    second: game_over_fullscreen_shatter_overlay_v2_53
+  - first:
+      213: -7393906342890453890
+    second: game_over_fullscreen_shatter_overlay_v2_54
+  - first:
+      213: -1500866906724863165
+    second: game_over_fullscreen_shatter_overlay_v2_55
+  - first:
+      213: -1717728178008459249
+    second: game_over_fullscreen_shatter_overlay_v2_56
+  - first:
+      213: -173443396202695999
+    second: game_over_fullscreen_shatter_overlay_v2_57
+  - first:
+      213: 1945166568240260983
+    second: game_over_fullscreen_shatter_overlay_v2_58
+  - first:
+      213: 2027552016117156302
+    second: game_over_fullscreen_shatter_overlay_v2_59
+  - first:
+      213: -2996893585356939815
+    second: game_over_fullscreen_shatter_overlay_v2_60
+  - first:
+      213: -6420473528471192553
+    second: game_over_fullscreen_shatter_overlay_v2_61
+  - first:
+      213: 3154788500529721317
+    second: game_over_fullscreen_shatter_overlay_v2_62
+  - first:
+      213: -8561832629860822146
+    second: game_over_fullscreen_shatter_overlay_v2_63
+  - first:
+      213: 8272363888142828115
+    second: game_over_fullscreen_shatter_overlay_v2_64
+  - first:
+      213: 727782807995424169
+    second: game_over_fullscreen_shatter_overlay_v2_65
+  - first:
+      213: 6471356542892029984
+    second: game_over_fullscreen_shatter_overlay_v2_66
+  - first:
+      213: 843756926167838786
+    second: game_over_fullscreen_shatter_overlay_v2_67
+  - first:
+      213: 1566589567704572127
+    second: game_over_fullscreen_shatter_overlay_v2_68
+  - first:
+      213: 6261159926614764993
+    second: game_over_fullscreen_shatter_overlay_v2_69
+  - first:
+      213: 3833655046189378008
+    second: game_over_fullscreen_shatter_overlay_v2_70
+  - first:
+      213: -8601423634547440529
+    second: game_over_fullscreen_shatter_overlay_v2_71
+  - first:
+      213: 333700223671942736
+    second: game_over_fullscreen_shatter_overlay_v2_72
+  - first:
+      213: -5551463007947941489
+    second: game_over_fullscreen_shatter_overlay_v2_73
+  - first:
+      213: -6465394512087520558
+    second: game_over_fullscreen_shatter_overlay_v2_74
+  - first:
+      213: -7014479297453314479
+    second: game_over_fullscreen_shatter_overlay_v2_75
+  - first:
+      213: -7941476505651897308
+    second: game_over_fullscreen_shatter_overlay_v2_76
+  - first:
+      213: 7726577913597253172
+    second: game_over_fullscreen_shatter_overlay_v2_77
+  - first:
+      213: -4443832668650827909
+    second: game_over_fullscreen_shatter_overlay_v2_78
+  - first:
+      213: -7168485948726097821
+    second: game_over_fullscreen_shatter_overlay_v2_79
+  - first:
+      213: 8513152545312692449
+    second: game_over_fullscreen_shatter_overlay_v2_80
+  - first:
+      213: -6884534170192235397
+    second: game_over_fullscreen_shatter_overlay_v2_81
+  - first:
+      213: 6552545206665663952
+    second: game_over_fullscreen_shatter_overlay_v2_82
+  - first:
+      213: 6369188408358381170
+    second: game_over_fullscreen_shatter_overlay_v2_83
+  - first:
+      213: -3754771139569726659
+    second: game_over_fullscreen_shatter_overlay_v2_84
+  - first:
+      213: 1251808156631189836
+    second: game_over_fullscreen_shatter_overlay_v2_85
+  - first:
+      213: 6483934997560951972
+    second: game_over_fullscreen_shatter_overlay_v2_86
+  - first:
+      213: -8442327153262038346
+    second: game_over_fullscreen_shatter_overlay_v2_87
+  - first:
+      213: 2965878249904580405
+    second: game_over_fullscreen_shatter_overlay_v2_88
+  - first:
+      213: -3614918415517133317
+    second: game_over_fullscreen_shatter_overlay_v2_89
+  - first:
+      213: -5940693362575756818
+    second: game_over_fullscreen_shatter_overlay_v2_90
+  - first:
+      213: -8300637786064589117
+    second: game_over_fullscreen_shatter_overlay_v2_91
+  - first:
+      213: -4307193973337036143
+    second: game_over_fullscreen_shatter_overlay_v2_92
+  - first:
+      213: 5941572900206213655
+    second: game_over_fullscreen_shatter_overlay_v2_93
+  - first:
+      213: 4370162131613983110
+    second: game_over_fullscreen_shatter_overlay_v2_94
+  - first:
+      213: -3073240456532440352
+    second: game_over_fullscreen_shatter_overlay_v2_95
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 100
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 100
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 100
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 50
+    textureCompression: 2
+    compressionQuality: 85
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 50
+    textureCompression: 2
+    compressionQuality: 85
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 821
+        height: 900
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4886463814d7da40800000000000000
+      internalID: 5393012279254353995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_1
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 876
+        width: 32
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 392f3710fb07d5d90800000000000000
+      internalID: -7107400671255334253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_2
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 888
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a425bec028ab3b010800000000000000
+      internalID: 1203510593163317834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_3
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 853
+        width: 116
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca86a951d831c7690800000000000000
+      internalID: -7603180574234482516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_4
+      rect:
+        serializedVersion: 2
+        x: 818
+        y: 0
+        width: 782
+        height: 900
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73f568cf4e07abb40800000000000000
+      internalID: 5456798027304296247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_5
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 884
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57a76e6c78b600f80800000000000000
+      internalID: -8142389895384106379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_6
+      rect:
+        serializedVersion: 2
+        x: 842
+        y: 894
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09fc932782b23dbe0800000000000000
+      internalID: -1453770801995460720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_7
+      rect:
+        serializedVersion: 2
+        x: 845
+        y: 889
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4766639d2d28f890800000000000000
+      internalID: -7424134311950522549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_8
+      rect:
+        serializedVersion: 2
+        x: 759
+        y: 855
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b36c0007950c90100800000000000000
+      internalID: 74802359192045115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_9
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 349
+        width: 209
+        height: 528
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13b0c7000ab6c01c0800000000000000
+      internalID: -4536132389721863375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_10
+      rect:
+        serializedVersion: 2
+        x: 825
+        y: 866
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3eaaad5fb33203f30800000000000000
+      internalID: 4553177963706362595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_11
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 859
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9c274a26a5682a00800000000000000
+      internalID: 731946703795989660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_12
+      rect:
+        serializedVersion: 2
+        x: 692
+        y: 829
+        width: 33
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa81489c902546680800000000000000
+      internalID: -8762788772967081809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_13
+      rect:
+        serializedVersion: 2
+        x: 710
+        y: 853
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec978764bdef5a750800000000000000
+      internalID: 6315734270190582222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_14
+      rect:
+        serializedVersion: 2
+        x: 683
+        y: 798
+        width: 14
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a633dc659f3e79ec0800000000000000
+      internalID: -3560126320370437270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_15
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 813
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00db56cd946927d80800000000000000
+      internalID: -8254369923042263808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_16
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 785
+        width: 23
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91539c5feb8f8e7c0800000000000000
+      internalID: -4041707166513941223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_17
+      rect:
+        serializedVersion: 2
+        x: 733
+        y: 778
+        width: 55
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1f68951ed6bd7eb0800000000000000
+      internalID: -4720415769453105380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_18
+      rect:
+        serializedVersion: 2
+        x: 798
+        y: 776
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 509bd25d593997ca0800000000000000
+      internalID: -6018617155268003579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_19
+      rect:
+        serializedVersion: 2
+        x: 838
+        y: 782
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ed47e23794817370800000000000000
+      internalID: 8318575771658964449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_20
+      rect:
+        serializedVersion: 2
+        x: 845
+        y: 778
+        width: 6
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9022b37a252b3130800000000000000
+      internalID: 3547469995744305309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_21
+      rect:
+        serializedVersion: 2
+        x: 845
+        y: 754
+        width: 17
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8bc336311ac1fe40800000000000000
+      internalID: 5688549979618265994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_22
+      rect:
+        serializedVersion: 2
+        x: 847
+        y: 806
+        width: 7
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae46427c472ea0e00800000000000000
+      internalID: 1011870057483232490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_23
+      rect:
+        serializedVersion: 2
+        x: 853
+        y: 801
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ad7d1014a13ec000800000000000000
+      internalID: 58038425917160864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_24
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 813
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5dee2e2f6cbc014d0800000000000000
+      internalID: -3165806482702537003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_25
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 766
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41bc1d146e08741e0800000000000000
+      internalID: -2213658965394207980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_26
+      rect:
+        serializedVersion: 2
+        x: 835
+        y: 754
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 037fe0f01e4c1f690800000000000000
+      internalID: -7570053027733768400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_27
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 706
+        width: 23
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6edf971e51f505260800000000000000
+      internalID: 7084266761435610598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_28
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 703
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6cc23a2750e39b120800000000000000
+      internalID: 2430041667062148294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_29
+      rect:
+        serializedVersion: 2
+        x: 835
+        y: 708
+        width: 13
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b94c028a05c170da0800000000000000
+      internalID: -5978778847567362917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_30
+      rect:
+        serializedVersion: 2
+        x: 699
+        y: 698
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 420756b3bf93d6300800000000000000
+      internalID: 246917305771323428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_31
+      rect:
+        serializedVersion: 2
+        x: 719
+        y: 691
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db57ed1247dc6e660800000000000000
+      internalID: 7414839735180228029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_32
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 684
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcb032c133b286270800000000000000
+      internalID: 8243886616417078219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_33
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 681
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 575594c00c8d4edf0800000000000000
+      internalID: -151758168072301195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_34
+      rect:
+        serializedVersion: 2
+        x: 818
+        y: 661
+        width: 21
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6507c492547b43b0800000000000000
+      internalID: -5527196219634940562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_35
+      rect:
+        serializedVersion: 2
+        x: 837
+        y: 656
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a806320c5e5c5510800000000000000
+      internalID: 1539208921920964773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_36
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 589
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9c301339279189b0800000000000000
+      internalID: -5079612701491053410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_37
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 302
+        width: 30
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec1d377248f74d630800000000000000
+      internalID: 3950922978685080014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_38
+      rect:
+        serializedVersion: 2
+        x: 842
+        y: 345
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9d1e4c5c092fa040800000000000000
+      internalID: 4660989272416722335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_39
+      rect:
+        serializedVersion: 2
+        x: 728
+        y: 338
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5aa9b26d6d483ff70800000000000000
+      internalID: 9219858920408586917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_40
+      rect:
+        serializedVersion: 2
+        x: 679
+        y: 299
+        width: 18
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6792ac73f5de68e0800000000000000
+      internalID: -1698184767727298706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_41
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 307
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f957f8bac440f79e0800000000000000
+      internalID: -1621572613487757921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_42
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 302
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb6d33b9f7a6d30d0800000000000000
+      internalID: -3441477443943934274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_43
+      rect:
+        serializedVersion: 2
+        x: 749
+        y: 285
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60f2e8e7fe780a060800000000000000
+      internalID: 6962714486604967686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_44
+      rect:
+        serializedVersion: 2
+        x: 781
+        y: 253
+        width: 31
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 811dbaf5a6511cd90800000000000000
+      internalID: -7079353592633896680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_45
+      rect:
+        serializedVersion: 2
+        x: 698
+        y: 239
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21d45046b11f2b870800000000000000
+      internalID: 8697278930350329106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_46
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 240
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65620d94182b039e0800000000000000
+      internalID: -1643617595631327658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_47
+      rect:
+        serializedVersion: 2
+        x: 691
+        y: 224
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c602e1a302919360800000000000000
+      internalID: 7174676225676412613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_48
+      rect:
+        serializedVersion: 2
+        x: 813
+        y: 215
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 804a89441e77b3130800000000000000
+      internalID: 3547560940886598664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_49
+      rect:
+        serializedVersion: 2
+        x: 687
+        y: 193
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec112c2b621962c10800000000000000
+      internalID: 2028468277570834894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_50
+      rect:
+        serializedVersion: 2
+        x: 755
+        y: 208
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 201e2f59c27c6add0800000000000000
+      internalID: -2475071950885297918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_51
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 207
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49ab77d0105a50530800000000000000
+      internalID: 3820641282833234580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_52
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 202
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 926325757c1507c80800000000000000
+      internalID: -8327065794402699735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_53
+      rect:
+        serializedVersion: 2
+        x: 701
+        y: 189
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53a329df90b1d7100800000000000000
+      internalID: 107271695849634357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_54
+      rect:
+        serializedVersion: 2
+        x: 743
+        y: 196
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e74c1811b51936990800000000000000
+      internalID: -7393906342890453890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_55
+      rect:
+        serializedVersion: 2
+        x: 837
+        y: 191
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34376811089db2be0800000000000000
+      internalID: -1500866906724863165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_56
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 188
+        width: 11
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f087021b2576928e0800000000000000
+      internalID: -1717728178008459249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_57
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 182
+        width: 17
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c273bc662ec79df0800000000000000
+      internalID: -173443396202695999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_58
+      rect:
+        serializedVersion: 2
+        x: 847
+        y: 185
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7772de810be9efa10800000000000000
+      internalID: 1945166568240260983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_59
+      rect:
+        serializedVersion: 2
+        x: 674
+        y: 166
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec94a44f0df432c10800000000000000
+      internalID: 2027552016117156302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_60
+      rect:
+        serializedVersion: 2
+        x: 722
+        y: 179
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dd172f8925e866d0800000000000000
+      internalID: -2996893585356939815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_61
+      rect:
+        serializedVersion: 2
+        x: 753
+        y: 177
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71cfcadc755e5e6a0800000000000000
+      internalID: -6420473528471192553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_62
+      rect:
+        serializedVersion: 2
+        x: 837
+        y: 173
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5efaf8b2d6f08cb20800000000000000
+      internalID: 3154788500529721317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_63
+      rect:
+        serializedVersion: 2
+        x: 843
+        y: 180
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e731ccee5924e2980800000000000000
+      internalID: -8561832629860822146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_64
+      rect:
+        serializedVersion: 2
+        x: 734
+        y: 159
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 352c58d90275dc270800000000000000
+      internalID: 8272363888142828115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_65
+      rect:
+        serializedVersion: 2
+        x: 834
+        y: 163
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ad1430ab9a991a00800000000000000
+      internalID: 727782807995424169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_66
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 121
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 028baf13d70eec950800000000000000
+      internalID: 6471356542892029984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_67
+      rect:
+        serializedVersion: 2
+        x: 734
+        y: 105
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24072053470a5bb00800000000000000
+      internalID: 843756926167838786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_68
+      rect:
+        serializedVersion: 2
+        x: 742
+        y: 101
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd02dd369e4adb510800000000000000
+      internalID: 1566589567704572127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_69
+      rect:
+        serializedVersion: 2
+        x: 734
+        y: 95
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cda8cbb7cb14e650800000000000000
+      internalID: 6261159926614764993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_70
+      rect:
+        serializedVersion: 2
+        x: 755
+        y: 92
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d96083f3f0e33530800000000000000
+      internalID: 3833655046189378008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_71
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 79
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f648624d6ca91a880800000000000000
+      internalID: -8601423634547440529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_72
+      rect:
+        serializedVersion: 2
+        x: 779
+        y: 79
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05e3f6dd59a81a400800000000000000
+      internalID: 333700223671942736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_73
+      rect:
+        serializedVersion: 2
+        x: 858
+        y: 78
+        width: 6
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f899a83aecd35f2b0800000000000000
+      internalID: -5551463007947941489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_74
+      rect:
+        serializedVersion: 2
+        x: 717
+        y: 70
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2da634642fd4646a0800000000000000
+      internalID: -6465394512087520558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_75
+      rect:
+        serializedVersion: 2
+        x: 758
+        y: 51
+        width: 14
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15ea6f64e3097ae90800000000000000
+      internalID: -7014479297453314479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_76
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 69
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42c1280a1353ac190800000000000000
+      internalID: -7941476505651897308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_77
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 56
+        width: 6
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 436d75ddca15a3b60800000000000000
+      internalID: 7726577913597253172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_78
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 61
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7f8ac77bb55452c0800000000000000
+      internalID: -4443832668650827909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_79
+      rect:
+        serializedVersion: 2
+        x: 839
+        y: 56
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3684dc8820c648c90800000000000000
+      internalID: -7168485948726097821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_80
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 36
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e85316a22bc42670800000000000000
+      internalID: 8513152545312692449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_81
+      rect:
+        serializedVersion: 2
+        x: 753
+        y: 47
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7437a5e5a83570a0800000000000000
+      internalID: -6884534170192235397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_82
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 45
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d5def906215fea50800000000000000
+      internalID: 6552545206665663952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_83
+      rect:
+        serializedVersion: 2
+        x: 746
+        y: 37
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 276acbbac17e36850800000000000000
+      internalID: 6369188408358381170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_84
+      rect:
+        serializedVersion: 2
+        x: 786
+        y: 17
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3bce0dca8f54ebc0800000000000000
+      internalID: -3754771139569726659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_85
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 18
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4940f6d2e05f5110800000000000000
+      internalID: 1251808156631189836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_86
+      rect:
+        serializedVersion: 2
+        x: 846
+        y: 12
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a40854e6809bf950800000000000000
+      internalID: 6483934997560951972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_87
+      rect:
+        serializedVersion: 2
+        x: 853
+        y: 21
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b27e28fe24d6da80800000000000000
+      internalID: -8442327153262038346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_88
+      rect:
+        serializedVersion: 2
+        x: 789
+        y: 0
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 537ae9ced8ae82920800000000000000
+      internalID: 2965878249904580405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_89
+      rect:
+        serializedVersion: 2
+        x: 803
+        y: 0
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf5551f8ada35ddc0800000000000000
+      internalID: -3614918415517133317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_90
+      rect:
+        serializedVersion: 2
+        x: 806
+        y: 6
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee1b624acda6e8da0800000000000000
+      internalID: -5940693362575756818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_91
+      rect:
+        serializedVersion: 2
+        x: 835
+        y: 0
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ce6f6889e53ecc80800000000000000
+      internalID: -8300637786064589117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_92
+      rect:
+        serializedVersion: 2
+        x: 1039
+        y: 0
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19aea88d6e5c934c0800000000000000
+      internalID: -4307193973337036143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_93
+      rect:
+        serializedVersion: 2
+        x: 1366
+        y: 0
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71af0eba215b47250800000000000000
+      internalID: 5941572900206213655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_94
+      rect:
+        serializedVersion: 2
+        x: 1377
+        y: 0
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68127b9fd4fe5ac30800000000000000
+      internalID: 4370162131613983110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_over_fullscreen_shatter_overlay_v2_95
+      rect:
+        serializedVersion: 2
+        x: 1035
+        y: 0
+        width: 7
+        height: 5
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ea46076618a955d0800000000000000
+      internalID: -3073240456532440352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
