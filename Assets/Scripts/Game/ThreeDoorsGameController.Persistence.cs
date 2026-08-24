@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeDoorsOfFate.Audio;
 using ThreeDoorsOfFate.Cards;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,6 +28,7 @@ namespace ThreeDoorsOfFate.Game
 
             if (!CanUseRunSaveSystem())
             {
+                PlayGameSfx(GameSfxCue.SaveFailure);
                 return;
             }
 
@@ -62,6 +64,7 @@ namespace ThreeDoorsOfFate.Game
 
             if (phase != GamePhase.DoorSelection)
             {
+                PlayGameSfx(GameSfxCue.SaveFailure);
                 AddLog("저장은 다음 문 선택 화면에 도착하면 자동으로 진행됩니다.");
                 HideSettingsPanel();
                 RefreshLog();
@@ -69,6 +72,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             bool saved = SaveRunCheckpoint();
+            PlayGameSfx(saved ? GameSfxCue.SaveSuccess : GameSfxCue.SaveFailure);
             AddLog(saved ? "현재 런을 저장했습니다." : "저장할 카드 데이터가 부족해 현재 런을 저장하지 못했습니다.");
             HideSettingsPanel();
             RefreshTopBar();
@@ -164,6 +168,7 @@ namespace ThreeDoorsOfFate.Game
         {
             if (TryLoadHardRunSave())
             {
+                PlayGameSfx(GameSfxCue.LoadSuccess);
                 topBar.gameObject.SetActive(true);
                 SetLogVisible(true);
                 AddLog("저장된 런을 이어갑니다.");
@@ -171,6 +176,7 @@ namespace ThreeDoorsOfFate.Game
                 return;
             }
 
+            PlayGameSfx(GameSfxCue.LoadFailure);
             ClearHardRunSave();
             ShowMainMenu();
         }

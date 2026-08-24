@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using ThreeDoorsOfFate.Cards;
 using ThreeDoorsOfFate.Game;
+using ThreeDoorsOfFate.Platform;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -32,6 +33,7 @@ namespace ThreeDoorsOfFate.Editor
         private const string DeathMusicPath = "Assets/Audio/Music/The_Iron_Seal.mp3";
         private const string MusicRoot = "Assets/Audio/Music";
         private const string ImpactSfxRoot = "Assets/Audio/SFX/Impact";
+        private const string GameSfxRoot = "Assets/Audio/SFX";
         private const string WindowsBuildFolderFromProjectRoot = "../Builds/Windows";
         private const string WindowsBuildFileName = "ThreeDoorsOfFate.exe";
         private const string WebGLBuildFolderFromProjectRoot = "../Builds/WebGL";
@@ -265,6 +267,7 @@ namespace ThreeDoorsOfFate.Editor
             }
 
             string outputPath = GetBuildOutputPath(buildFolderFromProjectRoot, buildFileName);
+            PrepareCleanStandaloneBuildDirectory(outputPath);
             BuildPlayerOptions options = new()
             {
                 scenes = new[] { PlayableScenePath },
@@ -332,6 +335,24 @@ namespace ThreeDoorsOfFate.Editor
             return Path.Combine(buildDirectory, buildFileName);
         }
 
+        private static void PrepareCleanStandaloneBuildDirectory(string outputPath)
+        {
+            string fullOutputPath = Path.GetFullPath(outputPath);
+            string buildDirectory = Path.GetDirectoryName(fullOutputPath);
+            if (string.IsNullOrWhiteSpace(buildDirectory)
+                || string.Equals(buildDirectory, Path.GetPathRoot(buildDirectory), StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException($"Unsafe standalone build output path: {outputPath}");
+            }
+
+            if (Directory.Exists(buildDirectory))
+            {
+                Directory.Delete(buildDirectory, true);
+            }
+
+            Directory.CreateDirectory(buildDirectory);
+        }
+
         [MenuItem("Three Doors of Fate/Refresh Playable Scene Assets")]
         public static void RefreshPlayableSceneAssets()
         {
@@ -371,13 +392,19 @@ namespace ThreeDoorsOfFate.Editor
             PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
             PlayerSettings.allowedAutorotateToLandscapeLeft = true;
             PlayerSettings.allowedAutorotateToLandscapeRight = true;
-            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone, "com.adam.threedoorsfate");
-            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, "com.adam.threedoorsfate");
+            PlayerSettings.SetApplicationIdentifier(
+                NamedBuildTarget.Standalone,
+                IOSReleaseConfiguration.BundleIdentifier);
+            PlayerSettings.SetApplicationIdentifier(
+                NamedBuildTarget.iOS,
+                IOSReleaseConfiguration.BundleIdentifier);
         }
 
         private static void ConfigureAndroidLandscapePlayerSettings()
         {
-            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, "com.adam.threedoorsfate");
+            PlayerSettings.SetApplicationIdentifier(
+                NamedBuildTarget.Android,
+                IOSReleaseConfiguration.BundleIdentifier);
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel25;
             PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
@@ -389,13 +416,19 @@ namespace ThreeDoorsOfFate.Editor
 
         private static void ConfigureIOSPlayerSettings(iOSSdkVersion sdkVersion)
         {
-            PlayerSettings.bundleVersion = "1.0.0";
-            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, "com.adam.threedoorsfate");
+            PlayerSettings.bundleVersion = IOSReleaseConfiguration.GetEnvironmentOverride(
+                "UNITY_IOS_VERSION",
+                IOSReleaseConfiguration.DefaultVersion);
+            PlayerSettings.SetApplicationIdentifier(
+                NamedBuildTarget.iOS,
+                IOSReleaseConfiguration.BundleIdentifier);
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.iOS, ScriptingImplementation.IL2CPP);
             PlayerSettings.SetApiCompatibilityLevel(NamedBuildTarget.iOS, ApiCompatibilityLevel.NET_Standard);
             PlayerSettings.SetManagedStrippingLevel(NamedBuildTarget.iOS, ManagedStrippingLevel.Low);
-            PlayerSettings.iOS.targetOSVersionString = "15.0";
-            PlayerSettings.iOS.buildNumber = "1";
+            PlayerSettings.iOS.targetOSVersionString = IOSReleaseConfiguration.MinimumOSVersion;
+            PlayerSettings.iOS.buildNumber = IOSReleaseConfiguration.GetEnvironmentOverride(
+                "UNITY_IOS_BUILD_NUMBER",
+                IOSReleaseConfiguration.DefaultBuildNumber);
             PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;
             PlayerSettings.iOS.sdkVersion = sdkVersion;
             PlayerSettings.iOS.simulatorSdkArchitecture = AppleMobileArchitectureSimulator.Universal;
@@ -549,7 +582,8 @@ namespace ThreeDoorsOfFate.Editor
 
         private static void AssignUi(SerializedObject serializedObject)
         {
-            serializedObject.FindProperty("uiFontAsset").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>("Assets/Fonts/GowunBatang-Regular.ttf");
+            serializedObject.FindProperty("uiFontAsset").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>("Assets/Fonts/NotoSansKR-VF.ttf");
+            serializedObject.FindProperty("titleFontAsset").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>("Assets/Fonts/GowunBatang-Bold.ttf");
             serializedObject.FindProperty("panelSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_inner_panel_frame.png");
             serializedObject.FindProperty("statusPanelFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_status_modal_frame_v2.png");
             serializedObject.FindProperty("statusSectionFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_status_section_medium_frame_v2.png");
@@ -558,6 +592,9 @@ namespace ThreeDoorsOfFate.Editor
             serializedObject.FindProperty("statusSectionMediumFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_status_section_medium_frame_v2.png");
             serializedObject.FindProperty("statusHintFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_status_hint_bar_frame_v2.png");
             serializedObject.FindProperty("statusCategoryCardFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_status_category_card_frame.png");
+            serializedObject.FindProperty("statusInnerPanelFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_status_inner_panel_frame_ai.png");
+            serializedObject.FindProperty("statusInnerHeaderFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_status_inner_header_frame_ai.png");
+            serializedObject.FindProperty("statusItemSlotFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_status_item_slot_frame_ai.png");
             serializedObject.FindProperty("shopCombinationPanelFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_shop_combination_panel_frame.png");
             serializedObject.FindProperty("buttonIdleSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/Buttons/button_idle.png");
             serializedObject.FindProperty("buttonHoverSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/Buttons/button_hover.png");
@@ -741,6 +778,46 @@ namespace ThreeDoorsOfFate.Editor
                 LoadAudioClip($"{ImpactSfxRoot}/impact_boss_start.wav");
             serializedObject.FindProperty("bossVictoryImpactClip").objectReferenceValue =
                 LoadAudioClip($"{ImpactSfxRoot}/impact_boss_victory.wav");
+            AssignAudioClip(serializedObject, "uiDeniedClip", "UI/ui_denied.wav");
+            AssignAudioClipList(
+                serializedObject,
+                "cardDrawClips",
+                new[] { $"{GameSfxRoot}/Cards/card_draw_01.wav", $"{GameSfxRoot}/Cards/card_draw_02.wav" });
+            AssignAudioClipList(
+                serializedObject,
+                "cardPlayClips",
+                new[] { $"{GameSfxRoot}/Cards/card_play_01.wav", $"{GameSfxRoot}/Cards/card_play_02.wav" });
+            AssignAudioClip(serializedObject, "cardDiscardClip", "Cards/card_discard.wav");
+            AssignAudioClip(serializedObject, "doorOpenClip", "World/door_open.wav");
+            AssignAudioClip(serializedObject, "turnCommitClip", "World/turn_commit.wav");
+            AssignAudioClip(serializedObject, "diceRollClip", "World/dice_roll.wav");
+            AssignAudioClip(serializedObject, "playerHitClip", "World/player_hit.wav");
+            AssignAudioClip(serializedObject, "healClip", "World/heal.wav");
+            AssignAudioClip(serializedObject, "combatStartClip", "World/combat_start.wav");
+            AssignAudioClip(serializedObject, "enemyDefeatClip", "World/enemy_defeat.wav");
+            AssignAudioClip(serializedObject, "treasureOpenClip", "World/treasure_open.wav");
+            AssignAudioClip(serializedObject, "eventChoiceClip", "World/event_choice.wav");
+            AssignAudioClip(serializedObject, "restClip", "World/rest.wav");
+            AssignAudioClip(serializedObject, "curseAcceptClip", "World/curse_accept.wav");
+            AssignAudioClip(serializedObject, "defeatClip", "World/defeat.wav");
+            AssignAudioClip(serializedObject, "victoryClip", "World/victory.wav");
+            AssignAudioClip(serializedObject, "endingClip", "World/ending.wav");
+            AssignAudioClip(serializedObject, "rewardRevealClip", "Rewards/reward_reveal.wav");
+            AssignAudioClip(serializedObject, "rewardClaimClip", "Rewards/reward_claim.wav");
+            AssignAudioClip(serializedObject, "goldGainClip", "Rewards/gold_gain.wav");
+            AssignAudioClip(serializedObject, "purchaseClip", "Rewards/purchase.wav");
+            AssignAudioClip(serializedObject, "upgradeClip", "Rewards/upgrade.wav");
+            AssignAudioClip(serializedObject, "itemEquipClip", "Rewards/item_equip.wav");
+            AssignAudioClip(serializedObject, "saveSuccessClip", "Rewards/save_success.wav");
+            AssignAudioClip(serializedObject, "saveFailureClip", "Rewards/save_failure.wav");
+            AssignAudioClip(serializedObject, "loadSuccessClip", "Rewards/load_success.wav");
+            AssignAudioClip(serializedObject, "loadFailureClip", "Rewards/load_failure.wav");
+        }
+
+        private static void AssignAudioClip(SerializedObject serializedObject, string propertyName, string relativePath)
+        {
+            serializedObject.FindProperty(propertyName).objectReferenceValue =
+                LoadAudioClip($"{GameSfxRoot}/{relativePath}");
         }
 
         private static void AssignAudioClipList(SerializedObject serializedObject, string propertyName, IEnumerable<string> assetPaths)
@@ -811,6 +888,13 @@ namespace ThreeDoorsOfFate.Editor
                 ConfigureMusicAudioImporter(assetPath);
                 AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
             }
+
+            foreach (string file in Directory.GetFiles(GameSfxRoot, "*.wav", SearchOption.AllDirectories))
+            {
+                string assetPath = NormalizeAssetPath(file);
+                ConfigureSfxAudioImporter(assetPath);
+                AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+            }
         }
 
         private static void ConfigureArtTextureImporter(string assetPath)
@@ -851,6 +935,19 @@ namespace ThreeDoorsOfFate.Editor
             importer.filterMode = FilterMode.Bilinear;
             importer.mipMapBias = 0f;
 
+            if (assetPath.EndsWith("ui_status_inner_panel_frame_ai.png", StringComparison.Ordinal))
+            {
+                importer.spriteBorder = new Vector4(96f, 96f, 96f, 96f);
+            }
+            else if (assetPath.EndsWith("ui_status_inner_header_frame_ai.png", StringComparison.Ordinal))
+            {
+                importer.spriteBorder = new Vector4(84f, 54f, 84f, 54f);
+            }
+            else if (assetPath.EndsWith("ui_status_item_slot_frame_ai.png", StringComparison.Ordinal))
+            {
+                importer.spriteBorder = new Vector4(96f, 82f, 96f, 82f);
+            }
+
             ApplyCardPlatformTextureSettings(importer, "Standalone");
             ApplyCardPlatformTextureSettings(importer, "WebGL");
             ApplyAndroidTextureSettings(importer);
@@ -870,6 +967,23 @@ namespace ThreeDoorsOfFate.Editor
             settings.preloadAudioData = false;
             importer.defaultSampleSettings = settings;
             importer.loadInBackground = true;
+        }
+
+        private static void ConfigureSfxAudioImporter(string assetPath)
+        {
+            if (AssetImporter.GetAtPath(assetPath) is not AudioImporter importer)
+            {
+                return;
+            }
+
+            AudioImporterSampleSettings settings = importer.defaultSampleSettings;
+            settings.loadType = AudioClipLoadType.DecompressOnLoad;
+            settings.compressionFormat = AudioCompressionFormat.ADPCM;
+            settings.quality = 1f;
+            settings.preloadAudioData = true;
+            importer.defaultSampleSettings = settings;
+            importer.forceToMono = true;
+            importer.loadInBackground = false;
         }
 
         private static void ApplyCardPlatformTextureSettings(TextureImporter importer, string buildTarget)

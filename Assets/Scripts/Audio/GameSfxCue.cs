@@ -1,0 +1,40 @@
+namespace ThreeDoorsOfFate.Audio
+{
+    public enum GameSfxCue
+    {
+        None,
+        UiAccept,
+        UiBack,
+        UiDenied,
+        PanelOpen,
+        PanelClose,
+        RunStart,
+        DoorOpen,
+        CardDraw,
+        CardPlay,
+        CardDiscard,
+        TurnCommit,
+        DiceRoll,
+        PlayerHit,
+        Heal,
+        CombatStart,
+        EnemyDefeat,
+        RewardReveal,
+        RewardClaim,
+        GoldGain,
+        Purchase,
+        Upgrade,
+        ItemEquip,
+        TreasureOpen,
+        EventChoice,
+        Rest,
+        CurseAccept,
+        SaveSuccess,
+        SaveFailure,
+        LoadSuccess,
+        LoadFailure,
+        Defeat,
+        Victory,
+        Ending
+    }
+}
