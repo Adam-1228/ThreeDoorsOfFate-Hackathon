@@ -2,7 +2,7 @@
 
 세 개의 문 중 하나를 고르고, 카드와 주사위로 빚과 운명을 돌파하는 한국어 덱빌딩 로그라이크입니다.
 
-[최신 WebGL 빌드와 제출 자료 다운로드](https://github.com/Adam-1228/ThreeDoorsOfFate-Hackathon/releases/latest)
+[최신 릴리스 보기](https://github.com/Adam-1228/ThreeDoorsOfFate-Hackathon/releases/latest) · [변경 이력](CHANGELOG.md)
 
 ![직업 선택](docs/screenshots/class-selection.png)
 
@@ -26,9 +26,9 @@
 - 카드·문·직업 초상에 포인터를 올리면 추가 정보와 시각 반응을 확인할 수 있습니다.
 - 설정 화면에서 음악과 효과음 음량을 조절할 수 있습니다.
 
-## WebGL 실행
+## WebGL 실행 (v1.0.0 레거시 빌드)
 
-GitHub Release에서 `ThreeDoorsOfFate-WebGL-v1.0.0.zip`을 내려받아 압축을 푼 뒤, `index.html`이 있는 폴더를 로컬 HTTP 서버로 제공합니다.
+현재 공개 WebGL 바이너리는 [v1.0.0 릴리스](https://github.com/Adam-1228/ThreeDoorsOfFate-Hackathon/releases/tag/v1.0.0)의 `ThreeDoorsOfFate-WebGL-v1.0.0.zip`입니다. 이 파일은 v1.1.0의 UI·오디오·Apple 플랫폼 개선을 포함하지 않는 레거시 빌드입니다. 내려받아 압축을 푼 뒤, `index.html`이 있는 폴더를 로컬 HTTP 서버로 제공합니다.
 
 ```powershell
 python -m http.server 8000
@@ -71,9 +71,10 @@ Windows 배치 빌드:
 
 ## 검증 상태
 
-- Unity WebGL BuildReport: 성공, 반환 코드 0
-- Unity EditMode: Win64 타깃 32/32 통과
-- PDF 생성기 테스트: 8/8 통과
+- v1.1.0 Windows 플레이어 빌드: 성공
+- Unity EditMode: 138/138 통과
+- Apple 플랫폼 보조 스크립트 테스트: 7/7 통과
+- v1.0.0 WebGL BuildReport: 성공, 반환 코드 0
 - WebGL 빌드는 로컬 HTTP 서버 실행을 전제로 합니다.
 - macOS/iOS 빌드 자동화는 포함하지만, 실제 Mac·Xcode·실기기 실행은 아직 검증하지 않았습니다.
 - 모바일 스토어 제출 준비 완료를 주장하지 않습니다.
@@ -105,4 +106,4 @@ Windows 배치 빌드:
 
 ## English summary
 
-Three Doors of Fate is a Korean-first, single-player deck-building roguelike built with Unity. Choose one of three doors, manage cards, dice, debt and status effects, defeat bosses, and extend the run through an endless record mode. Download the WebGL build from the latest GitHub Release and serve it through a local HTTP server.
+Three Doors of Fate is a Korean-first, single-player deck-building roguelike built with Unity. Choose one of three doors, manage cards, dice, debt and status effects, defeat bosses, and extend the run through an endless record mode. The v1.1.0 release contains the latest source and Windows-oriented improvements; the downloadable WebGL binary remains the legacy v1.0.0 build.

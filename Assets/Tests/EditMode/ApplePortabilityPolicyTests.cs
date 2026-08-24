@@ -449,6 +449,10 @@ namespace ThreeDoorsOfFate.Tests
                 Is.EqualTo("ThreeDoorsOfFate.entitlements"));
             Assert.That(GetPublicConstant(configurationType, "MinimumOSVersion"),
                 Is.EqualTo("15.0"));
+            Assert.That(GetPublicConstant(configurationType, "DefaultVersion"),
+                Is.EqualTo("1.1.0"));
+            Assert.That(GetPublicConstant(configurationType, "DefaultBuildNumber"),
+                Is.EqualTo("2"));
         }
 
         [Test]

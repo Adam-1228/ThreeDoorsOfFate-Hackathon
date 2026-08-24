@@ -8,8 +8,8 @@ namespace ThreeDoorsOfFate.Platform
         public const string ICloudContainerIdentifier = "iCloud.com.adam.threedoorsfate";
         public const string EntitlementsFileName = "ThreeDoorsOfFate.entitlements";
         public const string MinimumOSVersion = "15.0";
-        public const string DefaultVersion = "1.0.0";
-        public const string DefaultBuildNumber = "1";
+        public const string DefaultVersion = "1.1.0";
+        public const string DefaultBuildNumber = "2";
 
         public static string GetEnvironmentOverride(string variableName, string fallback)
         {
