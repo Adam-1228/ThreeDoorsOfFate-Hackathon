@@ -8,6 +8,25 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
 class AppleReleaseScriptPolicyTests(unittest.TestCase):
+    def test_gamekit_achievement_reporting_uses_current_completion_selector(self) -> None:
+        source = (
+            PROJECT_ROOT / "Assets" / "Plugins" / "iOS" / "ThreeDoorsGameKitBridge.mm"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(
+            "reportAchievements:@[achievement] withCompletionHandler:",
+            source,
+        )
+        self.assertNotIn(
+            "reportAchievements:@[achievement] completionHandler:",
+            source,
+        )
+        self.assertIn(
+            "TDOF_EXPORT void TDOF_GameCenterSetAccessPointVisible(int visible)",
+            source,
+        )
+        self.assertIn("[GKAccessPoint shared].active = visible != 0;", source)
+
     def test_mac_release_verification_covers_ios_dependencies_and_outputs(self) -> None:
         source = (PROJECT_ROOT / "tools" / "mac_setup_and_build.sh").read_text(
             encoding="utf-8"

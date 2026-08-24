@@ -398,6 +398,16 @@ TDOF_EXPORT void TDOF_GameCenterAuthenticate(int requestId)
     });
 }
 
+TDOF_EXPORT void TDOF_GameCenterSetAccessPointVisible(int visible)
+{
+    TDOFRunOnMain(^{
+        if (@available(iOS 14.0, *))
+        {
+            [GKAccessPoint shared].active = visible != 0;
+        }
+    });
+}
+
 TDOF_EXPORT void TDOF_GameCenterReportScore(
     int requestId,
     const char *leaderboardId,
@@ -470,7 +480,7 @@ TDOF_EXPORT void TDOF_GameCenterReportAchievement(int requestId, const char *ach
         GKAchievement *achievement = [[GKAchievement alloc] initWithIdentifier:identifier];
         achievement.percentComplete = 100.0;
         achievement.showsCompletionBanner = YES;
-        [GKAchievement reportAchievements:@[achievement] completionHandler:^(NSError *error) {
+        [GKAchievement reportAchievements:@[achievement] withCompletionHandler:^(NSError *error) {
             TDOFRunOnMain(^{
                 TDOFSendEnvelope(
                     @"achievement",
