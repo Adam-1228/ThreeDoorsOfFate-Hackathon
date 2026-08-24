@@ -3785,7 +3785,7 @@ namespace ThreeDoorsOfFate.Game
         {
             if (currentDifficulty == RunDifficulty.Normal && !endlessModeActive)
             {
-                return CreateScaledEnemyState(NormalBossId, "부채 심판관", 150, 18, 11, true, true, 0);
+                return CreateScaledEnemyState(NormalBossId, "부채 심판관", 138, 16, 9, true, true, 0);
             }
 
             if (currentDifficulty == RunDifficulty.Hard || endlessModeActive)
@@ -3831,6 +3831,12 @@ namespace ThreeDoorsOfFate.Game
                 RunDifficulty.Hard => 1.18f,
                 _ => 0.95f
             };
+
+            ApplyNormalStandardEnemyRetune(
+                boss,
+                ref healthScale,
+                ref attackScale,
+                ref blockScale);
 
             if (endlessModeActive)
             {
@@ -7872,6 +7878,11 @@ namespace ThreeDoorsOfFate.Game
                 EnsureHardReward(rewards);
             }
 
+            if (count == 3)
+            {
+                EnsureAttackOffer(rewards, sources);
+            }
+
             return rewards;
         }
 
@@ -7887,6 +7898,11 @@ namespace ThreeDoorsOfFate.Game
             if (IsHardModeFeatureActive() && Random.value <= 0.45f)
             {
                 EnsureHardReward(cards);
+            }
+
+            if (count == 3)
+            {
+                EnsureAttackOffer(cards, sources);
             }
 
             return cards;
@@ -8871,7 +8887,9 @@ namespace ThreeDoorsOfFate.Game
             if (roomsCleared >= 4 || state.WasElite || state.IsBoss)
             {
                 cards.Add(new EnemyCardDefinition("균열 강타", attacks: true, attackBonus: 4));
-                cards.Add(new EnemyCardDefinition("동굴 재생", healAmount: Mathf.Max(4, state.MaxHealth / 12)));
+                cards.Add(new EnemyCardDefinition(
+                    "동굴 재생",
+                    healAmount: GetEnemyRegenerationAmount(state)));
             }
 
             if (state.WasElite)
@@ -11702,4 +11720,3 @@ namespace ThreeDoorsOfFate.Game
         }
     }
 }
-
