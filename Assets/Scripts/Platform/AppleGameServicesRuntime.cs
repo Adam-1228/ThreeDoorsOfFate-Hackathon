@@ -34,6 +34,14 @@ namespace ThreeDoorsOfFate.Platform
         private int nextRequestId = 1;
         private float nextSyncAt;
 
+        public static void SetAccessPointVisible(bool visible)
+        {
+            if (NativeCloudBridge.IsAvailable)
+            {
+                NativeCloudBridge.SetAccessPointVisible(visible);
+            }
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Bootstrap()
         {
@@ -536,6 +544,9 @@ namespace ThreeDoorsOfFate.Platform
                 string achievementId);
 
             [DllImport("__Internal")]
+            private static extern void TDOF_GameCenterSetAccessPointVisible(int visible);
+
+            [DllImport("__Internal")]
             private static extern void TDOF_CloudFetch(int requestId, string name);
 
             [DllImport("__Internal")]
@@ -562,6 +573,9 @@ namespace ThreeDoorsOfFate.Platform
             public static void ReportAchievement(int requestId, string achievementId) =>
                 TDOF_GameCenterReportAchievement(requestId, achievementId);
 
+            public static void SetAccessPointVisible(bool visible) =>
+                TDOF_GameCenterSetAccessPointVisible(visible ? 1 : 0);
+
             public static void Fetch(int requestId, string name) =>
                 TDOF_CloudFetch(requestId, name);
 
@@ -584,6 +598,10 @@ namespace ThreeDoorsOfFate.Platform
 
             public static void ReportAchievement(int requestId, string achievementId) =>
                 throw new PlatformNotSupportedException();
+
+            public static void SetAccessPointVisible(bool visible)
+            {
+            }
 
             public static void Fetch(int requestId, string name) =>
                 throw new PlatformNotSupportedException();

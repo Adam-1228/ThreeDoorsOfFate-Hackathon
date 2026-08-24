@@ -9,22 +9,21 @@ namespace ThreeDoorsOfFate.Platform
 
         public const string GoogleTestIOSAppId =
             "ca-app-pub-3940256099942544~1458002511";
-        public const string GoogleTestIOSInterstitialAdUnitId =
-            "ca-app-pub-3940256099942544/4411468910";
+        public const string GoogleTestIOSRewardedAdUnitId =
+            "ca-app-pub-3940256099942544/1712485313";
         public const string IOSAppIdEnvironmentVariable = "ADMOB_IOS_APP_ID";
-        public const string IOSInterstitialIdEnvironmentVariable =
-            "ADMOB_IOS_INTERSTITIAL_ID";
+        public const string IOSRewardedIdEnvironmentVariable =
+            "ADMOB_IOS_REWARDED_ID";
         public const string RequireProductionAdsEnvironmentVariable =
             "UNITY_IOS_REQUIRE_PRODUCTION_ADS";
-        public const string TrackingUsageDescription =
-            "맞춤형 광고 제공과 광고 성과 측정을 위해 기기 식별자 사용을 요청합니다.";
+        public const string TrackingUsageDescription = "";
 
-        public static bool HasProductionIdentifiers(string appId, string interstitialAdUnitId)
+        public static bool HasProductionIdentifiers(string appId, string rewardedAdUnitId)
         {
             return IsAdMobIdentifier(appId, '~')
-                && IsAdMobIdentifier(interstitialAdUnitId, '/')
+                && IsAdMobIdentifier(rewardedAdUnitId, '/')
                 && !appId.StartsWith(GoogleTestPublisherPrefix, StringComparison.Ordinal)
-                && !interstitialAdUnitId.StartsWith(
+                && !rewardedAdUnitId.StartsWith(
                     GoogleTestPublisherPrefix,
                     StringComparison.Ordinal);
         }

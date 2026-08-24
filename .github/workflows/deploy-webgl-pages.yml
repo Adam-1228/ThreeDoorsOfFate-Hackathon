@@ -6,12 +6,12 @@ on:
       release_tag:
         description: GitHub release tag containing the WebGL ZIP
         required: true
-        default: v1.1.0
+        default: v1.1.2
         type: string
       asset_name:
         description: WebGL ZIP asset name
         required: true
-        default: ThreeDoorsOfFate-WebGL-v1.1.0.zip
+        default: ThreeDoorsOfFate-WebGL-v1.1.2.zip
         type: string
 
 permissions:
@@ -32,6 +32,9 @@ jobs:
     timeout-minutes: 60
 
     steps:
+      - name: Check out deployment helpers
+        uses: actions/checkout@v4
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
@@ -52,6 +55,7 @@ jobs:
       - name: Prepare and validate Pages site
         env:
           ASSET_NAME: ${{ inputs.asset_name }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
           set -euo pipefail
           mkdir -p extracted site
@@ -66,6 +70,11 @@ jobs:
           source_root="$(dirname "$index_path")"
           cp -a "$source_root"/. site/
           touch site/.nojekyll
+
+          python3 tools/prepare_webgl_pages.py \
+            --site-root site \
+            --expected-version "${RELEASE_TAG#v}"
+          grep -q 'data-tdf-pages-shell="v1"' site/index.html
 
           if find site -type l -print -quit | grep -q .; then
             echo "The Pages site must not contain symbolic links." >&2

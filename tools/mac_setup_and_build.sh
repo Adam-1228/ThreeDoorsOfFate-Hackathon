@@ -440,8 +440,8 @@ verify_signed_archive() {
 run_ios_release_verify() {
     local team_id="${UNITY_IOS_DEVELOPMENT_TEAM:-}"
     [[ -n "$team_id" ]] || fail "Set UNITY_IOS_DEVELOPMENT_TEAM to your Apple team ID."
-    [[ -n "${ADMOB_IOS_APP_ID:-}" && -n "${ADMOB_IOS_INTERSTITIAL_ID:-}" ]] \
-        || fail "Set ADMOB_IOS_APP_ID and ADMOB_IOS_INTERSTITIAL_ID to production IDs."
+    [[ -n "${ADMOB_IOS_APP_ID:-}" && -n "${ADMOB_IOS_REWARDED_ID:-}" ]] \
+        || fail "Set ADMOB_IOS_APP_ID and ADMOB_IOS_REWARDED_ID to production IDs."
     export UNITY_IOS_REQUIRE_PRODUCTION_ADS=1
     local xcode_root="$BUILD_ROOT/iOS/Device"
     local archive_path="$BUILD_ROOT/iOS/ThreeDoorsOfFate.xcarchive"

@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import plistlib
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -131,7 +132,7 @@ class ConfigureIOSReleasePlistTests(unittest.TestCase):
         environment["ADMOB_IOS_APP_ID"] = admob_app_id or self.admob_app_id
         return subprocess.run(
             [
-                "python3",
+                sys.executable,
                 str(TOOL_PATH),
                 command,
                 "--plist",

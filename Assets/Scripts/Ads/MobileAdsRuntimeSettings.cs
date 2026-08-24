@@ -8,14 +8,14 @@ namespace ThreeDoorsOfFate.Ads
         public const string ResourcesPath = "MobileAdsRuntimeSettings";
 
         [SerializeField]
-        private string iosInterstitialAdUnitId =
-            AdsReleaseConfiguration.GoogleTestIOSInterstitialAdUnitId;
+        private string iosRewardedAdUnitId =
+            AdsReleaseConfiguration.GoogleTestIOSRewardedAdUnitId;
 
-        public string IOSInterstitialAdUnitId => iosInterstitialAdUnitId;
+        public string IOSRewardedAdUnitId => iosRewardedAdUnitId;
 
-        public void SetIOSInterstitialAdUnitId(string value)
+        public void SetIOSRewardedAdUnitId(string value)
         {
-            iosInterstitialAdUnitId = value == null ? string.Empty : value.Trim();
+            iosRewardedAdUnitId = value == null ? string.Empty : value.Trim();
         }
     }
 }

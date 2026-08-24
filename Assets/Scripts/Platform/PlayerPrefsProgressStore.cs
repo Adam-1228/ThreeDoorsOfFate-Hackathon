@@ -116,6 +116,8 @@ namespace ThreeDoorsOfFate.Platform
                 }
             }
 
+            keys.AddRange(AchievementProgress.GetCompletionKeys(keyPrefix));
+
             return keys;
         }
 

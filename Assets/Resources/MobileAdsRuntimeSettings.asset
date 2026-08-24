@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1527480de934542a94655bb7984b7f1, type: 3}
   m_Name: MobileAdsRuntimeSettings
   m_EditorClassIdentifier:
-  iosInterstitialAdUnitId: ca-app-pub-3940256099942544/4411468910
+  iosRewardedAdUnitId: ca-app-pub-3940256099942544/1712485313

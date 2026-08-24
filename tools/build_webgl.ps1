@@ -4,6 +4,11 @@ param(
 )
 
 $projectRoot = (Resolve-Path -LiteralPath $ProjectRoot).Path
+$unityProjectPath = if ($projectRoot.EndsWith('\')) {
+    "$projectRoot."
+} else {
+    $projectRoot
+}
 $buildRoot = (Resolve-Path (Join-Path $projectRoot '..')).Path
 $indexPath = Join-Path $buildRoot 'Builds\WebGL\index.html'
 $logPath = Join-Path $buildRoot 'Builds\Logs\webgl-build.log'
@@ -20,17 +25,19 @@ $unityArguments = @(
     '-nographics'
     '-quit'
     '-projectPath'
-    "`"$projectRoot`""
+    "`"$unityProjectPath`""
     '-executeMethod'
     'ThreeDoorsOfFate.Editor.PlayableGameBuilder.BuildWebGLPlayable'
     '-logFile'
     "`"$logPath`""
 )
+Write-Output "Starting Unity WebGL build. Log: $logPath"
 $unityProcess = Start-Process `
     -FilePath $UnityPath `
     -ArgumentList $unityArguments `
-    -Wait `
-    -PassThru
+    -PassThru `
+    -WindowStyle Hidden
+$unityProcess.WaitForExit()
 $unityExitCode = $unityProcess.ExitCode
 
 if ($unityExitCode -ne 0) {

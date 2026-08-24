@@ -1,5 +1,6 @@
 using System;
 using ThreeDoorsOfFate.Cards;
+using ThreeDoorsOfFate.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -46,6 +47,9 @@ namespace ThreeDoorsOfFate.UI
             {
                 button.onClick.AddListener(HandleClicked);
             }
+
+            GameLocalization.LanguageChanged += RefreshLocalizedLabels;
+            RefreshLocalizedLabels();
         }
 
         private void OnDisable()
@@ -54,6 +58,8 @@ namespace ThreeDoorsOfFate.UI
             {
                 button.onClick.RemoveListener(HandleClicked);
             }
+
+            GameLocalization.LanguageChanged -= RefreshLocalizedLabels;
         }
 
         public void Bind(CardData value)
@@ -65,10 +71,8 @@ namespace ThreeDoorsOfFate.UI
                 return;
             }
 
-            SetText(nameText, value.DisplayName);
             SetText(costText, value.Cost.ToString());
-            SetText(typeText, $"{GetDisplayCategoryLabel(value.Category)} / {GetDisplayRarityLabel(value.Rarity)}");
-            SetText(rulesText, value.RulesText);
+            RefreshLocalizedLabels();
 
             if (illustrationImage != null)
             {
@@ -140,50 +144,38 @@ namespace ThreeDoorsOfFate.UI
             rulesText.lineSpacing = 0.92f;
         }
 
-        private static string GetDisplayCategoryLabel(CardCategory category)
+        private void RefreshLocalizedLabels()
         {
-            return category switch
+            if (cardData == null)
             {
-                CardCategory.Attack => "공격",
-                CardCategory.Defense => "방어",
-                CardCategory.Skill => "특수",
-                CardCategory.Curse => "저주카드",
-                _ => category.ToString()
-            };
-        }
+                return;
+            }
 
-        private static string GetDisplayRarityLabel(CardRarity rarity)
-        {
-            return rarity switch
-            {
-                CardRarity.Common => "일반",
-                CardRarity.Rare => "희귀",
-                CardRarity.Curse => "저주카드",
-                _ => rarity.ToString()
-            };
-        }
+            SetText(
+                nameText,
+                CardLocalization.GetName(cardData.CardId, cardData.DisplayName));
+            SetText(
+                rulesText,
+                CardLocalization.GetRules(cardData.CardId, cardData.RulesText));
 
-        private static string GetCategoryLabel(CardCategory category)
-        {
-            return category switch
+            string category = cardData.Category switch
             {
-                CardCategory.Attack => "공격",
-                CardCategory.Defense => "방어",
-                CardCategory.Skill => "특수",
-                CardCategory.Curse => "저주카드",
-                _ => category.ToString()
+                CardCategory.Attack => GameLocalization.Text("card.category.attack"),
+                CardCategory.Defense => GameLocalization.Text("card.category.defense"),
+                CardCategory.Skill => GameLocalization.Text("card.category.skill"),
+                CardCategory.Curse => GameLocalization.Text("card.category.curse"),
+                _ => cardData.Category.ToString()
             };
-        }
 
-        private static string GetRarityLabel(CardRarity rarity)
-        {
-            return rarity switch
+            string rarity = cardData.Rarity switch
             {
-                CardRarity.Common => "일반",
-                CardRarity.Rare => "희귀",
-                CardRarity.Curse => "저주카드",
-                _ => rarity.ToString()
+                CardRarity.Common => GameLocalization.Text("card.rarity.common"),
+                CardRarity.Rare => GameLocalization.Text("card.rarity.rare"),
+                CardRarity.Curse => GameLocalization.Text("card.rarity.curse"),
+                _ => cardData.Rarity.ToString()
             };
+
+            SetText(typeText, GameLocalization.Format("card.meta", category, rarity));
         }
 
         private static Color GetCategoryColor(CardCategory category)

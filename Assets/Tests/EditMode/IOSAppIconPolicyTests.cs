@@ -48,6 +48,14 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(importer.textureCompression, Is.EqualTo(TextureImporterCompression.Uncompressed));
 
             PlatformIconKind[] kinds = PlayerSettings.GetSupportedIconKinds(NamedBuildTarget.iOS);
+            if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.iOS, BuildTarget.iOS))
+            {
+                Assert.That(kinds, Is.Empty);
+                Assert.Ignore(
+                    "iOS Build Support is not installed; importer checks passed, "
+                    + "and slot checks remain enabled on an iOS-capable editor.");
+            }
+
             Assert.That(kinds, Is.Not.Empty);
             foreach (PlatformIconKind kind in kinds)
             {

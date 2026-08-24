@@ -1,17 +1,21 @@
-#if UNITY_IOS
 using System;
 using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 using ThreeDoorsOfFate.Platform;
 using UnityEditor;
 using UnityEditor.Build;
+#if UNITY_IOS
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
+#endif
 using UnityEngine;
 
 namespace ThreeDoorsOfFate.Editor
 {
     public static class AppleReleasePostprocessor
     {
+#if UNITY_IOS
         private const string PrivacyManifestFileName = "PrivacyInfo.xcprivacy";
 
         [PostProcessBuild(900)]
@@ -87,18 +91,64 @@ namespace ThreeDoorsOfFate.Editor
                 project.AddFileToBuild(mainTarget, fileGuid);
             }
         }
+#endif
 
         private static void ConfigureInfoPlist(string buildPath)
         {
             string infoPlistPath = Path.Combine(buildPath, "Info.plist");
-            PlistDocument infoPlist = new();
-            infoPlist.ReadFromFile(infoPlistPath);
-            infoPlist.root.SetBoolean("ITSAppUsesNonExemptEncryption", false);
-            infoPlist.root.SetString(
-                "NSUserTrackingUsageDescription",
-                AdsReleaseConfiguration.TrackingUsageDescription);
-            infoPlist.WriteToFile(infoPlistPath);
+            XDocument infoPlist = XDocument.Load(
+                infoPlistPath,
+                LoadOptions.PreserveWhitespace);
+            XElement dictionary = infoPlist.Root?.Element("dict")
+                ?? throw new BuildFailedException("Info.plist does not contain a root dictionary.");
+
+            RemovePlistValue(dictionary, "NSUserTrackingUsageDescription");
+            SetBooleanPlistValue(
+                dictionary,
+                "ITSAppUsesNonExemptEncryption",
+                false);
+            infoPlist.Save(infoPlistPath, SaveOptions.DisableFormatting);
+        }
+
+        private static void RemovePlistValue(XElement dictionary, string key)
+        {
+            XElement keyElement = dictionary
+                .Elements("key")
+                .FirstOrDefault(element =>
+                    string.Equals(element.Value, key, StringComparison.Ordinal));
+            if (keyElement == null)
+            {
+                return;
+            }
+
+            keyElement.ElementsAfterSelf().FirstOrDefault()?.Remove();
+            keyElement.Remove();
+        }
+
+        private static void SetBooleanPlistValue(
+            XElement dictionary,
+            string key,
+            bool value)
+        {
+            XElement keyElement = dictionary
+                .Elements("key")
+                .FirstOrDefault(element =>
+                    string.Equals(element.Value, key, StringComparison.Ordinal));
+            XElement booleanElement = new(value ? "true" : "false");
+            if (keyElement == null)
+            {
+                dictionary.Add(new XElement("key", key), booleanElement);
+                return;
+            }
+
+            XElement currentValue = keyElement.ElementsAfterSelf().FirstOrDefault();
+            if (currentValue == null)
+            {
+                keyElement.AddAfterSelf(booleanElement);
+                return;
+            }
+
+            currentValue.ReplaceWith(booleanElement);
         }
     }
 }
-#endif

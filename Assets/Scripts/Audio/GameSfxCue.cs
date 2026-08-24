@@ -5,6 +5,7 @@ namespace ThreeDoorsOfFate.Audio
         None,
         UiAccept,
         UiBack,
+        ImportantConfirm,
         UiDenied,
         PanelOpen,
         PanelClose,

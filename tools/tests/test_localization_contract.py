@@ -999,14 +999,14 @@ class LocalizationContractTests(unittest.TestCase):
             self.assertNotIn("GameLanguagePolicy.PreferenceKey", method)
             self.assertNotRegex(method, re.compile(r'Language[}".]'))
 
-    def test_active_release_identity_is_version_1_1_1_build_11100(self) -> None:
+    def test_webgl_patch_version_preserves_ios_release_defaults(self) -> None:
         project_settings = PROJECT_SETTINGS_PATH.read_text(encoding="utf-8")
         release_configuration = IOS_RELEASE_CONFIGURATION_PATH.read_text(
             encoding="utf-8"
         )
         self.assertRegex(
             project_settings,
-            re.compile(r"(?m)^  bundleVersion: 1\.1\.1$"),
+            re.compile(r"(?m)^  bundleVersion: 1\.1\.2$"),
         )
         self.assertRegex(
             project_settings,

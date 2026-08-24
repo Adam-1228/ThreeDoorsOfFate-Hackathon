@@ -27,22 +27,22 @@ namespace ThreeDoorsOfFate.Editor
             string appId = IOSReleaseConfiguration.GetEnvironmentOverride(
                 AdsReleaseConfiguration.IOSAppIdEnvironmentVariable,
                 AdsReleaseConfiguration.GoogleTestIOSAppId);
-            string interstitialId = IOSReleaseConfiguration.GetEnvironmentOverride(
-                AdsReleaseConfiguration.IOSInterstitialIdEnvironmentVariable,
-                AdsReleaseConfiguration.GoogleTestIOSInterstitialAdUnitId);
+            string rewardedId = IOSReleaseConfiguration.GetEnvironmentOverride(
+                AdsReleaseConfiguration.IOSRewardedIdEnvironmentVariable,
+                AdsReleaseConfiguration.GoogleTestIOSRewardedAdUnitId);
             bool requireProduction = string.Equals(
                 Environment.GetEnvironmentVariable(
                     AdsReleaseConfiguration.RequireProductionAdsEnvironmentVariable),
                 "1",
                 StringComparison.Ordinal);
 
-            ValidateIdentifiers(appId, interstitialId, requireProduction);
-            ApplyIdentifiers(appId, interstitialId);
+            ValidateIdentifiers(appId, rewardedId, requireProduction);
+            ApplyIdentifiers(appId, rewardedId);
         }
 
         public static void ValidateIdentifiers(
             string appId,
-            string interstitialId,
+            string rewardedId,
             bool requireProduction)
         {
             bool usesOfficialTestPair = string.Equals(
@@ -50,12 +50,12 @@ namespace ThreeDoorsOfFate.Editor
                     AdsReleaseConfiguration.GoogleTestIOSAppId,
                     StringComparison.Ordinal)
                 && string.Equals(
-                    interstitialId,
-                    AdsReleaseConfiguration.GoogleTestIOSInterstitialAdUnitId,
+                    rewardedId,
+                    AdsReleaseConfiguration.GoogleTestIOSRewardedAdUnitId,
                     StringComparison.Ordinal);
             bool usesProductionPair = AdsReleaseConfiguration.HasProductionIdentifiers(
                 appId,
-                interstitialId);
+                rewardedId);
 
             if (!usesOfficialTestPair && !usesProductionPair)
             {
@@ -67,11 +67,11 @@ namespace ThreeDoorsOfFate.Editor
             {
                 throw new BuildFailedException(
                     "Production iOS builds require ADMOB_IOS_APP_ID and "
-                    + "ADMOB_IOS_INTERSTITIAL_ID. Test identifiers are not allowed.");
+                    + "ADMOB_IOS_REWARDED_ID. Test identifiers are not allowed.");
             }
         }
 
-        private static void ApplyIdentifiers(string appId, string interstitialId)
+        private static void ApplyIdentifiers(string appId, string rewardedId)
         {
             MobileAdsRuntimeSettings runtimeSettings =
                 AssetDatabase.LoadAssetAtPath<MobileAdsRuntimeSettings>(
@@ -82,7 +82,7 @@ namespace ThreeDoorsOfFate.Editor
                     $"Missing mobile ads runtime settings: {RuntimeSettingsAssetPath}");
             }
 
-            runtimeSettings.SetIOSInterstitialAdUnitId(interstitialId);
+            runtimeSettings.SetIOSRewardedAdUnitId(rewardedId);
             EditorUtility.SetDirty(runtimeSettings);
 
             ScriptableObject googleSettings =

@@ -13,13 +13,21 @@ namespace ThreeDoorsOfFate.Platform
         public const string EndlessLeaderboardId =
             "com.adam.threedoorsfate.leaderboard.endless";
         public const string HardDifficultyAchievementId =
-            "com.adam.threedoorsfate.achievement.hard-unlocked";
+            "com.adam.threedoorsfate.achievement.hard_unlocked";
         public const string GamblerTrueEndingAchievementId =
-            "com.adam.threedoorsfate.achievement.true-ending.gambler";
+            "com.adam.threedoorsfate.achievement.true_ending.gambler";
         public const string OracleTrueEndingAchievementId =
-            "com.adam.threedoorsfate.achievement.true-ending.oracle";
+            "com.adam.threedoorsfate.achievement.true_ending.oracle";
         public const string ExileTrueEndingAchievementId =
-            "com.adam.threedoorsfate.achievement.true-ending.exile";
+            "com.adam.threedoorsfate.achievement.true_ending.exile";
+        public const string AbyssCollectorAchievementId =
+            "com.adam.threedoorsfate.achievement.abyss_collector";
+        public const string GamblerHighRollAchievementId =
+            "com.adam.threedoorsfate.achievement.build.gambler_high_roll";
+        public const string OracleRiftEngineAchievementId =
+            "com.adam.threedoorsfate.achievement.build.oracle_rift_engine";
+        public const string ExileLastOathAchievementId =
+            "com.adam.threedoorsfate.achievement.build.exile_last_oath";
 
         public static GameCenterProgressReport CaptureGameCenterProgress(string keyPrefix)
         {
@@ -62,6 +70,13 @@ namespace ThreeDoorsOfFate.Platform
                 keyPrefix,
                 "Exile",
                 ExileTrueEndingAchievementId);
+            foreach (AchievementDefinition definition in AchievementProgress.NewDefinitions)
+            {
+                if (AchievementProgress.IsCompleted(keyPrefix, definition))
+                {
+                    achievements.Add(definition.GameCenterId);
+                }
+            }
 
             return new GameCenterProgressReport
             {

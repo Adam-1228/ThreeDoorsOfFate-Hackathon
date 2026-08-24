@@ -6,6 +6,7 @@ import http.server
 import json
 import shutil
 import subprocess
+import sys
 import tempfile
 import threading
 import unittest
@@ -76,7 +77,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
         """Catches missing pages or disclosures that would make public support incomplete."""
         result = subprocess.run(
             [
-                "python3",
+                sys.executable,
                 str(VALIDATOR),
                 "--root",
                 str(PROJECT_ROOT),
@@ -99,7 +100,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
         """Catches a missing App Store field, privacy basis, rating, or review path."""
         result = subprocess.run(
             [
-                "python3",
+                sys.executable,
                 str(VALIDATOR),
                 "--root",
                 str(PROJECT_ROOT),
@@ -196,7 +197,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
             (fixture_submission / "metadata-1.0.4.en-US.json").unlink(missing_ok=True)
             result = subprocess.run(
                 [
-                    "python3",
+                    sys.executable,
                     str(VALIDATOR),
                     "--root",
                     str(fixture_root),
@@ -249,7 +250,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
             )
             result = subprocess.run(
                 [
-                    "python3",
+                    sys.executable,
                     str(VALIDATOR),
                     "--root",
                     str(fixture_root),
@@ -284,7 +285,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
             )
             result = subprocess.run(
                 [
-                    "python3",
+                    sys.executable,
                     str(VALIDATOR),
                     "--root",
                     str(fixture_root),
@@ -319,7 +320,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
             )
             result = subprocess.run(
                 [
-                    "python3",
+                    sys.executable,
                     str(VALIDATOR),
                     "--root",
                     str(fixture_root),
@@ -366,7 +367,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
             )
             result = subprocess.run(
                 [
-                    "python3",
+                    sys.executable,
                     str(VALIDATOR),
                     "--root",
                     str(fixture_root),
@@ -393,7 +394,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
             with serve_directory(site_root) as origin:
                 result = subprocess.run(
                     [
-                        "python3",
+                        sys.executable,
                         str(VALIDATOR),
                         "--root",
                         str(PROJECT_ROOT),
@@ -428,7 +429,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
             ) as origin:
                 result = subprocess.run(
                     [
-                        "python3",
+                        sys.executable,
                         str(VALIDATOR),
                         "--root",
                         str(PROJECT_ROOT),
@@ -467,7 +468,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
             )
             result = subprocess.run(
                 [
-                    "python3",
+                    sys.executable,
                     str(VALIDATOR),
                     "--root",
                     str(fixture_root),

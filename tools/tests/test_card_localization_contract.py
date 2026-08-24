@@ -35,6 +35,7 @@ CONTROLLER_LOCALIZATION_PATH = (
 )
 CARD_VIEW_PATH = PROJECT_ROOT / "Assets/Scripts/UI/CardView.cs"
 IMPORTER_PATH = PROJECT_ROOT / "Assets/Editor/CardSpriteImportPostprocessor.cs"
+PLAYABLE_BUILDER_PATH = PROJECT_ROOT / "Assets/Editor/PlayableGameBuilder.cs"
 UNITY_TEST_PATH = (
     PROJECT_ROOT / "Assets/Tests/EditMode/CardLocalizationTests.cs"
 )
@@ -311,6 +312,111 @@ class CardImportAndHandoffContractTests(unittest.TestCase):
             "path.StartsWith(EnglishLocalizedCardRoot",
             source[full_rendered_start:full_rendered_end],
         )
+
+    def test_english_cards_use_webgl_only_high_quality_compression(self) -> None:
+        source = IMPORTER_PATH.read_text(encoding="utf-8")
+        preprocess_start = source.index("private void OnPreprocessTexture")
+        preprocess_end = source.index(
+            "private static bool IsGameArt", preprocess_start
+        )
+        preprocess = source[preprocess_start:preprocess_end]
+        self.assertIn(
+            "ApplyEnglishLocalizedWebGLSettings(textureImporter)", preprocess
+        )
+
+        method_start = source.index(
+            "private static void ApplyEnglishLocalizedWebGLSettings"
+        )
+        method_end = source.index("private static bool IsGameArt", method_start)
+        method = source[method_start:method_end]
+        for token in (
+            'GetPlatformTextureSettings("WebGL")',
+            "overridden = true",
+            "maxTextureSize = 2048",
+            "TextureImporterFormat.DXT5",
+            "TextureImporterCompression.CompressedHQ",
+            "compressionQuality = 100",
+            "crunchedCompression = false",
+            "SetPlatformTextureSettings",
+        ):
+            with self.subTest(token=token):
+                self.assertIn(token, method)
+
+    def test_webgl_build_forces_english_card_platform_reimport(self) -> None:
+        source = PLAYABLE_BUILDER_PATH.read_text(encoding="utf-8")
+        build_start = source.index("public static void BuildWebGLPlayable")
+        build_end = source.index(
+            '[MenuItem("Three Doors of Fate/Build macOS Playable")', build_start
+        )
+        self.assertIn(
+            "ImportEnglishLocalizedCardsForWebGL();",
+            source[build_start:build_end],
+        )
+        self.assertIn(
+            "EditorUserBuildSettings.webGLBuildSubtarget = "
+            "WebGLTextureSubtarget.DXT;",
+            source[build_start:build_end],
+        )
+
+        method_start = source.index(
+            "private static void ImportEnglishLocalizedCardsForWebGL"
+        )
+        method_end = source.index(
+            "private static void ConfigureArtTextureImporter", method_start
+        )
+        method = source[method_start:method_end]
+        for token in (
+            "EnglishLocalizedCardRoot",
+            "Directory.GetFiles(",
+            '"*.png"',
+            "ApplyEnglishLocalizedWebGLTextureSettings(importer)",
+            "ImportAssetOptions.ForceUpdate",
+            'GetPlatformTextureSettings("WebGL")',
+            "overridden = true",
+            "TextureImporterCompression.CompressedHQ",
+            "compressionQuality = 100",
+            "TextureImporterFormat.DXT5",
+            "SetPlatformTextureSettings",
+        ):
+            with self.subTest(token=token):
+                self.assertIn(token, method)
+
+    def test_webgl_high_quality_art_is_dxt5_but_standalone_stays_uncompressed(
+        self,
+    ) -> None:
+        source = PLAYABLE_BUILDER_PATH.read_text(encoding="utf-8")
+        configure_start = source.index(
+            "private static void ConfigureArtTextureImporter"
+        )
+        configure_end = source.index(
+            "private static void ConfigureMusicAudioImporter", configure_start
+        )
+        configure = source[configure_start:configure_end]
+        self.assertIn(
+            'ApplyCardPlatformTextureSettings(importer, "Standalone")', configure
+        )
+        self.assertIn("ApplyWebGLTextureSettings(importer)", configure)
+        self.assertNotIn(
+            'ApplyCardPlatformTextureSettings(importer, "WebGL")', configure
+        )
+
+        method_start = source.index("private static void ApplyWebGLTextureSettings")
+        method_end = source.index(
+            "private static void ApplyAndroidTextureSettings", method_start
+        )
+        method = source[method_start:method_end]
+        for token in (
+            'GetPlatformTextureSettings("WebGL")',
+            "overridden = true",
+            "maxTextureSize = 4096",
+            "TextureImporterCompression.CompressedHQ",
+            "compressionQuality = 100",
+            "TextureImporterFormat.DXT5",
+            "crunchedCompression = false",
+            "SetPlatformTextureSettings",
+        ):
+            with self.subTest(token=token):
+                self.assertIn(token, method)
 
     def test_windows_handoff_names_exact_package_and_runtime_matrix(self) -> None:
         source = WINDOWS_HANDOFF_PATH.read_text(encoding="utf-8")

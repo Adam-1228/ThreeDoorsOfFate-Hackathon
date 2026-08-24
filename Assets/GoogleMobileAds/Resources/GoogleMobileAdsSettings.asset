@@ -18,7 +18,7 @@ MonoBehaviour:
   enableGradleBuildPreProcessor: 1
   disableOptimizeInitialization: 0
   disableOptimizeAdLoading: 0
-  userTrackingUsageDescription: 맞춤형 광고 제공과 광고 성과 측정을 위해 기기 식별자 사용을 요청합니다.
+  userTrackingUsageDescription:
   userLanguage: ko
   overrideDefaultGmaAndroidSdk: 0
   selectedGmaAndroidSdk: 0

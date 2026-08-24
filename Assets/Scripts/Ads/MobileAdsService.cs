@@ -1,30 +1,37 @@
 using System;
-using System.Globalization;
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Common;
 using GoogleMobileAds.Ump.Api;
-using ThreeDoorsOfFate.Platform;
 using UnityEngine;
 
 namespace ThreeDoorsOfFate.Ads
 {
     public sealed class MobileAdsService : MonoBehaviour
     {
-        private const string CompletedRunsKey = "ThreeDoorsOfFate.Ads.CompletedRunsSinceAd";
-        private const string LastShownAtKey = "ThreeDoorsOfFate.Ads.LastShownAtUnixSeconds";
-
         private static MobileAdsService instance;
 
+        private readonly RewardedAdRequestCoordinator rewardedRequest = new();
         private MobileAdsRuntimeSettings settings;
-        private InterstitialAd interstitialAd;
-        private Action pendingContinuation;
+        private RewardedAd rewardedAd;
         private bool initializationRequested;
+        private bool rewardedLoadRequested;
         private bool shuttingDown;
+
+        public static event Action RewardedAdAvailabilityChanged;
+
+        public static bool IsRewardedAdReady =>
+            instance != null && instance.CanShowRewardedAd;
 
         public static bool IsPrivacyOptionsRequired =>
             IsRuntimeSupported
             && ConsentInformation.PrivacyOptionsRequirementStatus
                 == PrivacyOptionsRequirementStatus.Required;
+
+        private bool CanShowRewardedAd =>
+            !shuttingDown
+            && !rewardedRequest.IsActive
+            && rewardedAd != null
+            && rewardedAd.CanShowAd();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Bootstrap()
@@ -38,27 +45,17 @@ namespace ThreeDoorsOfFate.Ads
             host.AddComponent<MobileAdsService>();
         }
 
-        public static void RecordRunCompleted()
+        public static void ShowRewarded(
+            Func<bool> commitReward,
+            Action<RewardedAdOutcome> completion)
         {
-            if (!IsRuntimeSupported)
+            if (instance == null || !instance.CanShowRewardedAd)
             {
+                completion?.Invoke(RewardedAdOutcome.Unavailable);
                 return;
             }
 
-            int completedRuns = Mathf.Clamp(PlayerPrefs.GetInt(CompletedRunsKey, 0) + 1, 0, 100);
-            PlayerPrefs.SetInt(CompletedRunsKey, completedRuns);
-            PlayerPrefs.Save();
-        }
-
-        public static void RunAfterInterstitial(Action continuation, bool gameplayActive)
-        {
-            if (instance == null)
-            {
-                continuation?.Invoke();
-                return;
-            }
-
-            instance.TryRunAfterInterstitial(continuation, gameplayActive);
+            instance.TryShowRewarded(commitReward, completion);
         }
 
         public static void ShowPrivacyOptions()
@@ -101,24 +98,41 @@ namespace ThreeDoorsOfFate.Ads
             DontDestroyOnLoad(gameObject);
             settings = Resources.Load<MobileAdsRuntimeSettings>(
                 MobileAdsRuntimeSettings.ResourcesPath);
-            if (settings == null || string.IsNullOrWhiteSpace(settings.IOSInterstitialAdUnitId))
+            if (settings == null || string.IsNullOrWhiteSpace(settings.IOSRewardedAdUnitId))
             {
                 Debug.LogWarning("Mobile ads are disabled because runtime settings are missing.");
                 return;
             }
 
             MobileAds.SetiOSAppPauseOnBackground(true);
+            MobileAds.SetRequestConfiguration(CreateNonTrackingRequestConfiguration());
             GatherConsent();
+        }
+
+        private static RequestConfiguration CreateNonTrackingRequestConfiguration()
+        {
+            return new RequestConfiguration
+            {
+                PublisherFirstPartyIdEnabled = false,
+                PublisherPrivacyPersonalizationState =
+                    GoogleMobileAds.Api.PublisherPrivacyPersonalizationState.Disabled
+            };
         }
 
         private void OnDestroy()
         {
             shuttingDown = true;
-            interstitialAd?.Destroy();
-            interstitialAd = null;
+            rewardedAd?.Destroy();
+            rewardedAd = null;
+            if (rewardedRequest.IsActive)
+            {
+                rewardedRequest.Finish(true);
+            }
+
             if (instance == this)
             {
                 instance = null;
+                NotifyRewardedAdAvailabilityChanged();
             }
         }
 
@@ -196,25 +210,30 @@ namespace ThreeDoorsOfFate.Ads
                         return;
                     }
 
-                    LoadInterstitial();
+                    LoadRewardedAd();
                 });
             });
         }
 
-        private void LoadInterstitial()
+        private void LoadRewardedAd()
         {
-            if (shuttingDown || settings == null || interstitialAd != null)
+            if (shuttingDown
+                || settings == null
+                || rewardedAd != null
+                || rewardedLoadRequested)
             {
                 return;
             }
 
-            InterstitialAd.Load(
-                settings.IOSInterstitialAdUnitId,
+            rewardedLoadRequested = true;
+            RewardedAd.Load(
+                settings.IOSRewardedAdUnitId,
                 new AdRequest(),
                 (ad, error) =>
                 {
                     MobileAdsEventExecutor.ExecuteInUpdate(() =>
                     {
+                        rewardedLoadRequested = false;
                         if (shuttingDown)
                         {
                             ad?.Destroy();
@@ -223,96 +242,85 @@ namespace ThreeDoorsOfFate.Ads
 
                         if (error != null || ad == null)
                         {
-                            Debug.LogWarning($"Interstitial ad load failed: {error}");
+                            Debug.LogWarning($"Rewarded ad load failed: {error}");
+                            NotifyRewardedAdAvailabilityChanged();
                             return;
                         }
 
-                        interstitialAd = ad;
-                        RegisterInterstitialEvents(ad);
+                        rewardedAd = ad;
+                        RegisterRewardedAdEvents(ad);
+                        NotifyRewardedAdAvailabilityChanged();
                     });
                 });
         }
 
-        private void RegisterInterstitialEvents(InterstitialAd ad)
+        private void RegisterRewardedAdEvents(RewardedAd ad)
         {
-            ad.OnAdFullScreenContentClosed += () => DispatchAdCompletion(true);
+            ad.OnAdFullScreenContentClosed += () =>
+                DispatchRewardedAdCompletion(ad, false);
             ad.OnAdFullScreenContentFailed += error =>
             {
-                Debug.LogWarning($"Interstitial ad presentation failed: {error}");
-                DispatchAdCompletion(false);
+                Debug.LogWarning($"Rewarded ad presentation failed: {error}");
+                DispatchRewardedAdCompletion(ad, true);
             };
         }
 
-        private void TryRunAfterInterstitial(Action continuation, bool gameplayActive)
+        private void TryShowRewarded(
+            Func<bool> commitReward,
+            Action<RewardedAdOutcome> completion)
         {
-            if (pendingContinuation != null)
+            if (!CanShowRewardedAd
+                || !rewardedRequest.TryBegin(commitReward, completion))
             {
-                continuation?.Invoke();
+                completion?.Invoke(RewardedAdOutcome.Unavailable);
                 return;
             }
 
-            int completedRuns = PlayerPrefs.GetInt(CompletedRunsKey, 0);
-            double nowSeconds = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            double lastShownAtSeconds = ReadLastShownAtSeconds();
-            bool adReady = interstitialAd != null && interstitialAd.CanShowAd();
-            if (!AdDisplayPolicy.ShouldShowInterstitial(
-                    completedRuns,
-                    nowSeconds,
-                    lastShownAtSeconds,
-                    gameplayActive,
-                    adReady))
-            {
-                continuation?.Invoke();
-                return;
-            }
-
-            pendingContinuation = continuation;
+            RewardedAd ad = rewardedAd;
+            rewardedAd = null;
+            NotifyRewardedAdAvailabilityChanged();
             try
             {
-                interstitialAd.Show();
+                ad.Show(_ =>
+                {
+                    MobileAdsEventExecutor.ExecuteInUpdate(() =>
+                    {
+                        if (!shuttingDown)
+                        {
+                            rewardedRequest.CommitReward();
+                        }
+                    });
+                });
             }
             catch (Exception exception)
             {
-                Debug.LogWarning($"Interstitial ad could not be shown: {exception.Message}");
-                FinishAdBreak(false);
+                Debug.LogWarning($"Rewarded ad could not be shown: {exception.Message}");
+                FinishRewardedAd(ad, true);
             }
         }
 
-        private void DispatchAdCompletion(bool shown)
+        private void DispatchRewardedAdCompletion(RewardedAd ad, bool presentationFailed)
         {
-            MobileAdsEventExecutor.ExecuteInUpdate(() => FinishAdBreak(shown));
+            MobileAdsEventExecutor.ExecuteInUpdate(
+                () => FinishRewardedAd(ad, presentationFailed));
         }
 
-        private void FinishAdBreak(bool shown)
+        private void FinishRewardedAd(RewardedAd ad, bool presentationFailed)
         {
-            if (shown)
+            if (!rewardedRequest.IsActive)
             {
-                PlayerPrefs.SetInt(CompletedRunsKey, 0);
-                PlayerPrefs.SetString(
-                    LastShownAtKey,
-                    DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(
-                        CultureInfo.InvariantCulture));
-                PlayerPrefs.Save();
+                return;
             }
 
-            interstitialAd?.Destroy();
-            interstitialAd = null;
-            Action continuation = pendingContinuation;
-            pendingContinuation = null;
-            continuation?.Invoke();
-            LoadInterstitial();
+            ad?.Destroy();
+            rewardedRequest.Finish(presentationFailed);
+            NotifyRewardedAdAvailabilityChanged();
+            LoadRewardedAd();
         }
 
-        private static double ReadLastShownAtSeconds()
+        private static void NotifyRewardedAdAvailabilityChanged()
         {
-            string stored = PlayerPrefs.GetString(LastShownAtKey, string.Empty);
-            return double.TryParse(
-                stored,
-                NumberStyles.Float,
-                CultureInfo.InvariantCulture,
-                out double value)
-                ? value
-                : 0d;
+            RewardedAdAvailabilityChanged?.Invoke();
         }
     }
 }

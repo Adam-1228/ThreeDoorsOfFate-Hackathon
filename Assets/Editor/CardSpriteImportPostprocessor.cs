@@ -7,6 +7,8 @@ namespace ThreeDoorsOfFate.Editor
     public sealed class CardSpriteImportPostprocessor : AssetPostprocessor
     {
         private const string ArtRoot = "Assets/Art/";
+        private const string IOSAppIconRoot = "Assets/Art/Branding/AppIcon/";
+        private const string EnglishLocalizedCardRoot = "Assets/Resources/Cards/EnglishLocalized/";
 
         private void OnPreprocessTexture()
         {
@@ -54,11 +56,31 @@ namespace ThreeDoorsOfFate.Editor
                 textureSettings.spriteBorder = GetGeneratedFrameBorder(assetPath);
             }
             textureImporter.SetTextureSettings(textureSettings);
+
+            if (assetPath.StartsWith(EnglishLocalizedCardRoot, StringComparison.Ordinal))
+            {
+                ApplyEnglishLocalizedWebGLSettings(textureImporter);
+            }
+        }
+
+        private static void ApplyEnglishLocalizedWebGLSettings(TextureImporter textureImporter)
+        {
+            TextureImporterPlatformSettings webGLSettings =
+                textureImporter.GetPlatformTextureSettings("WebGL");
+            webGLSettings.overridden = true;
+            webGLSettings.maxTextureSize = 2048;
+            webGLSettings.format = TextureImporterFormat.DXT5;
+            webGLSettings.textureCompression = TextureImporterCompression.CompressedHQ;
+            webGLSettings.compressionQuality = 100;
+            webGLSettings.crunchedCompression = false;
+            textureImporter.SetPlatformTextureSettings(webGLSettings);
         }
 
         private static bool IsGameArt(string path)
         {
-            return path.StartsWith(ArtRoot, StringComparison.Ordinal)
+            return ((path.StartsWith(ArtRoot, StringComparison.Ordinal)
+                        && !path.StartsWith(IOSAppIconRoot, StringComparison.Ordinal))
+                    || path.StartsWith(EnglishLocalizedCardRoot, StringComparison.Ordinal))
                 && path.EndsWith(".png", StringComparison.OrdinalIgnoreCase);
         }
 
@@ -70,7 +92,8 @@ namespace ThreeDoorsOfFate.Editor
 
         private static bool IsFullRenderedCardArt(string path)
         {
-            return path.IndexOf("/Cards/FullRendered/", StringComparison.Ordinal) >= 0
+            return path.StartsWith(EnglishLocalizedCardRoot, StringComparison.Ordinal)
+                || path.IndexOf("/Cards/FullRendered/", StringComparison.Ordinal) >= 0
                 || path.IndexOf("\\Cards\\FullRendered\\", StringComparison.Ordinal) >= 0
                 || path.IndexOf("/Cards/UnifiedRendered/", StringComparison.Ordinal) >= 0
                 || path.IndexOf("\\Cards\\UnifiedRendered\\", StringComparison.Ordinal) >= 0

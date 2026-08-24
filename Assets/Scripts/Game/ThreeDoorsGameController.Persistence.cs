@@ -319,6 +319,8 @@ namespace ThreeDoorsOfFate.Game
                 }
             }
 
+            TryCompleteBuildAchievement();
+
             return true;
         }
 

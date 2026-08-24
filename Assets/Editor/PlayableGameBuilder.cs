@@ -24,6 +24,7 @@ namespace ThreeDoorsOfFate.Editor
         private const string PlayableScenePath = "Assets/Scenes/ThreeDoorsPlayable.unity";
         private const string CardDataRoot = "Assets/Data/Cards/MVP";
         private const string CardBackPath = "Assets/Art/Cards/Illustrations/MVP/card_back_three_doors_v2.png";
+        private const string EnglishLocalizedCardRoot = "Assets/Resources/Cards/EnglishLocalized";
         private const string RunModifierCatalogPath = "Assets/Data/RunModifiers/run_modifier_catalog.json";
         private const string RunModifierIconRoot = "Assets/Art/RunModifiers/Icons512BoxMatched";
         private const string MainMenuMusicPath = "Assets/Audio/Music/Payment_in_Iron.mp3";
@@ -34,6 +35,8 @@ namespace ThreeDoorsOfFate.Editor
         private const string MusicRoot = "Assets/Audio/Music";
         private const string ImpactSfxRoot = "Assets/Audio/SFX/Impact";
         private const string GameSfxRoot = "Assets/Audio/SFX";
+        private const string IOSAppIconPath =
+            "Assets/Art/Branding/AppIcon/three_doors_app_icon_1024.png";
         private const string WindowsBuildFolderFromProjectRoot = "../Builds/Windows";
         private const string WindowsBuildFileName = "ThreeDoorsOfFate.exe";
         private const string WebGLBuildFolderFromProjectRoot = "../Builds/WebGL";
@@ -159,6 +162,8 @@ namespace ThreeDoorsOfFate.Editor
                 throw new InvalidOperationException("WebGL Build Support is not installed.");
             }
 
+            EditorUserBuildSettings.webGLBuildSubtarget = WebGLTextureSubtarget.DXT;
+            ImportEnglishLocalizedCardsForWebGL();
             CreatePlayableScene();
             ConfigurePlayerSettings();
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Brotli;
@@ -422,6 +427,7 @@ namespace ThreeDoorsOfFate.Editor
             PlayerSettings.SetApplicationIdentifier(
                 NamedBuildTarget.iOS,
                 IOSReleaseConfiguration.BundleIdentifier);
+            ConfigureIOSAppIcons();
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.iOS, ScriptingImplementation.IL2CPP);
             PlayerSettings.SetApiCompatibilityLevel(NamedBuildTarget.iOS, ApiCompatibilityLevel.NET_Standard);
             PlayerSettings.SetManagedStrippingLevel(NamedBuildTarget.iOS, ManagedStrippingLevel.Low);
@@ -438,6 +444,45 @@ namespace ThreeDoorsOfFate.Editor
             if (!string.IsNullOrWhiteSpace(developmentTeam))
             {
                 PlayerSettings.iOS.appleDeveloperTeamID = developmentTeam.Trim();
+            }
+        }
+
+        private static void ConfigureIOSAppIcons()
+        {
+            if (AssetImporter.GetAtPath(IOSAppIconPath) is not TextureImporter importer)
+            {
+                throw new BuildFailedException($"Missing iOS app icon: {IOSAppIconPath}");
+            }
+
+            importer.textureType = TextureImporterType.Default;
+            importer.alphaSource = TextureImporterAlphaSource.None;
+            importer.alphaIsTransparency = false;
+            importer.mipmapEnabled = false;
+            importer.sRGBTexture = true;
+            importer.isReadable = false;
+            importer.npotScale = TextureImporterNPOTScale.None;
+            importer.maxTextureSize = 1024;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.SaveAndReimport();
+
+            Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>(IOSAppIconPath);
+            if (icon == null)
+            {
+                throw new BuildFailedException($"Unable to import iOS app icon: {IOSAppIconPath}");
+            }
+
+            foreach (PlatformIconKind kind in
+                     PlayerSettings.GetSupportedIconKinds(NamedBuildTarget.iOS))
+            {
+                PlatformIcon[] slots = PlayerSettings.GetPlatformIcons(
+                    NamedBuildTarget.iOS,
+                    kind);
+                foreach (PlatformIcon slot in slots)
+                {
+                    slot.SetTexture(icon, 0);
+                }
+
+                PlayerSettings.SetPlatformIcons(NamedBuildTarget.iOS, kind, slots);
             }
         }
 
@@ -897,6 +942,47 @@ namespace ThreeDoorsOfFate.Editor
             }
         }
 
+        private static void ImportEnglishLocalizedCardsForWebGL()
+        {
+            if (!Directory.Exists(EnglishLocalizedCardRoot))
+            {
+                throw new DirectoryNotFoundException(
+                    $"English localized card root was not found: {EnglishLocalizedCardRoot}");
+            }
+
+            string[] files = Directory.GetFiles(
+                EnglishLocalizedCardRoot,
+                "*.png",
+                SearchOption.TopDirectoryOnly);
+            foreach (string file in files.OrderBy(path => path, StringComparer.Ordinal))
+            {
+                string assetPath = NormalizeAssetPath(file);
+                if (AssetImporter.GetAtPath(assetPath) is not TextureImporter importer)
+                {
+                    throw new InvalidOperationException(
+                        $"English localized card is not a texture asset: {assetPath}");
+                }
+
+                ApplyEnglishLocalizedWebGLTextureSettings(importer);
+                AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+            }
+
+            AssetDatabase.SaveAssets();
+        }
+
+        private static void ApplyEnglishLocalizedWebGLTextureSettings(TextureImporter importer)
+        {
+            TextureImporterPlatformSettings settings =
+                importer.GetPlatformTextureSettings("WebGL");
+            settings.overridden = true;
+            settings.maxTextureSize = 2048;
+            settings.textureCompression = TextureImporterCompression.CompressedHQ;
+            settings.compressionQuality = 100;
+            settings.format = TextureImporterFormat.DXT5;
+            settings.crunchedCompression = false;
+            importer.SetPlatformTextureSettings(settings);
+        }
+
         private static void ConfigureArtTextureImporter(string assetPath)
         {
             bool usesHighQualityDesktopSettings =
@@ -949,7 +1035,7 @@ namespace ThreeDoorsOfFate.Editor
             }
 
             ApplyCardPlatformTextureSettings(importer, "Standalone");
-            ApplyCardPlatformTextureSettings(importer, "WebGL");
+            ApplyWebGLTextureSettings(importer);
             ApplyAndroidTextureSettings(importer);
         }
 
@@ -994,6 +1080,19 @@ namespace ThreeDoorsOfFate.Editor
             settings.textureCompression = TextureImporterCompression.Uncompressed;
             settings.compressionQuality = 100;
             settings.format = TextureImporterFormat.Automatic;
+            settings.crunchedCompression = false;
+            importer.SetPlatformTextureSettings(settings);
+        }
+
+        private static void ApplyWebGLTextureSettings(TextureImporter importer)
+        {
+            TextureImporterPlatformSettings settings =
+                importer.GetPlatformTextureSettings("WebGL");
+            settings.overridden = true;
+            settings.maxTextureSize = 4096;
+            settings.textureCompression = TextureImporterCompression.CompressedHQ;
+            settings.compressionQuality = 100;
+            settings.format = TextureImporterFormat.DXT5;
             settings.crunchedCompression = false;
             importer.SetPlatformTextureSettings(settings);
         }
