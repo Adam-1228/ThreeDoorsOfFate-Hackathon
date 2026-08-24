@@ -16,6 +16,8 @@ namespace ThreeDoorsOfFate.Tests
         private const string LayoutPolicyTypeName = "ThreeDoorsOfFate.UI.PcUiLayoutPolicy, Assembly-CSharp";
         private const string SettingsGearFactoryTypeName = "ThreeDoorsOfFate.UI.SettingsGearSpriteFactory, Assembly-CSharp";
         private const string ControllerPath = "Assets/Scripts/Game/ThreeDoorsGameController.cs";
+        private const string AchievementControllerPath = "Assets/Scripts/Game/ThreeDoorsGameController.Achievements.cs";
+        private const string LocalizationControllerPath = "Assets/Scripts/Game/ThreeDoorsGameController.Localization.cs";
         private const string ScenePath = "Assets/Scenes/ThreeDoorsPlayable.unity";
         private const string PlayableBuilderPath = "Assets/Editor/PlayableGameBuilder.cs";
 
@@ -72,9 +74,9 @@ namespace ThreeDoorsOfFate.Tests
             string source = File.ReadAllText(ControllerPath);
 
             StringAssert.Contains("Sprite titleBoxSprite = GetTopHeaderBoxSprite();", source);
-            StringAssert.Contains("subtitleFrame = AddPanel(root, \"부제 박스\", Color.white, titleBoxSprite);", source);
+            StringAssert.Contains("subtitleFrame = AddPanel(topBar, \"부제 박스\", Color.white, titleBoxSprite);", source);
             StringAssert.Contains("subtitleText = AddText(subtitleFrame,", source);
-            StringAssert.Contains("SetAnchors(subtitleFrame, PcUiLayoutPolicy.HeaderPromptRoot);", source);
+            StringAssert.Contains("SetAnchors(subtitleFrame, PcUiLayoutPolicy.HeaderPrompt);", source);
         }
 
         [Test]
@@ -95,7 +97,8 @@ namespace ThreeDoorsOfFate.Tests
 
             string source = File.ReadAllText(ControllerPath);
             StringAssert.Contains("SetAnchors(body.rectTransform, PcUiLayoutPolicy.LogTextSafe);", source);
-            StringAssert.Contains("SetAnchors(hintText.rectTransform, PcUiLayoutPolicy.DoorHintSafe);", source);
+            StringAssert.Contains("PcUiLayoutPolicy.DoorHintSafe", source);
+            StringAssert.Contains("\"문 설명 안전영역\"", source);
         }
 
         [Test]
@@ -131,6 +134,40 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
+        public void RunStatusMainRegions_StayInsideTheOrnamentalFrameSafeInset()
+        {
+            string[] regionNames =
+            {
+                "StatusEquipmentPanel",
+                "StatusSynergyCard",
+                "StatusDeckCard",
+                "StatusAwakeningCard",
+                "StatusTraitsCard"
+            };
+
+            foreach (string regionName in regionNames)
+            {
+                object region = GetLayoutField(regionName);
+                Assert.That(
+                    GetProperty<float>(region, "MinX"),
+                    Is.GreaterThanOrEqualTo(0.065f),
+                    regionName);
+                Assert.That(
+                    GetProperty<float>(region, "MaxX"),
+                    Is.LessThanOrEqualTo(0.935f),
+                    regionName);
+                Assert.That(
+                    GetProperty<float>(region, "MinY"),
+                    Is.GreaterThanOrEqualTo(0.170f),
+                    regionName);
+                Assert.That(
+                    GetProperty<float>(region, "MaxY"),
+                    Is.LessThanOrEqualTo(0.820f),
+                    regionName);
+            }
+        }
+
+        [Test]
         public void RunStatusMainAndDetailText_UseContainedUiBoxes()
         {
             string source = File.ReadAllText(ControllerPath);
@@ -154,8 +191,8 @@ namespace ThreeDoorsOfFate.Tests
             FieldInfo safeInsetField = policyType.GetField("StatusFramedTextSafe", BindingFlags.Public | BindingFlags.Static);
             Assert.That(safeInsetField, Is.Not.Null);
             object safeInset = safeInsetField.GetValue(null);
-            Assert.That(GetProperty<float>(safeInset, "MinX"), Is.GreaterThanOrEqualTo(0.08f));
-            Assert.That(GetProperty<float>(safeInset, "MaxX"), Is.LessThanOrEqualTo(0.92f));
+            Assert.That(GetProperty<float>(safeInset, "MinX"), Is.GreaterThanOrEqualTo(0.12f));
+            Assert.That(GetProperty<float>(safeInset, "MaxX"), Is.LessThanOrEqualTo(0.88f));
             Assert.That(GetProperty<float>(safeInset, "MinY"), Is.GreaterThanOrEqualTo(0.11f));
             Assert.That(GetProperty<float>(safeInset, "MaxY"), Is.LessThanOrEqualTo(0.89f));
 
@@ -262,7 +299,7 @@ namespace ThreeDoorsOfFate.Tests
         {
             string source = File.ReadAllText(ControllerPath);
 
-            StringAssert.Contains("AddSettingsMenuButton(topBar, \"설정 버튼\", \"설정\", 15)", source);
+            StringAssert.Contains("AddLocalizedSettingsMenuButton(topBar, \"설정 버튼\", \"menu.settings\", 15)", source);
             StringAssert.DoesNotContain("AddIconButton(topBar, \"설정 버튼\", GetSettingsGearSprite())", source);
         }
 
@@ -270,14 +307,12 @@ namespace ThreeDoorsOfFate.Tests
         public void MainMenuOptionsControl_ShowsDedicatedGearIconBesideLabel()
         {
             string source = File.ReadAllText(ControllerPath);
+            string localizationSource = File.ReadAllText(LocalizationControllerPath);
 
-            StringAssert.Contains(
-                "AddButtonIcon(optionsButton, \"옵션 톱니\", GetSettingsGearSprite(), new Vector2(0.10f, 0.21f), new Vector2(0.225f, 0.71f))",
-                source);
-            StringAssert.Contains(
-                "SetAnchors(label.rectTransform, new Vector2(0.08f, 0.14f), new Vector2(0.92f, 0.86f))",
-                source,
-                "The options label must remain centered in the full button frame.");
+            StringAssert.Contains("AddMainMenuIconButton(", source);
+            StringAssert.Contains("\"설정 톱니바퀴\"", localizationSource);
+            StringAssert.Contains("new Vector2(0.36f, 0.12f)", localizationSource);
+            StringAssert.Contains("new Vector2(0.035f, 0.12f)", localizationSource);
         }
 
         [Test]
@@ -313,31 +348,28 @@ namespace ThreeDoorsOfFate.Tests
         [Test]
         public void AchievementGallery_ReadsAllEightExistingProgressSignals()
         {
-            string source = File.ReadAllText(ControllerPath);
+            string source = File.ReadAllText(AchievementControllerPath);
 
             StringAssert.Contains("DifficultyUnlockKey", source);
-            StringAssert.Contains("EndlessRecordSeenKey", source);
-            StringAssert.Contains("IsTrueEndingUnlocked(CharacterClass.Gambler)", source);
-            StringAssert.Contains("IsTrueEndingUnlocked(CharacterClass.Oracle)", source);
-            StringAssert.Contains("IsTrueEndingUnlocked(CharacterClass.Exile)", source);
-            StringAssert.Contains("IsSurvivorTitleUnlocked(CharacterClass.Gambler)", source);
-            StringAssert.Contains("IsSurvivorTitleUnlocked(CharacterClass.Oracle)", source);
-            StringAssert.Contains("IsSurvivorTitleUnlocked(CharacterClass.Exile)", source);
+            StringAssert.Contains("GetTrueEndingKey(CharacterClass.Gambler)", source);
+            StringAssert.Contains("GetTrueEndingKey(CharacterClass.Oracle)", source);
+            StringAssert.Contains("GetTrueEndingKey(CharacterClass.Exile)", source);
+            StringAssert.Contains("AchievementProgress.NewDefinitions", source);
+            StringAssert.Contains("AchievementCardsPerPage = 4", source);
         }
 
         [Test]
         public void AchievementAndCollectionDetails_UseNonOverlappingPanels()
         {
             string source = File.ReadAllText(ControllerPath);
+            string achievements = File.ReadAllText(AchievementControllerPath);
 
-            StringAssert.Contains("AddAchievementHeaderBox(achievementOverlay, \"업적 제목 박스\"", source);
-            StringAssert.Contains("AddAchievementHeaderBox(achievementOverlay, \"업적 달성 박스\"", source);
-            StringAssert.Contains("AddRunStatusContentBox(parent, $\"{achievement.Title} 카드\"", source);
-            StringAssert.Contains("AddRunStatusFlatLabelBox(card, \"업적 이름 박스\"", source);
-            StringAssert.Contains("AddRunStatusContentBox(card, \"업적 내용 박스\"", source);
-            StringAssert.Contains("AddRunStatusContentBox(card, \"업적 아이콘 박스\"", source);
-            StringAssert.DoesNotContain("업적 강조선", source);
-            StringAssert.DoesNotContain("AddPanel(parent, achievement.Title", source);
+            StringAssert.Contains("achievementCardsRoot", achievements);
+            StringAssert.Contains("AddAchievementCard(", achievements);
+            StringAssert.Contains("const float columnGap", achievements);
+            StringAssert.Contains("const float rowGap", achievements);
+            StringAssert.Contains("AddRunStatusContentBox(", source);
+            StringAssert.Contains("PcUiLayoutPolicy.CollectionDetail", source);
         }
 
         [Test]
@@ -345,7 +377,8 @@ namespace ThreeDoorsOfFate.Tests
         {
             string source = File.ReadAllText(ControllerPath);
 
-            StringAssert.Contains("AddTopHeaderLabelBox(contentRoot, \"직업 한줄 설명\"", source);
+            StringAssert.Contains("AddTopHeaderLabelBox(", source);
+            StringAssert.Contains("\"직업 한줄 설명\"", source);
             StringAssert.Contains("GetTopHeaderBoxSprite()", source);
             StringAssert.Contains("PcUiLayoutPolicy.ClassDetailTagline", source);
             StringAssert.DoesNotContain("AddEventMessagePanel(contentRoot, \"직업 한줄 설명\")", source);

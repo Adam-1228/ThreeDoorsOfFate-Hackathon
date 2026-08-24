@@ -1,7 +1,11 @@
 {
   "name": "ThreeDoorsOfFate.EditModeTests",
   "rootNamespace": "ThreeDoorsOfFate.Tests",
-  "references": [],
+  "references": [
+    "ThreeDoorsOfFate.Platform",
+    "ThreeDoorsOfFate.Ads",
+    "ThreeDoorsOfFate.Localization"
+  ],
   "includePlatforms": [
     "Editor"
   ],

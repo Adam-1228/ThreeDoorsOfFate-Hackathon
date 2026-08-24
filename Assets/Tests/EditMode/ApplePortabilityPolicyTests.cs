@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using ThreeDoorsOfFate.Platform;
 using UnityEngine;
 
 namespace ThreeDoorsOfFate.Tests
@@ -34,6 +35,8 @@ namespace ThreeDoorsOfFate.Tests
             "ThreeDoorsOfFate.Ads.MobileAdsService, ThreeDoorsOfFate.Ads";
         private const string AdsReleaseBuildProcessorTypeName =
             "ThreeDoorsOfFate.Editor.AdsReleaseBuildProcessor, Assembly-CSharp-Editor";
+        private const string AppleReleasePostprocessorTypeName =
+            "ThreeDoorsOfFate.Editor.AppleReleasePostprocessor, Assembly-CSharp-Editor";
 
         [TestCase(RuntimePlatform.IPhonePlayer, false)]
         [TestCase(RuntimePlatform.Android, false)]
@@ -209,6 +212,89 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
+        public void AchievementCompletionKeys_RoundTripThroughCaptureAndApply()
+        {
+            string prefix = $"ThreeDoorsOfFate.Tests.{Guid.NewGuid():N}.";
+            string[] keys = AchievementProgress.NewDefinitions
+                .Select(definition => AchievementProgress.GetCompletionKey(
+                    prefix,
+                    definition.StorageSuffix))
+                .ToArray();
+
+            try
+            {
+                foreach (string key in keys)
+                {
+                    PlayerPrefs.SetInt(key, 1);
+                }
+
+                string json = PlayerPrefsProgressStore.CaptureJson(
+                    prefix,
+                    "test-device",
+                    4,
+                    1234);
+                ProgressSnapshotData snapshot = JsonUtility.FromJson<ProgressSnapshotData>(json);
+                Assert.That(
+                    keys.Select(key => GetInt(snapshot, key)),
+                    Is.EqualTo(new[] { 1, 1, 1, 1 }));
+
+                foreach (string key in keys)
+                {
+                    PlayerPrefs.DeleteKey(key);
+                }
+
+                PlayerPrefsProgressStore.ApplyJson(prefix, json);
+                Assert.That(
+                    keys.Select(key => PlayerPrefs.GetInt(key, 0)),
+                    Is.EqualTo(new[] { 1, 1, 1, 1 }));
+            }
+            finally
+            {
+                foreach (string key in keys)
+                {
+                    PlayerPrefs.DeleteKey(key);
+                }
+            }
+        }
+
+        [Test]
+        public void MergeJson_KeepsAchievementCompletionMonotonicAcrossDevices()
+        {
+            string prefix = $"ThreeDoorsOfFate.Tests.{Guid.NewGuid():N}.";
+            string localCompletionKey = AchievementProgress.GetCompletionKey(
+                prefix,
+                AchievementProgress.NewDefinitions[0].StorageSuffix);
+            string cloudCompletionKey = AchievementProgress.GetCompletionKey(
+                prefix,
+                AchievementProgress.NewDefinitions[1].StorageSuffix);
+            ProgressSnapshotData local = new()
+            {
+                schemaVersion = 1,
+                revision = 2,
+                integers = new List<ProgressIntData>
+                {
+                    new() { key = localCompletionKey, value = 1 },
+                    new() { key = cloudCompletionKey, value = 0 }
+                }
+            };
+            ProgressSnapshotData cloud = new()
+            {
+                schemaVersion = 1,
+                revision = 3,
+                integers = new List<ProgressIntData>
+                {
+                    new() { key = localCompletionKey, value = 0 },
+                    new() { key = cloudCompletionKey, value = 1 }
+                }
+            };
+
+            ProgressSnapshotData merged = Merge(local, cloud);
+
+            Assert.That(GetInt(merged, localCompletionKey), Is.EqualTo(1));
+            Assert.That(GetInt(merged, cloudCompletionKey), Is.EqualTo(1));
+        }
+
+        [Test]
         public void ContentHash_IgnoresMetadataAndEntryOrder()
         {
             ProgressSnapshotData first = new()
@@ -252,7 +338,15 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(GetPublicConstant(serviceType, "EndlessLeaderboardId"),
                 Is.EqualTo("com.adam.threedoorsfate.leaderboard.endless"));
             Assert.That(GetPublicConstant(serviceType, "HardDifficultyAchievementId"),
-                Is.EqualTo("com.adam.threedoorsfate.achievement.hard-unlocked"));
+                Is.EqualTo("com.adam.threedoorsfate.achievement.hard_unlocked"));
+            Assert.That(GetPublicConstant(serviceType, "AbyssCollectorAchievementId"),
+                Is.EqualTo("com.adam.threedoorsfate.achievement.abyss_collector"));
+            Assert.That(GetPublicConstant(serviceType, "GamblerHighRollAchievementId"),
+                Is.EqualTo("com.adam.threedoorsfate.achievement.build.gambler_high_roll"));
+            Assert.That(GetPublicConstant(serviceType, "OracleRiftEngineAchievementId"),
+                Is.EqualTo("com.adam.threedoorsfate.achievement.build.oracle_rift_engine"));
+            Assert.That(GetPublicConstant(serviceType, "ExileLastOathAchievementId"),
+                Is.EqualTo("com.adam.threedoorsfate.achievement.build.exile_last_oath"));
         }
 
         [Test]
@@ -405,11 +499,11 @@ namespace ThreeDoorsOfFate.Tests
 
                 Assert.That(score, Is.EqualTo(12));
                 Assert.That(achievements, Does.Contain(
-                    "com.adam.threedoorsfate.achievement.hard-unlocked"));
+                    "com.adam.threedoorsfate.achievement.hard_unlocked"));
                 Assert.That(achievements, Does.Contain(
-                    "com.adam.threedoorsfate.achievement.true-ending.oracle"));
+                    "com.adam.threedoorsfate.achievement.true_ending.oracle"));
                 Assert.That(achievements, Does.Not.Contain(
-                    "com.adam.threedoorsfate.achievement.true-ending.gambler"));
+                    "com.adam.threedoorsfate.achievement.true_ending.gambler"));
             }
             finally
             {
@@ -417,6 +511,42 @@ namespace ThreeDoorsOfFate.Tests
                 PlayerPrefs.DeleteKey(gamblerRecordKey);
                 PlayerPrefs.DeleteKey(oracleRecordKey);
                 PlayerPrefs.DeleteKey(oracleEndingKey);
+            }
+        }
+
+        [Test]
+        public void CaptureGameCenterProgress_ReportsOnlyCompletedNewAchievements()
+        {
+            string prefix = $"ThreeDoorsOfFate.Tests.{Guid.NewGuid():N}.";
+            AchievementDefinition completedFirst = AchievementProgress.NewDefinitions[0];
+            AchievementDefinition incomplete = AchievementProgress.NewDefinitions[1];
+            AchievementDefinition completedSecond = AchievementProgress.NewDefinitions[2];
+            AchievementDefinition incompleteSecond = AchievementProgress.NewDefinitions[3];
+            string[] keys = AchievementProgress.GetCompletionKeys(prefix).ToArray();
+
+            try
+            {
+                PlayerPrefs.SetInt(
+                    AchievementProgress.GetCompletionKey(prefix, completedFirst.StorageSuffix),
+                    1);
+                PlayerPrefs.SetInt(
+                    AchievementProgress.GetCompletionKey(prefix, completedSecond.StorageSuffix),
+                    1);
+
+                GameCenterProgressReport report = AppleGameServices.CaptureGameCenterProgress(prefix);
+
+                Assert.That(report.completedAchievementIds, Does.Contain(completedFirst.GameCenterId));
+                Assert.That(report.completedAchievementIds, Does.Contain(completedSecond.GameCenterId));
+                Assert.That(report.completedAchievementIds, Does.Not.Contain(incomplete.GameCenterId));
+                Assert.That(report.completedAchievementIds, Does.Not.Contain(incompleteSecond.GameCenterId));
+                Assert.That(report.completedAchievementIds.Length, Is.EqualTo(2));
+            }
+            finally
+            {
+                foreach (string key in keys)
+                {
+                    PlayerPrefs.DeleteKey(key);
+                }
             }
         }
 
@@ -450,9 +580,9 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(GetPublicConstant(configurationType, "MinimumOSVersion"),
                 Is.EqualTo("15.0"));
             Assert.That(GetPublicConstant(configurationType, "DefaultVersion"),
-                Is.EqualTo("1.1.0"));
+                Is.EqualTo("1.1.1"));
             Assert.That(GetPublicConstant(configurationType, "DefaultBuildNumber"),
-                Is.EqualTo("2"));
+                Is.EqualTo("11100"));
         }
 
         [Test]
@@ -473,17 +603,42 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
-        public void ApplePostprocessor_AddsATTUsageDescription()
+        public void ApplePostprocessor_RemovesLegacyATTUsageDescription()
         {
-            string postprocessorPath = Path.Combine(
-                Application.dataPath,
-                "Editor",
-                "AppleReleasePostprocessor.cs");
-            string source = File.ReadAllText(postprocessorPath);
+            Type postprocessorType = Type.GetType(AppleReleasePostprocessorTypeName);
+            Assert.That(postprocessorType, Is.Not.Null);
+            MethodInfo configureInfoPlist = postprocessorType.GetMethod(
+                "ConfigureInfoPlist",
+                BindingFlags.NonPublic | BindingFlags.Static);
+            Assert.That(configureInfoPlist, Is.Not.Null);
 
-            Assert.That(source, Does.Contain("NSUserTrackingUsageDescription"));
-            Assert.That(source, Does.Contain(
-                "AdsReleaseConfiguration.TrackingUsageDescription"));
+            string buildPath = Path.Combine(
+                Path.GetTempPath(),
+                $"tdof-att-plist-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(buildPath);
+            string infoPlistPath = Path.Combine(buildPath, "Info.plist");
+            File.WriteAllText(
+                infoPlistPath,
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" "
+                + "\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
+                + "<plist version=\"1.0\"><dict>"
+                + "<key>CFBundleIdentifier</key><string>com.adam.threedoorsfate</string>"
+                + "<key>NSUserTrackingUsageDescription</key><string>legacy tracking</string>"
+                + "</dict></plist>");
+
+            try
+            {
+                configureInfoPlist.Invoke(null, new object[] { buildPath });
+                string output = File.ReadAllText(infoPlistPath);
+                Assert.That(output, Does.Not.Contain("NSUserTrackingUsageDescription"));
+                Assert.That(output, Does.Contain("ITSAppUsesNonExemptEncryption"));
+                Assert.That(output, Does.Contain("CFBundleIdentifier"));
+            }
+            finally
+            {
+                Directory.Delete(buildPath, true);
+            }
         }
 
         [Test]
@@ -501,39 +656,11 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(source, Does.Contain("new[] { containerIdentifier }"));
         }
 
-        [TestCase(1, 500d, 0d, false, true, false)]
-        [TestCase(2, 500d, 0d, true, true, false)]
-        [TestCase(2, 500d, 0d, false, false, false)]
-        [TestCase(2, 500d, 0d, false, true, true)]
-        [TestCase(2, 500d, 400d, false, true, false)]
-        [TestCase(2, 580d, 400d, false, true, true)]
-        public void AdDisplayPolicy_OnlyShowsAtEligibleRunBreaks(
-            int completedRunsSinceAd,
-            double nowSeconds,
-            double lastShownAtSeconds,
-            bool gameplayActive,
-            bool adReady,
-            bool expected)
+        [Test]
+        public void LegacyInterstitialPolicy_IsRemoved()
         {
             Type policyType = Type.GetType(AdDisplayPolicyTypeName);
-            Assert.That(policyType, Is.Not.Null, "AdDisplayPolicy must exist.");
-            MethodInfo method = policyType.GetMethod(
-                "ShouldShowInterstitial",
-                BindingFlags.Public | BindingFlags.Static);
-            Assert.That(method, Is.Not.Null);
-
-            bool actual = (bool)method.Invoke(
-                null,
-                new object[]
-                {
-                    completedRunsSinceAd,
-                    nowSeconds,
-                    lastShownAtSeconds,
-                    gameplayActive,
-                    adReady
-                });
-
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.That(policyType, Is.Null);
         }
 
         [Test]
@@ -542,18 +669,23 @@ namespace ThreeDoorsOfFate.Tests
             Type configurationType = Type.GetType(AdsReleaseConfigurationTypeName);
             Assert.That(configurationType, Is.Not.Null, "AdsReleaseConfiguration must exist.");
             string testAppId = GetPublicConstant(configurationType, "GoogleTestIOSAppId");
-            string testInterstitialId = GetPublicConstant(
+            string testRewardedId = GetPublicConstant(
                 configurationType,
-                "GoogleTestIOSInterstitialAdUnitId");
+                "GoogleTestIOSRewardedAdUnitId");
+            string rewardedEnvironmentVariable = GetPublicConstant(
+                configurationType,
+                "IOSRewardedIdEnvironmentVariable");
             MethodInfo method = configurationType.GetMethod(
                 "HasProductionIdentifiers",
                 BindingFlags.Public | BindingFlags.Static);
             Assert.That(method, Is.Not.Null);
 
             Assert.That(testAppId, Is.EqualTo("ca-app-pub-3940256099942544~1458002511"));
-            Assert.That(testInterstitialId, Is.EqualTo(
-                "ca-app-pub-3940256099942544/4411468910"));
-            Assert.That(method.Invoke(null, new object[] { testAppId, testInterstitialId }),
+            Assert.That(testRewardedId, Is.EqualTo(
+                "ca-app-pub-3940256099942544/1712485313"));
+            Assert.That(rewardedEnvironmentVariable, Is.EqualTo(
+                "ADMOB_IOS_REWARDED_ID"));
+            Assert.That(method.Invoke(null, new object[] { testAppId, testRewardedId }),
                 Is.EqualTo(false));
             Assert.That(method.Invoke(
                     null,
@@ -570,7 +702,7 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
-        public void MobileAdsService_ExposesRunBreakAndPrivacyEntryPoints()
+        public void MobileAdsService_ExposesRewardedPrivacyAndBuildTimeIdentifierInjection()
         {
             Type serviceType = Type.GetType(MobileAdsServiceTypeName);
             Assert.That(serviceType, Is.Not.Null, "MobileAdsService must exist.");
@@ -578,13 +710,29 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(serviceType.GetMethod(
                     "RecordRunCompleted",
                     BindingFlags.Public | BindingFlags.Static),
-                Is.Not.Null);
+                Is.Null);
             Assert.That(serviceType.GetMethod(
                     "RunAfterInterstitial",
+                    BindingFlags.Public | BindingFlags.Static),
+                Is.Null);
+            Assert.That(serviceType.GetMethod(
+                    "ShowRewarded",
                     BindingFlags.Public | BindingFlags.Static,
                     null,
-                    new[] { typeof(Action), typeof(bool) },
+                    new[]
+                    {
+                        typeof(Func<bool>),
+                        typeof(Action<ThreeDoorsOfFate.Ads.RewardedAdOutcome>)
+                    },
                     null),
+                Is.Not.Null);
+            Assert.That(serviceType.GetProperty(
+                    "IsRewardedAdReady",
+                    BindingFlags.Public | BindingFlags.Static),
+                Is.Not.Null);
+            Assert.That(serviceType.GetEvent(
+                    "RewardedAdAvailabilityChanged",
+                    BindingFlags.Public | BindingFlags.Static),
                 Is.Not.Null);
             Assert.That(serviceType.GetMethod(
                     "ShowPrivacyOptions",
@@ -605,13 +753,49 @@ namespace ThreeDoorsOfFate.Tests
                 "Resources",
                 "GoogleMobileAdsSettings.asset");
             Assert.That(File.Exists(runtimeSettingsPath), Is.True);
-            Assert.That(File.ReadAllText(runtimeSettingsPath), Does.Contain(
-                "ca-app-pub-3940256099942544/4411468910"));
             Assert.That(File.Exists(googleSettingsPath), Is.True);
+            string runtimeSettings = File.ReadAllText(runtimeSettingsPath);
             string googleSettings = File.ReadAllText(googleSettingsPath);
-            Assert.That(googleSettings, Does.Contain(
-                "ca-app-pub-3940256099942544~1458002511"));
+            string rewardedId = GetYamlScalar(runtimeSettings, "iosRewardedAdUnitId");
+            string appId = GetYamlScalar(googleSettings, "adMobIOSAppId");
+            Type configurationType = Type.GetType(AdsReleaseConfigurationTypeName);
+            MethodInfo hasProductionIdentifiers = configurationType?.GetMethod(
+                "HasProductionIdentifiers",
+                BindingFlags.Public | BindingFlags.Static);
+            Assert.That(configurationType, Is.Not.Null);
+            Assert.That(hasProductionIdentifiers, Is.Not.Null);
+            Assert.That(
+                hasProductionIdentifiers.Invoke(null, new object[] { appId, rewardedId }),
+                Is.EqualTo(false),
+                "The repository must retain Google's official test pair; the release processor injects production identifiers from the environment.");
+            Assert.That(appId, Is.EqualTo("ca-app-pub-3940256099942544~1458002511"));
+            Assert.That(rewardedId, Is.EqualTo("ca-app-pub-3940256099942544/1712485313"));
             Assert.That(googleSettings, Does.Contain("userLanguage: ko"));
+            Assert.That(
+                GetYamlScalar(googleSettings, "userTrackingUsageDescription"),
+                Is.Empty,
+                "A no-tracking build must not advertise an ATT permission prompt.");
+        }
+
+        [Test]
+        public void MobileAdsService_CreatesNonTrackingRequestConfiguration()
+        {
+            Type serviceType = Type.GetType(MobileAdsServiceTypeName);
+            Assert.That(serviceType, Is.Not.Null);
+            MethodInfo createConfiguration = serviceType.GetMethod(
+                "CreateNonTrackingRequestConfiguration",
+                BindingFlags.NonPublic | BindingFlags.Static);
+            Assert.That(createConfiguration, Is.Not.Null);
+            object configuration = createConfiguration.Invoke(null, null);
+
+            Assert.That(
+                GetPublicMemberValue(configuration, "PublisherFirstPartyIdEnabled"),
+                Is.EqualTo(false));
+            Assert.That(
+                GetPublicMemberValue(
+                    configuration,
+                    "PublisherPrivacyPersonalizationState")?.ToString(),
+                Is.EqualTo("Disabled"));
         }
 
         [Test]
@@ -631,25 +815,6 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
-        public void Controller_RoutesRunBreaksAndPrivacyThroughMobileAdsService()
-        {
-            string controllerPath = Path.Combine(
-                Application.dataPath,
-                "Scripts",
-                "Game",
-                "ThreeDoorsGameController.cs");
-            string source = File.ReadAllText(controllerPath);
-
-            Assert.That(source, Does.Contain("MobileAdsService.RecordRunCompleted();"));
-            Assert.That(source, Does.Contain(
-                "RunAfterInterstitial(() => StartRun(selectedClass))"));
-            Assert.That(source, Does.Contain("RunAfterInterstitial(ShowClassSelection)"));
-            Assert.That(source, Does.Contain("RunAfterInterstitial(ShowMainMenu)"));
-            Assert.That(source, Does.Contain("MobileAdsService.IsPrivacyOptionsRequired"));
-            Assert.That(source, Does.Contain("MobileAdsService.ShowPrivacyOptions"));
-        }
-
-        [Test]
         public void AdsReleaseBuildProcessor_RejectsTestIdsForProductionBuilds()
         {
             Type processorType = Type.GetType(AdsReleaseBuildProcessorTypeName);
@@ -664,7 +829,7 @@ namespace ThreeDoorsOfFate.Tests
                 new object[]
                 {
                     "ca-app-pub-3940256099942544~1458002511",
-                    "ca-app-pub-3940256099942544/4411468910",
+                    "ca-app-pub-3940256099942544/1712485313",
                     false
                 }));
             TargetInvocationException testIdFailure = Assert.Throws<TargetInvocationException>(
@@ -673,7 +838,7 @@ namespace ThreeDoorsOfFate.Tests
                     new object[]
                     {
                         "ca-app-pub-3940256099942544~1458002511",
-                        "ca-app-pub-3940256099942544/4411468910",
+                        "ca-app-pub-3940256099942544/1712485313",
                         true
                     }));
             Assert.That(testIdFailure.InnerException?.GetType().Name,
@@ -776,6 +941,35 @@ namespace ThreeDoorsOfFate.Tests
             FieldInfo field = type.GetField(fieldName, BindingFlags.Public | BindingFlags.Static);
             Assert.That(field, Is.Not.Null, $"{fieldName} must be public and static.");
             return (string)field.GetValue(null);
+        }
+
+        private static object GetPublicMemberValue(object instance, string memberName)
+        {
+            Assert.That(instance, Is.Not.Null);
+            Type type = instance.GetType();
+            PropertyInfo property = type.GetProperty(
+                memberName,
+                BindingFlags.Public | BindingFlags.Instance);
+            if (property != null)
+            {
+                return property.GetValue(instance);
+            }
+
+            FieldInfo field = type.GetField(
+                memberName,
+                BindingFlags.Public | BindingFlags.Instance);
+            Assert.That(field, Is.Not.Null, $"{memberName} must be public.");
+            return field.GetValue(instance);
+        }
+
+        private static string GetYamlScalar(string yaml, string key)
+        {
+            string prefix = key + ":";
+            string line = (yaml ?? string.Empty)
+                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(candidate => candidate.Trim())
+                .Single(candidate => candidate.StartsWith(prefix, StringComparison.Ordinal));
+            return line.Substring(prefix.Length).Trim();
         }
 
         [Serializable]

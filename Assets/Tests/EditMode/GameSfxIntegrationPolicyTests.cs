@@ -1,121 +1,222 @@
-using System.IO;
+using System;
+using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace ThreeDoorsOfFate.Tests
 {
     public sealed class GameSfxIntegrationPolicyTests
     {
-        private const string ControllerPath = "Assets/Scripts/Game/ThreeDoorsGameController.cs";
-        private const string PersistencePath = "Assets/Scripts/Game/ThreeDoorsGameController.Persistence.cs";
-        private const string AudioControllerPath = "Assets/Scripts/Game/ThreeDoorsGameController.Audio.cs";
-        private const string BuilderPath = "Assets/Editor/PlayableGameBuilder.cs";
+        private const string PlayableScenePath = "Assets/Scenes/ThreeDoorsPlayable.unity";
+        private const string CueTypeName =
+            "ThreeDoorsOfFate.Audio.GameSfxCue, ThreeDoorsOfFate.Audio";
 
-        [Test]
-        public void SfxPlayback_DoesNotDuckOrMutateBackgroundMusic()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void ButtonFactory_RemainsSilentWhenActionRemovesTarget(
+            bool destroyTarget)
         {
-            string source = File.ReadAllText(ControllerPath);
+            Component controller = LoadController();
+            MethodInfo addSfxButton = controller.GetType().GetMethod(
+                "AddSfxButton",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo lastImportantFrame = controller.GetType().GetField(
+                "lastImportantUiSfxFrame",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Type cueType = Type.GetType(CueTypeName);
 
-            Assert.That(source, Does.Not.Contain("DuckMusicForSfx"));
-            Assert.That(source, Does.Not.Contain("sfxMusicDuckRoutine"));
-        }
+            Assert.That(addSfxButton, Is.Not.Null);
+            Assert.That(lastImportantFrame, Is.Not.Null);
+            Assert.That(cueType, Is.Not.Null);
 
-        [Test]
-        public void ButtonFactory_DefaultsToSilenceWithoutRawButtonConstruction()
-        {
-            string source = File.ReadAllText(ControllerPath);
-
-            Assert.That(source, Does.Contain("AddSfxButton("));
-            Assert.That(source, Does.Not.Contain(".AddComponent<Button>()"));
-
-            string audioSource = File.ReadAllText(AudioControllerPath);
-            Assert.That(audioSource, Does.Contain("GameSfxButtonFeedback"));
-            Assert.That(
-                audioSource,
-                Does.Contain("GameSfxCue cue = GameSfxCue.None"),
-                "Generic UI buttons must stay silent unless a semantic cue is explicitly requested.");
-            Assert.That(audioSource, Does.Not.Contain("button.onClick.AddListener"));
-        }
-
-        [Test]
-        public void MenuNavigation_DoesNotEmitOpenCloseOrBackClickCues()
-        {
-            string source = File.ReadAllText(ControllerPath);
-
-            Assert.That(source, Does.Not.Contain("PlayGameSfx(GameSfxCue.PanelOpen)"));
-            Assert.That(source, Does.Not.Contain("PlayGameSfx(GameSfxCue.PanelClose)"));
-            Assert.That(source, Does.Not.Contain("AddSfxButton(overlay.gameObject, GameSfxCue.UiBack)"));
-        }
-
-        [Test]
-        public void CharacterConfirmation_DoesNotEmitOrRebindRunStartClickCue()
-        {
-            string source = File.ReadAllText(ControllerPath);
-            string builder = File.ReadAllText(BuilderPath);
-
-            Assert.That(source, Does.Not.Contain("PlayGameSfx(GameSfxCue.RunStart)"));
-            Assert.That(builder, Does.Not.Contain("AssignAudioClip(serializedObject, \"runStartClip\""));
-        }
-
-        [Test]
-        public void GameplayActions_EmitRequiredSemanticCues()
-        {
-            string source = File.ReadAllText(ControllerPath);
-            string[] requiredCalls =
+            GameObject target = new("Silent button policy test", typeof(RectTransform));
+            try
             {
-                "PlayGameSfx(GameSfxCue.DoorOpen)",
-                "PlayGameSfx(GameSfxCue.CardDraw)",
-                "PlayGameSfx(GameSfxCue.CardPlay)",
-                "PlayGameSfx(GameSfxCue.CardDiscard)",
-                "PlayGameSfx(GameSfxCue.TurnCommit)",
-                "PlayGameSfx(GameSfxCue.DiceRoll)",
-                "PlayGameSfx(GameSfxCue.PlayerHit)",
-                "PlayGameSfx(GameSfxCue.Heal)",
-                "PlayGameSfx(GameSfxCue.EnemyDefeat)",
-                "PlayGameSfx(GameSfxCue.RewardReveal)",
-                "PlayGameSfx(GameSfxCue.GoldGain)",
-                "PlayGameSfx(GameSfxCue.Purchase)",
-                "PlayGameSfx(GameSfxCue.ItemEquip)",
-                "PlayGameSfx(GameSfxCue.TreasureOpen)",
-                "PlayGameSfx(GameSfxCue.EventChoice)",
-                "PlayGameSfx(GameSfxCue.Rest)",
-                "PlayGameSfx(GameSfxCue.CurseAccept)",
-                "PlayGameSfx(GameSfxCue.Defeat)",
-                "PlayGameSfx(GameSfxCue.Victory)",
-                "PlayGameSfx(GameSfxCue.Ending)"
-            };
+                lastImportantFrame.SetValue(controller, -1);
+                object importantConfirm = Enum.Parse(cueType, "ImportantConfirm");
+                Button button = addSfxButton.Invoke(
+                    controller,
+                    new[] { target, importantConfirm }) as Button;
 
-            foreach (string requiredCall in requiredCalls)
+                Assert.That(button, Is.Not.Null);
+                bool hasFeedback = target.GetComponents<Component>()
+                    .Any(component => component.GetType().Name == "GameSfxButtonFeedback");
+                Assert.That(hasFeedback, Is.False);
+                Assert.That(target.GetComponent<AudioSource>(), Is.Null);
+                if (destroyTarget)
+                {
+                    button.onClick.AddListener(
+                        () => UnityEngine.Object.DestroyImmediate(target));
+                }
+                else
+                {
+                    button.onClick.AddListener(() => target.SetActive(false));
+                }
+
+                button.onClick.Invoke();
+
+                Assert.That(
+                    (int)lastImportantFrame.GetValue(controller),
+                    Is.EqualTo(-1),
+                    "UI actions must not route any sound effect.");
+                Assert.That(target == null, Is.EqualTo(destroyTarget));
+                if (!destroyTarget)
+                {
+                    Assert.That(target.activeSelf, Is.False);
+                }
+            }
+            finally
             {
-                Assert.That(source, Does.Contain(requiredCall), requiredCall);
+                if (target != null)
+                {
+                    UnityEngine.Object.DestroyImmediate(target);
+                }
             }
         }
 
         [Test]
-        public void PersistenceActions_EmitSuccessAndFailureCues()
+        public void NoneCue_DoesNotCreateAudioSources()
         {
-            string source = File.ReadAllText(PersistencePath);
+            Component controller = LoadController();
+            MethodInfo playGameSfx = controller.GetType().GetMethod(
+                "PlayGameSfx",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Type cueType = Type.GetType(CueTypeName);
 
-            Assert.That(source, Does.Contain("GameSfxCue.SaveSuccess"));
-            Assert.That(source, Does.Contain("GameSfxCue.SaveFailure"));
-            Assert.That(source, Does.Contain("GameSfxCue.LoadSuccess"));
-            Assert.That(source, Does.Contain("GameSfxCue.LoadFailure"));
+            Assert.That(playGameSfx, Is.Not.Null);
+            Assert.That(cueType, Is.Not.Null);
+
+            int before = controller.GetComponents<AudioSource>().Length;
+            object none = Enum.Parse(cueType, "None");
+            playGameSfx.Invoke(controller, new[] { none });
+            int after = controller.GetComponents<AudioSource>().Length;
+
+            Assert.That(after, Is.EqualTo(before));
         }
 
         [Test]
-        public void SceneBuilder_AssignsAndConfiguresGameSfx()
+        public void GeneralButtonFeedback_DoesNotCreatePlaybackSource()
         {
-            string source = File.ReadAllText(BuilderPath);
+            Component controller = LoadController();
+            Type controllerType = controller.GetType();
+            FieldInfo sourceField = controllerType.GetField(
+                "selectedUiSfxSource",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo clipField = controllerType.GetField(
+                "selectedGeneralUiSfxClip",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo addSfxButton = controllerType.GetMethod(
+                "AddSfxButton",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Type cueType = Type.GetType(CueTypeName);
 
-            Assert.That(source, Does.Contain("GameSfxRoot"));
-            Assert.That(source, Does.Contain("ConfigureSfxAudioImporter"));
-            Assert.That(
-                source,
-                Does.Not.Contain("\"uiAcceptClips\""),
-                "Regenerating the playable scene must not reconnect the removed generic click clips.");
-            Assert.That(source, Does.Not.Contain("\"uiBackClip\""));
-            Assert.That(source, Does.Not.Contain("\"panelOpenClip\""));
-            Assert.That(source, Does.Not.Contain("\"panelCloseClip\""));
-            Assert.That(source, Does.Contain("victoryClip"));
+            Assert.That(sourceField, Is.Not.Null);
+            Assert.That(clipField, Is.Not.Null);
+            Assert.That(addSfxButton, Is.Not.Null);
+            Assert.That(cueType, Is.Not.Null);
+
+            AudioClip clip = AudioClip.Create(
+                "Immediate G3 test",
+                256,
+                1,
+                48000,
+                false);
+            GameObject target = new(
+                "Immediate general button",
+                typeof(RectTransform));
+
+            try
+            {
+                AudioSource existing = sourceField.GetValue(controller) as AudioSource;
+                if (existing != null)
+                {
+                    UnityEngine.Object.DestroyImmediate(existing);
+                }
+
+                sourceField.SetValue(controller, null);
+                clipField.SetValue(controller, clip);
+                object general = Enum.Parse(cueType, "UiAccept");
+                Button button = addSfxButton.Invoke(
+                    controller,
+                    new[] { target, general }) as Button;
+
+                Assert.That(button, Is.Not.Null);
+                button.onClick.Invoke();
+
+                Assert.That(
+                    sourceField.GetValue(controller),
+                    Is.Null,
+                    "General UI clicks must remain silent while background music stays enabled.");
+            }
+            finally
+            {
+                AudioSource created = sourceField.GetValue(controller) as AudioSource;
+                if (created != null)
+                {
+                    UnityEngine.Object.DestroyImmediate(created);
+                    sourceField.SetValue(controller, null);
+                }
+
+                UnityEngine.Object.DestroyImmediate(target);
+                UnityEngine.Object.DestroyImmediate(clip);
+            }
+        }
+
+        [Test]
+        public void EffectSources_AreMutedWhileMusicSourceKeepsConfiguredVolume()
+        {
+            Component controller = LoadController();
+            Type controllerType = controller.GetType();
+            MethodInfo ensureAudioSources = controllerType.GetMethod(
+                "EnsureAudioSources",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(ensureAudioSources, Is.Not.Null);
+
+            ensureAudioSources.Invoke(controller, null);
+
+            AudioSource music = GetAudioSource(controller, "musicSource");
+            Assert.That(music, Is.Not.Null);
+            Assert.That(music.loop, Is.True);
+            Assert.That(music.volume, Is.GreaterThan(0f));
+
+            string[] effectSourceFields =
+            {
+                "impactSfxSource",
+                "detailSfxSource",
+                "selectedCombatSfxSource",
+                "selectedUiSfxSource"
+            };
+            foreach (string fieldName in effectSourceFields)
+            {
+                AudioSource source = GetAudioSource(controller, fieldName);
+                Assert.That(source, Is.Not.Null, fieldName);
+                Assert.That(source.volume, Is.EqualTo(0f), fieldName);
+            }
+        }
+
+        private static AudioSource GetAudioSource(Component controller, string fieldName)
+        {
+            FieldInfo field = controller.GetType().GetField(
+                fieldName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(field, Is.Not.Null, fieldName);
+            return field.GetValue(controller) as AudioSource;
+        }
+
+        private static Component LoadController()
+        {
+            Scene scene = EditorSceneManager.OpenScene(PlayableScenePath, OpenSceneMode.Single);
+            Component controller = scene.GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<Component>(true))
+                .FirstOrDefault(component =>
+                    component != null && component.GetType().Name == "ThreeDoorsGameController");
+
+            Assert.That(controller, Is.Not.Null, "Playable scene controller is missing.");
+            return controller;
         }
     }
 }

@@ -5,6 +5,8 @@ using System.Linq;
 using ThreeDoorsOfFate.Ads;
 using ThreeDoorsOfFate.Audio;
 using ThreeDoorsOfFate.Cards;
+using ThreeDoorsOfFate.Localization;
+using ThreeDoorsOfFate.Platform;
 using ThreeDoorsOfFate.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -233,7 +235,6 @@ namespace ThreeDoorsOfFate.Game
         [SerializeField] private Sprite settingsButtonHoverSprite;
         [SerializeField] private Sprite settingsButtonPressedSprite;
         [SerializeField] private Sprite settingsIconSprite;
-        private Sprite runtimeSettingsGearSprite;
         [SerializeField] private Sprite mainTitleLogoSprite;
         [SerializeField] private Sprite topBarFrameSprite;
         [SerializeField] private Sprite runStatusPanelFrameSprite;
@@ -283,17 +284,10 @@ namespace ThreeDoorsOfFate.Game
         [SerializeField] private AudioClip deathMusicClip;
         [SerializeField, Range(0f, 1f)] private float musicVolume = 0.46f;
         [SerializeField, Range(0f, 1f)] private float sfxVolume = 0.86f;
-        [SerializeField] private List<AudioClip> attackImpactClips = new();
-        [SerializeField] private AudioClip criticalImpactClip;
-        [SerializeField] private List<AudioClip> defenseImpactClips = new();
-        [SerializeField] private List<AudioClip> blockedImpactClips = new();
-        [SerializeField] private AudioClip plateSettleClip;
-        [SerializeField] private AudioClip prophecyDetailClip;
-        [SerializeField] private AudioClip traitDetailClip;
-        [SerializeField] private AudioClip comboDetailClip;
-        [SerializeField] private AudioClip curseDetailClip;
-        [SerializeField] private AudioClip bossStartImpactClip;
-        [SerializeField] private AudioClip bossVictoryImpactClip;
+        [SerializeField] private AudioClip selectedAttackSfxClip;
+        [SerializeField] private AudioClip selectedDefenseSfxClip;
+        [SerializeField] private AudioClip selectedGeneralUiSfxClip;
+        [SerializeField] private AudioClip selectedImportantConfirmSfxClip;
 
         [Header("Combat Feedback")]
         [SerializeField] private Sprite combatFeedbackAttackSprite;
@@ -336,7 +330,8 @@ namespace ThreeDoorsOfFate.Game
         private Text titleText;
         private Text subtitleText;
         private Text playerStatsText;
-        private Text runStatsText;
+        private Text runProgressText;
+        private Text runResourcesText;
         private Image diceImage;
         private Text diceText;
         private RectTransform combatDiceHudRoot;
@@ -348,15 +343,17 @@ namespace ThreeDoorsOfFate.Game
         private Button primaryButton;
         private Button settingsButton;
         private RectTransform settingsOverlay;
-        private RectTransform achievementOverlay;
         private RectTransform gameOverOverlay;
         private RectTransform enemyRevealRoot;
         private RectTransform runStatusPanel;
         private RectTransform runStatusMainPanel;
         private RectTransform runStatusDetailPanel;
         private readonly List<UiVisibilitySnapshot> runStatusHiddenUiSnapshots = new();
-        private RectTransform cardPreviewRoot;
+        private Image cardPreviewImage;
         private RectTransform cardPreviewTarget;
+        private int selectedCombatCardIndex = -1;
+        private Button cardPreviewUseButton;
+        private Button cardPreviewCancelButton;
         private Font uiFont;
         private Font titleFont;
         private Coroutine enemyRevealRoutine;
@@ -365,11 +362,11 @@ namespace ThreeDoorsOfFate.Game
         private RectTransform combatVictoryEffectRoot;
         private Sprite cachedVictoryShardSprite;
         private AudioSource musicSource;
-        private AudioSource impactSfxSource;
-        private AudioSource detailSfxSource;
+        private AudioSource selectedCombatSfxSource;
+        private AudioSource selectedUiSfxSource;
+        private int lastImportantUiSfxFrame = -1;
+        private float importantUiSfxPriorityUntil = -1f;
         private AudioClip currentMusicClip;
-        private ImpactSfxCue lastImpactSfxCue = ImpactSfxCue.None;
-        private float lastImpactSfxTime = -100f;
         private RectTransform combatFeedbackRoot;
         private Image combatFeedbackEffectImage;
         private Text combatFeedbackText;
@@ -516,7 +513,10 @@ namespace ThreeDoorsOfFate.Game
             Random.InitState(Environment.TickCount);
             ApplyMobileRuntimeSettings();
             EnsureEventSystem();
+            GameLocalization.Initialize(Application.systemLanguage);
+            RegisterCardLocalizationSources();
             BuildShell();
+            InitializeRewardedRelicAds();
             EnsureAudioSources();
             ShowMainMenu();
         }
@@ -590,8 +590,7 @@ namespace ThreeDoorsOfFate.Game
             titleBoxImage.raycastTarget = false;
             SetAnchors(titleBox, PcUiLayoutPolicy.HeaderTitle);
 
-            titleText = AddText(titleBox, "제목", "세 개의 운명의 문", 24, TextAnchor.MiddleCenter, Color.white);
-            titleText.font = titleFont;
+            titleText = AddLocalizedText(titleBox, "제목", "app.title", 24, TextAnchor.MiddleCenter, Color.white);
             titleText.fontStyle = FontStyle.Bold;
             titleText.alignByGeometry = true;
             titleText.resizeTextForBestFit = false;
@@ -602,28 +601,43 @@ namespace ThreeDoorsOfFate.Game
 
             playerStatsText = AddText(topBar, "플레이어 상태", "", 22, TextAnchor.MiddleLeft, new Color(0.94f, 0.88f, 0.78f, 1f));
             SetAnchors(playerStatsText.rectTransform, new Vector2(0.315f, 0.25f), new Vector2(0.535f, 0.75f));
+            playerStatsText.resizeTextForBestFit = true;
+            playerStatsText.resizeTextMinSize = 12;
+            playerStatsText.resizeTextMaxSize = 20;
 
             diceImage = AddImage(topBar, "행운 주사위", Color.white);
             diceImage.preserveAspect = true;
-            SetAnchors(diceImage.rectTransform, new Vector2(0.705f, 0.20f), new Vector2(0.738f, 0.80f));
+            SetAnchors(diceImage.rectTransform, new Vector2(0.540f, 0.20f), new Vector2(0.570f, 0.80f));
 
             diceText = AddText(topBar, "행운 텍스트", "", 22, TextAnchor.MiddleLeft, new Color(0.70f, 1.0f, 0.90f, 1f));
             diceText.fontStyle = FontStyle.Bold;
-            SetAnchors(diceText.rectTransform, new Vector2(0.746f, 0.25f), new Vector2(0.800f, 0.75f));
+            diceText.resizeTextForBestFit = true;
+            diceText.resizeTextMinSize = 12;
+            diceText.resizeTextMaxSize = 20;
+            SetAnchors(diceText.rectTransform, new Vector2(0.575f, 0.25f), new Vector2(0.625f, 0.75f));
 
-            runStatsText = AddText(topBar, "런 상태", "", 19, TextAnchor.MiddleRight, new Color(0.86f, 0.82f, 0.72f, 1f));
-            SetAnchors(runStatsText.rectTransform, new Vector2(0.790f, 0.25f), new Vector2(0.915f, 0.75f));
+            runProgressText = AddText(topBar, "런 진행", "", 17, TextAnchor.MiddleRight, new Color(0.86f, 0.82f, 0.72f, 1f));
+            runProgressText.resizeTextForBestFit = true;
+            runProgressText.resizeTextMinSize = 12;
+            runProgressText.resizeTextMaxSize = 17;
+            SetAnchors(runProgressText.rectTransform, new Vector2(0.625f, 0.51f), new Vector2(0.915f, 0.80f));
 
-            settingsButton = AddSettingsMenuButton(topBar, "설정 버튼", "설정", 15);
+            runResourcesText = AddText(topBar, "런 자원", "", 16, TextAnchor.MiddleRight, new Color(0.78f, 0.96f, 0.88f, 1f));
+            runResourcesText.resizeTextForBestFit = true;
+            runResourcesText.resizeTextMinSize = 12;
+            runResourcesText.resizeTextMaxSize = 16;
+            SetAnchors(runResourcesText.rectTransform, new Vector2(0.625f, 0.20f), new Vector2(0.915f, 0.49f));
+
+            settingsButton = AddLocalizedSettingsMenuButton(topBar, "설정 버튼", "menu.settings", 15);
             SetAnchors(settingsButton.GetComponent<RectTransform>(), new Vector2(0.927f, 0.210f), new Vector2(0.987f, 0.790f));
             settingsButton.onClick.AddListener(ToggleSettingsPanel);
 
-            subtitleFrame = AddPanel(root, "부제 박스", Color.white, titleBoxSprite);
+            subtitleFrame = AddPanel(topBar, "부제 박스", Color.white, titleBoxSprite);
             Image subtitleFrameImage = subtitleFrame.GetComponent<Image>();
             subtitleFrameImage.type = Image.Type.Simple;
             subtitleFrameImage.color = new Color(1.10f, 1.08f, 1.02f, 1f);
             subtitleFrameImage.raycastTarget = false;
-            SetAnchors(subtitleFrame, PcUiLayoutPolicy.HeaderPromptRoot);
+            SetAnchors(subtitleFrame, PcUiLayoutPolicy.HeaderPrompt);
             subtitleFrame.gameObject.SetActive(false);
 
             subtitleText = AddText(subtitleFrame, "부제", "", 22, TextAnchor.MiddleCenter, new Color(0.90f, 0.98f, 0.96f, 1f));
@@ -635,21 +649,34 @@ namespace ThreeDoorsOfFate.Game
             SetAnchors(subtitleText.rectTransform, new Vector2(0.145f, 0.235f), new Vector2(0.855f, 0.765f));
 
             contentRoot = AddPanel(root, "주요 화면", new Color(1f, 1f, 1f, 0f));
+            contentRoot.GetComponent<Image>().raycastTarget = false;
             SetAnchors(contentRoot, new Vector2(0.04f, 0.11f), new Vector2(0.73f, 0.83f));
 
             logRoot = AddPanel(root, "기록", new Color(1f, 1f, 1f, 0.88f), logPanelFrameSprite);
             SetAnchors(logRoot, PcUiLayoutPolicy.LogPanel);
             logRoot.gameObject.AddComponent<RectMask2D>();
 
-            logTitleRoot = AddPanel(logRoot, "기록 제목 영역", new Color(1f, 1f, 1f, 0f));
+            Sprite logTitleSprite = classConfirmButtonSprite != null
+                ? classConfirmButtonSprite
+                : classBackButtonSprite != null
+                    ? classBackButtonSprite
+                    : statusHintFrameSprite != null
+                        ? statusHintFrameSprite
+                        : eventMessageFrameSprite != null
+                            ? eventMessageFrameSprite
+                            : statusCategoryCardFrameSprite != null
+                                ? statusCategoryCardFrameSprite
+                                : classInfoButtonSprite;
+            logTitleRoot = AddPanel(logRoot, "기록 제목 박스", Color.white, logTitleSprite);
             Image logTitleImage = logTitleRoot.GetComponent<Image>();
-            logTitleImage.raycastTarget = false;
+            logTitleImage.type = Image.Type.Simple;
+            logTitleImage.color = new Color(1.10f, 1.08f, 1.02f, 1f);
             SetAnchors(logTitleRoot, PcUiLayoutPolicy.LogHeading);
 
             Text logTitle = AddText(logTitleRoot, "기록 제목", "진행 기록", 24, TextAnchor.MiddleCenter, Color.white);
-            logTitle.font = titleFont;
             logTitle.fontStyle = FontStyle.Bold;
             logTitle.alignByGeometry = true;
+            logTitle.resizeTextForBestFit = true;
             logTitle.resizeTextMinSize = 17;
             logTitle.resizeTextMaxSize = 24;
             AddTextGlow(logTitle, new Color(0f, 0f, 0f, 0.90f), new Color(0.08f, 0.62f, 0.58f, 0.42f), new Vector2(1.5f, -1.7f));
@@ -722,14 +749,17 @@ namespace ThreeDoorsOfFate.Game
 
         private void ShowMainMenu()
         {
+            HideHowToPlay();
+            HideAchievements();
             HideSettingsPanel();
-            HideAchievementPanel();
+            TryCompleteAbyssCollectorFromSavedCharacters();
             PlayMainMenuMusic();
             phase = GamePhase.MainMenu;
             SetBackground(mainMenuBackground != null ? mainMenuBackground : classSelectBackground);
             ClearContent();
+            AppleGameServicesRuntime.SetAccessPointVisible(true);
             combatLog.Clear();
-            titleText.text = "세 개의 운명의 문";
+            titleText.text = L("app.title");
             subtitleText.text = string.Empty;
             SetSubtitleBoxVisible(false);
             primaryButton.gameObject.SetActive(false);
@@ -747,7 +777,7 @@ namespace ThreeDoorsOfFate.Game
             }
             else
             {
-                Text title = AddText(contentRoot, "메인 타이틀", "Three Doors Of Fate", 70, TextAnchor.MiddleCenter, new Color(1f, 0.90f, 0.68f, 1f));
+                Text title = AddLocalizedText(contentRoot, "메인 타이틀", "app.title", 70, TextAnchor.MiddleCenter, new Color(1f, 0.90f, 0.68f, 1f));
                 title.fontStyle = FontStyle.Bold;
                 AddTextGlow(title, new Color(0f, 0f, 0f, 0.92f), new Color(0.58f, 0.46f, 0.26f, 0.78f), new Vector2(3.4f, -4.0f));
                 SetAnchors(title.rectTransform, new Vector2(0.18f, 0.80f), new Vector2(0.82f, 0.95f));
@@ -759,38 +789,58 @@ namespace ThreeDoorsOfFate.Game
             AddMainMenuEndlessRecordBox();
 
             bool supportsDesktopWindowControls = SupportsDesktopWindowControls(Application.platform);
+            int buttonCount = supportsDesktopWindowControls ? 5 : 4;
 
-            Button startButton = AddMainMenuButton(contentRoot, "게임시작", "게임시작", 30);
-            SetAnchors(
-                startButton.GetComponent<RectTransform>(),
-                supportsDesktopWindowControls ? new Vector2(0.08f, 0.055f) : new Vector2(0.14f, 0.055f),
-                supportsDesktopWindowControls ? new Vector2(0.25f, 0.14f) : new Vector2(0.34f, 0.14f));
+            Button startButton = AddLocalizedMainMenuButton(contentRoot, "게임시작", "menu.start", 30);
+            SetMainMenuButtonPlacement(startButton, 0, buttonCount);
             startButton.onClick.AddListener(ShowClassSelection);
 
-            Button achievementButton = AddMainMenuButton(contentRoot, "업적", "업적", 30);
-            SetAnchors(
-                achievementButton.GetComponent<RectTransform>(),
-                supportsDesktopWindowControls ? new Vector2(0.275f, 0.055f) : new Vector2(0.40f, 0.055f),
-                supportsDesktopWindowControls ? new Vector2(0.445f, 0.14f) : new Vector2(0.60f, 0.14f));
-            achievementButton.onClick.AddListener(ShowAchievementPanel);
+            Button guideButton = AddLocalizedMainMenuButton(contentRoot, "플레이 방법", "menu.howToPlay", 30);
+            SetMainMenuButtonPlacement(guideButton, 1, buttonCount);
+            guideButton.onClick.AddListener(ShowHowToPlay);
 
-            Button optionsButton = AddMainMenuButton(contentRoot, "옵션", "옵션", 30);
-            SetAnchors(
-                optionsButton.GetComponent<RectTransform>(),
-                supportsDesktopWindowControls ? new Vector2(0.47f, 0.055f) : new Vector2(0.66f, 0.055f),
-                supportsDesktopWindowControls ? new Vector2(0.64f, 0.14f) : new Vector2(0.86f, 0.14f));
-            AddButtonIcon(optionsButton, "옵션 톱니", GetSettingsGearSprite(), new Vector2(0.10f, 0.21f), new Vector2(0.225f, 0.71f));
+            Button achievementButton = AddLocalizedMainMenuButton(contentRoot, "업적", "menu.achievements", 30);
+            SetMainMenuButtonPlacement(achievementButton, 2, buttonCount);
+            achievementButton.onClick.AddListener(ShowAchievements);
+
+            Button optionsButton = AddMainMenuIconButton(
+                contentRoot,
+                "설정",
+                "menu.settings",
+                settingsIconSprite,
+                27);
+            SetMainMenuButtonPlacement(optionsButton, 3, buttonCount);
             optionsButton.onClick.AddListener(ShowSettingsPanel);
 
             if (supportsDesktopWindowControls)
             {
-                Button quitButton = AddMainMenuButton(contentRoot, "게임종료", "게임종료", 30);
-                SetAnchors(
-                    quitButton.GetComponent<RectTransform>(),
-                    new Vector2(0.665f, 0.055f),
-                    new Vector2(0.835f, 0.14f));
+                Button quitButton = AddLocalizedMainMenuButton(contentRoot, "게임종료", "menu.quit", 30);
+                SetMainMenuButtonPlacement(quitButton, 4, buttonCount);
                 quitButton.onClick.AddListener(QuitGame);
             }
+        }
+
+        private static Rect GetMainMenuButtonRect(int index, int count)
+        {
+            int safeCount = Mathf.Clamp(count, 1, 5);
+            int safeIndex = Mathf.Clamp(index, 0, safeCount - 1);
+            float width = safeCount == 5 ? 0.16f : safeCount == 4 ? 0.19f : 0.20f;
+            float gap = safeCount == 5 ? 0.025f : safeCount == 4 ? 0.04f : 0.03f;
+            float totalWidth = safeCount * width + (safeCount - 1) * gap;
+            float minX = 0.5f - totalWidth * 0.5f + safeIndex * (width + gap);
+            return new Rect(minX, 0.055f, width, 0.085f);
+        }
+
+        private static void SetMainMenuButtonPlacement(
+            Button button,
+            int index,
+            int count)
+        {
+            Rect rect = GetMainMenuButtonRect(index, count);
+            SetAnchors(
+                button.GetComponent<RectTransform>(),
+                new Vector2(rect.xMin, rect.yMin),
+                new Vector2(rect.xMax, rect.yMax));
         }
 
         private void AddMainMenuCharacter(string name, Sprite firstPose, Sprite secondPose, Vector2 anchorMin, Vector2 anchorMax, float phaseOffset)
@@ -853,150 +903,6 @@ namespace ThreeDoorsOfFate.Game
             SetAnchors(body.rectTransform, new Vector2(0.080f, 0.095f), new Vector2(0.920f, 0.650f));
         }
 
-        private void ShowAchievementPanel()
-        {
-            HideAchievementPanel();
-            HideSettingsPanel();
-            Image overlay = AddImage(root, "업적 오버레이", new Color(0f, 0f, 0f, 0.94f));
-            overlay.raycastTarget = true;
-            Stretch(overlay.rectTransform);
-            achievementOverlay = overlay.rectTransform;
-            achievementOverlay.SetAsLastSibling();
-
-            Sprite windowSprite = statusPanelFrameSprite != null ? statusPanelFrameSprite : panelSprite;
-            RectTransform window = AddPanel(achievementOverlay, "업적 창", Color.white, windowSprite);
-            SetAnchors(window, PcUiLayoutPolicy.AchievementWindow);
-
-            IReadOnlyList<AchievementDefinition> achievements = BuildAchievementDefinitions();
-            int completed = achievements.Count(item => item.Unlocked);
-
-            AddAchievementHeaderBox(achievementOverlay, "업적 제목 박스", "운명에 새겨진 기록", PcUiLayoutPolicy.AchievementHeading, 30);
-            AddAchievementHeaderBox(achievementOverlay, "업적 달성 박스", $"달성 {completed}/{achievements.Count}", PcUiLayoutPolicy.AchievementProgress, 18);
-
-            Button close = AddSettingsMenuButton(achievementOverlay, "업적 닫기", "닫기", 18);
-            SetAnchors(close.GetComponent<RectTransform>(), PcUiLayoutPolicy.AchievementClose);
-            close.onClick.AddListener(HideAchievementPanel);
-
-            for (int i = 0; i < achievements.Count; i += 1)
-            {
-                int row = i / 2;
-                int column = i % 2;
-                float left = column == 0 ? 0.045f : 0.515f;
-                float right = column == 0 ? 0.485f : 0.955f;
-                float top = 0.850f - row * 0.195f;
-                AddAchievementCard(window, achievements[i], new Vector2(left, top - 0.145f), new Vector2(right, top));
-            }
-        }
-
-        private void AddAchievementCard(RectTransform parent, AchievementDefinition achievement, Vector2 min, Vector2 max)
-        {
-            RectTransform card = AddRunStatusContentBox(parent, $"{achievement.Title} 카드", min, max, statusInnerPanelFrameSprite);
-            RectTransform iconBox = AddRunStatusContentBox(card, "업적 아이콘 박스", PcUiLayoutPolicy.AchievementCardIcon, statusItemSlotFrameSprite);
-            Image icon = AddImage(iconBox, "업적 아이콘", achievement.Unlocked ? Color.white : new Color(0.12f, 0.14f, 0.14f, 0.78f));
-            icon.sprite = achievement.Icon != null ? achievement.Icon : cardBackSprite;
-            icon.preserveAspect = true;
-            SetAnchors(icon.rectTransform, new Vector2(0.135f, 0.135f), new Vector2(0.865f, 0.865f));
-
-            RectTransform titleBox = AddRunStatusFlatLabelBox(card, "업적 이름 박스", achievement.Title,
-                new Vector2(PcUiLayoutPolicy.AchievementCardTitle.MinX, PcUiLayoutPolicy.AchievementCardTitle.MinY),
-                new Vector2(PcUiLayoutPolicy.AchievementCardTitle.MaxX, PcUiLayoutPolicy.AchievementCardTitle.MaxY), 18);
-            Text title = titleBox.GetComponentInChildren<Text>();
-            if (title != null)
-            {
-                title.color = achievement.Unlocked ? new Color(1f, 0.92f, 0.74f, 1f) : new Color(0.64f, 0.64f, 0.60f, 1f);
-            }
-
-            RectTransform bodyBox = AddRunStatusContentBox(card, "업적 내용 박스", PcUiLayoutPolicy.AchievementCardBody, statusInnerPanelFrameSprite);
-            Text description = AddText(bodyBox, "업적 설명", achievement.Description, 14, TextAnchor.MiddleLeft, achievement.Unlocked ? new Color(0.90f, 0.87f, 0.80f, 1f) : new Color(0.58f, 0.58f, 0.55f, 1f));
-            description.lineSpacing = 0.92f;
-            description.resizeTextForBestFit = true;
-            description.resizeTextMinSize = 11;
-            description.resizeTextMaxSize = 14;
-            SetAnchors(description.rectTransform, new Vector2(0.070f, 0.140f), new Vector2(0.675f, 0.860f));
-
-            Text state = AddText(bodyBox, "업적 상태", achievement.Unlocked ? "달성 1/1" : "미달성 0/1", 13, TextAnchor.MiddleRight, achievement.Unlocked ? new Color(0.66f, 1f, 0.94f, 1f) : new Color(0.55f, 0.58f, 0.56f, 1f));
-            state.fontStyle = FontStyle.Bold;
-            state.resizeTextForBestFit = true;
-            state.resizeTextMinSize = 10;
-            state.resizeTextMaxSize = 13;
-            SetAnchors(state.rectTransform, new Vector2(0.700f, 0.140f), new Vector2(0.930f, 0.860f));
-        }
-
-        private RectTransform AddAchievementHeaderBox(RectTransform parent, string name, string label, UiNormalizedRect bounds, int fontSize)
-        {
-            return AddRunStatusFlatLabelBox(
-                parent,
-                name,
-                label,
-                new Vector2(bounds.MinX, bounds.MinY),
-                new Vector2(bounds.MaxX, bounds.MaxY),
-                fontSize);
-        }
-
-        private RectTransform AddTopHeaderLabelBox(RectTransform parent, string name, string label, UiNormalizedRect bounds, int fontSize)
-        {
-            RectTransform box = AddPanel(parent, name, Color.white, GetTopHeaderBoxSprite());
-            Image boxImage = box.GetComponent<Image>();
-            boxImage.type = Image.Type.Simple;
-            boxImage.raycastTarget = false;
-            SetAnchors(box, bounds);
-
-            Text text = AddText(box, $"{name} 라벨", label, fontSize, TextAnchor.MiddleCenter, new Color(0.78f, 0.96f, 0.90f, 1f));
-            text.font = titleFont;
-            text.fontStyle = FontStyle.Bold;
-            text.resizeTextForBestFit = true;
-            text.resizeTextMinSize = Mathf.Max(12, fontSize - 8);
-            text.resizeTextMaxSize = fontSize;
-            text.raycastTarget = false;
-            AddTextGlow(text, new Color(0f, 0f, 0f, 0.88f), new Color(0.08f, 0.62f, 0.58f, 0.32f), new Vector2(0.9f, -1.0f));
-            SetAnchors(text.rectTransform, new Vector2(0.145f, 0.235f), new Vector2(0.855f, 0.765f));
-            return box;
-        }
-
-        private IReadOnlyList<AchievementDefinition> BuildAchievementDefinitions()
-        {
-            bool hardUnlocked = PlayerPrefs.GetInt(DifficultyUnlockKey, 0) >= 2;
-            bool endlessSeen = PlayerPrefs.GetInt(EndlessRecordSeenKey, 0) > 0;
-            return new[]
-            {
-                new AchievementDefinition("심연으로 가는 문", "어려움 난이도를 해금하세요.", hardUnlocked, cardBackSprite),
-                new AchievementDefinition("도박사의 진엔딩", "도박사의 숨겨진 결말을 찾으세요.", IsTrueEndingUnlocked(CharacterClass.Gambler), gamblerSelectSprite),
-                new AchievementDefinition("점술가의 진엔딩", "점술가의 숨겨진 결말을 찾으세요.", IsTrueEndingUnlocked(CharacterClass.Oracle), oracleSelectSprite),
-                new AchievementDefinition("추방자의 진엔딩", "추방자의 숨겨진 결말을 찾으세요.", IsTrueEndingUnlocked(CharacterClass.Exile), exileSelectSprite),
-                new AchievementDefinition("도박사의 생존자", SurvivorTitleText, IsSurvivorTitleUnlocked(CharacterClass.Gambler), gamblerSelectSprite),
-                new AchievementDefinition("점술가의 생존자", SurvivorTitleText, IsSurvivorTitleUnlocked(CharacterClass.Oracle), oracleSelectSprite),
-                new AchievementDefinition("추방자의 생존자", SurvivorTitleText, IsSurvivorTitleUnlocked(CharacterClass.Exile), exileSelectSprite),
-                new AchievementDefinition("끝없는 운명", "무한 모드의 기록을 확인하세요.", endlessSeen, cardBackSprite)
-            };
-        }
-
-        private void HideAchievementPanel()
-        {
-            if (achievementOverlay == null)
-            {
-                return;
-            }
-
-            Destroy(achievementOverlay.gameObject);
-            achievementOverlay = null;
-        }
-
-        private sealed class AchievementDefinition
-        {
-            public AchievementDefinition(string title, string description, bool unlocked, Sprite icon)
-            {
-                Title = title;
-                Description = description;
-                Unlocked = unlocked;
-                Icon = icon;
-            }
-
-            public string Title { get; }
-            public string Description { get; }
-            public bool Unlocked { get; }
-            public Sprite Icon { get; }
-        }
-
         private void ToggleSettingsPanel()
         {
             if (settingsOverlay != null)
@@ -1012,23 +918,37 @@ namespace ThreeDoorsOfFate.Game
         {
             if (settingsOverlay == null)
             {
+                koreanLanguageButton = null;
+                englishLanguageButton = null;
                 return;
             }
 
+            PlayGameSfx(GameSfxCue.PanelClose);
             Destroy(settingsOverlay.gameObject);
             settingsOverlay = null;
+            koreanLanguageButton = null;
+            englishLanguageButton = null;
+            if (phase == GamePhase.MainMenu
+                && howToPlayOverlay == null
+                && achievementOverlay == null)
+            {
+                AppleGameServicesRuntime.SetAccessPointVisible(true);
+            }
         }
 
         private void ShowSettingsPanel()
         {
             HideSettingsPanel();
+            AppleGameServicesRuntime.SetAccessPointVisible(false);
+            PlayGameSfx(GameSfxCue.PanelOpen);
+
             Image overlay = AddImage(root, "설정 오버레이", new Color(0f, 0f, 0f, 0.66f));
             overlay.raycastTarget = true;
             Stretch(overlay.rectTransform);
             settingsOverlay = overlay.rectTransform;
             settingsOverlay.SetAsLastSibling();
 
-            Button overlayButton = AddSfxButton(overlay.gameObject, GameSfxCue.None);
+            Button overlayButton = AddSfxButton(overlay.gameObject, GameSfxCue.UiBack);
             overlayButton.targetGraphic = overlay;
             overlayButton.colors = CreateFixedButtonColors(overlay.color);
             overlayButton.onClick.AddListener(HideSettingsPanel);
@@ -1036,51 +956,81 @@ namespace ThreeDoorsOfFate.Game
             Image modal = AddImage(settingsOverlay, "설정창", Color.white);
             modal.sprite = mainOptionsPanelSprite != null ? mainOptionsPanelSprite : settingsPanelSprite != null ? settingsPanelSprite : panelSprite;
             modal.raycastTarget = true;
-            SetAnchors(modal.rectTransform, new Vector2(0.22f, 0.15f), new Vector2(0.78f, 0.86f));
+            SetAnchors(modal.rectTransform, new Vector2(0.20f, 0.08f), new Vector2(0.80f, 0.92f));
 
             Button modalClickBlocker = AddSfxButton(modal.gameObject, GameSfxCue.None);
             modalClickBlocker.targetGraphic = modal;
             modalClickBlocker.colors = CreateFixedButtonColors(Color.white);
 
-            Text title = AddText(modal.rectTransform, "설정 제목", "설정", 42, TextAnchor.MiddleCenter, new Color(1f, 0.91f, 0.72f, 1f));
+            Text title = AddLocalizedText(modal.rectTransform, "설정 제목", "menu.settings", 42, TextAnchor.MiddleCenter, new Color(1f, 0.91f, 0.72f, 1f));
             title.fontStyle = FontStyle.Bold;
             AddTextGlow(title, new Color(0f, 0f, 0f, 0.88f), new Color(0.60f, 0.48f, 0.28f, 0.70f), new Vector2(2.4f, -2.8f));
-            SetAnchors(title.rectTransform, new Vector2(0.22f, 0.80f), new Vector2(0.78f, 0.93f));
+            SetAnchors(title.rectTransform, new Vector2(0.22f, 0.84f), new Vector2(0.78f, 0.95f));
 
             bool supportsDesktopWindowControls = SupportsDesktopWindowControls(Application.platform);
             bool showsPrivacyOptions =
                 !supportsDesktopWindowControls && MobileAdsService.IsPrivacyOptionsRequired;
+
+            Text languageLabel = AddLocalizedText(
+                modal.rectTransform,
+                "언어 제목",
+                "settings.language",
+                23,
+                TextAnchor.MiddleCenter,
+                new Color(0.82f, 0.98f, 0.94f, 1f));
+            languageLabel.fontStyle = FontStyle.Bold;
+            SetAnchors(languageLabel.rectTransform, new Vector2(0.08f, 0.68f), new Vector2(0.30f, 0.78f));
+
+            koreanLanguageButton = AddLocalizedOptionToggleButton(
+                modal.rectTransform,
+                "한국어 선택",
+                "settings.korean",
+                20);
+            SetAnchors(koreanLanguageButton.GetComponent<RectTransform>(), new Vector2(0.32f, 0.68f), new Vector2(0.61f, 0.78f));
+            koreanLanguageButton.onClick.AddListener(
+                () => SetGameLanguage(GameLanguage.Korean));
+
+            englishLanguageButton = AddLocalizedOptionToggleButton(
+                modal.rectTransform,
+                "영어 선택",
+                "settings.english",
+                20);
+            SetAnchors(englishLanguageButton.GetComponent<RectTransform>(), new Vector2(0.63f, 0.68f), new Vector2(0.92f, 0.78f));
+            englishLanguageButton.onClick.AddListener(
+                () => SetGameLanguage(GameLanguage.English));
+            UpdateLanguageSelectionState();
+
             if (supportsDesktopWindowControls)
             {
-                Text displayLabel = AddText(modal.rectTransform, "화면 모드 제목", "화면 모드", 24, TextAnchor.MiddleCenter, new Color(0.82f, 0.98f, 0.94f, 1f));
+                Text displayLabel = AddLocalizedText(modal.rectTransform, "화면 모드 제목", "settings.displayMode", 22, TextAnchor.MiddleCenter, new Color(0.82f, 0.98f, 0.94f, 1f));
                 displayLabel.fontStyle = FontStyle.Bold;
-                SetAnchors(displayLabel.rectTransform, new Vector2(0.20f, 0.66f), new Vector2(0.80f, 0.74f));
+                SetAnchors(displayLabel.rectTransform, new Vector2(0.08f, 0.54f), new Vector2(0.30f, 0.64f));
 
-                Button fullscreenButton = AddOptionToggleButton(modal.rectTransform, "전체화면", "전체화면", 22);
-                SetAnchors(fullscreenButton.GetComponent<RectTransform>(), new Vector2(0.16f, 0.54f), new Vector2(0.42f, 0.65f));
+                Button fullscreenButton = AddLocalizedOptionToggleButton(modal.rectTransform, "전체화면", "settings.fullscreen", 20);
+                SetAnchors(fullscreenButton.GetComponent<RectTransform>(), new Vector2(0.32f, 0.54f), new Vector2(0.61f, 0.64f));
                 fullscreenButton.onClick.AddListener(SetFullscreenMode);
 
-                Button windowedButton = AddOptionToggleButton(modal.rectTransform, "창모드", "창모드", 22);
-                SetAnchors(windowedButton.GetComponent<RectTransform>(), new Vector2(0.58f, 0.54f), new Vector2(0.84f, 0.65f));
+                Button windowedButton = AddLocalizedOptionToggleButton(modal.rectTransform, "창모드", "settings.windowed", 20);
+                SetAnchors(windowedButton.GetComponent<RectTransform>(), new Vector2(0.63f, 0.54f), new Vector2(0.92f, 0.64f));
                 windowedButton.onClick.AddListener(SetWindowedMode);
             }
 
-            Text volumeLabel = AddText(modal.rectTransform, "소리 제목", "소리", 24, TextAnchor.MiddleCenter, new Color(0.82f, 0.98f, 0.94f, 1f));
+            Text volumeLabel = AddLocalizedText(modal.rectTransform, "소리 제목", "settings.volume", 22, TextAnchor.MiddleCenter, new Color(0.82f, 0.98f, 0.94f, 1f));
             volumeLabel.fontStyle = FontStyle.Bold;
             SetAnchors(
                 volumeLabel.rectTransform,
-                supportsDesktopWindowControls ? new Vector2(0.20f, 0.43f) : new Vector2(0.20f, 0.58f),
-                supportsDesktopWindowControls ? new Vector2(0.80f, 0.51f) : new Vector2(0.80f, 0.66f));
+                supportsDesktopWindowControls ? new Vector2(0.08f, 0.39f) : new Vector2(0.08f, 0.51f),
+                supportsDesktopWindowControls ? new Vector2(0.30f, 0.49f) : new Vector2(0.30f, 0.61f));
 
             Slider volumeSlider = AddVolumeSlider(modal.rectTransform);
             SetAnchors(
                 volumeSlider.GetComponent<RectTransform>(),
-                supportsDesktopWindowControls ? new Vector2(0.20f, 0.33f) : new Vector2(0.20f, 0.47f),
-                supportsDesktopWindowControls ? new Vector2(0.80f, 0.42f) : new Vector2(0.80f, 0.56f));
+                supportsDesktopWindowControls ? new Vector2(0.32f, 0.39f) : new Vector2(0.32f, 0.51f),
+                supportsDesktopWindowControls ? new Vector2(0.92f, 0.49f) : new Vector2(0.92f, 0.61f));
 
             AddHardRunSaveLoadControls(modal.rectTransform);
 
-            Button continueButton = AddSettingsMenuButton(modal.rectTransform, "설정 닫기", "닫기", 20);
+            Button continueButton = AddLocalizedSettingsMenuButton(modal.rectTransform, "설정 닫기", "common.close", 20);
             SetAnchors(
                 continueButton.GetComponent<RectTransform>(),
                 supportsDesktopWindowControls
@@ -1097,10 +1047,10 @@ namespace ThreeDoorsOfFate.Game
 
             if (showsPrivacyOptions)
             {
-                Button privacyButton = AddSettingsMenuButton(
+                Button privacyButton = AddLocalizedSettingsMenuButton(
                     modal.rectTransform,
                     "개인정보 선택",
-                    "개인정보",
+                    "settings.privacy",
                     20);
                 SetAnchors(
                     privacyButton.GetComponent<RectTransform>(),
@@ -1109,7 +1059,7 @@ namespace ThreeDoorsOfFate.Game
                 privacyButton.onClick.AddListener(MobileAdsService.ShowPrivacyOptions);
             }
 
-            Button titleButton = AddSettingsMenuButton(modal.rectTransform, "처음으로", "처음으로", 20);
+            Button titleButton = AddLocalizedSettingsMenuButton(modal.rectTransform, "처음으로", "settings.returnToTitle", 20);
             SetAnchors(
                 titleButton.GetComponent<RectTransform>(),
                 supportsDesktopWindowControls
@@ -1126,7 +1076,7 @@ namespace ThreeDoorsOfFate.Game
 
             if (supportsDesktopWindowControls)
             {
-                Button quitButton = AddSettingsMenuButton(modal.rectTransform, "게임 종료", "게임 종료", 20);
+                Button quitButton = AddLocalizedSettingsMenuButton(modal.rectTransform, "게임 종료", "menu.quit", 20);
                 SetAnchors(quitButton.GetComponent<RectTransform>(), new Vector2(0.66f, 0.13f), new Vector2(0.88f, 0.24f));
                 quitButton.onClick.AddListener(QuitGame);
             }
@@ -1137,13 +1087,6 @@ namespace ThreeDoorsOfFate.Game
             AutoSaveRunIfAllowed();
             HideSettingsPanel();
             ShowMainMenu();
-        }
-
-        private void RunAfterInterstitial(Action continuation)
-        {
-            MobileAdsService.RunAfterInterstitial(
-                continuation,
-                phase == GamePhase.Combat);
         }
 
         private void SetLogVisible(bool visible)
@@ -1220,7 +1163,22 @@ namespace ThreeDoorsOfFate.Game
                 detailSfxSource.spatialBlend = 0f;
             }
 
-            EnsureGameSfxSources();
+            if (selectedCombatSfxSource == null)
+            {
+                selectedCombatSfxSource = gameObject.AddComponent<AudioSource>();
+                selectedCombatSfxSource.playOnAwake = false;
+                selectedCombatSfxSource.loop = false;
+                selectedCombatSfxSource.spatialBlend = 0f;
+            }
+
+            if (selectedUiSfxSource == null)
+            {
+                selectedUiSfxSource = gameObject.AddComponent<AudioSource>();
+                selectedUiSfxSource.playOnAwake = false;
+                selectedUiSfxSource.loop = false;
+                selectedUiSfxSource.spatialBlend = 0f;
+            }
+
             ApplyAudioVolumes();
         }
 
@@ -1233,12 +1191,22 @@ namespace ThreeDoorsOfFate.Game
 
             if (impactSfxSource != null)
             {
-                impactSfxSource.volume = sfxVolume;
+                impactSfxSource.volume = EffectiveSfxVolume;
             }
 
             if (detailSfxSource != null)
             {
-                detailSfxSource.volume = sfxVolume;
+                detailSfxSource.volume = EffectiveSfxVolume;
+            }
+
+            if (selectedCombatSfxSource != null)
+            {
+                selectedCombatSfxSource.volume = EffectiveSfxVolume;
+            }
+
+            if (selectedUiSfxSource != null)
+            {
+                selectedUiSfxSource.volume = EffectiveSfxVolume;
             }
 
             ApplyGameSfxVolumes();
@@ -1292,88 +1260,39 @@ namespace ThreeDoorsOfFate.Game
             ApplyAudioVolumes();
         }
 
-        private void PlayOneShot(AudioSource source, AudioClip clip, float volumeScale = 1f, float pitchJitter = 0f)
+        private void PlayResolvedCardCombatSfx(CardData card, int appliedDamage, int grantedBlock)
         {
-            if (source == null || clip == null)
+            if (!SoundEffectsEnabled)
             {
                 return;
             }
 
-            source.pitch = pitchJitter > 0f ? UnityEngine.Random.Range(1f - pitchJitter, 1f + pitchJitter) : 1f;
-            source.PlayOneShot(clip, Mathf.Clamp01(volumeScale));
-        }
-
-        private void PlayVariedOneShot(AudioSource source, List<AudioClip> clips, float volumeScale = 1f, float pitchJitter = 0.035f)
-        {
-            if (source == null || clips == null || clips.Count == 0)
+            SelectedCombatSfxCue eligibleCue = card?.Category switch
             {
-                return;
-            }
-
-            PlayOneShot(source, clips[UnityEngine.Random.Range(0, clips.Count)], volumeScale, pitchJitter);
-        }
-
-        private void PlayCombatFeedbackSfx(string message)
-        {
-            ImpactSfxCue cue = ImpactSfxCueResolver.FromFeedbackMessage(message);
-            if (cue == ImpactSfxCue.None)
-            {
-                return;
-            }
-
-            if (cue == lastImpactSfxCue && Time.unscaledTime - lastImpactSfxTime < 0.09f)
+                CardCategory.Attack => SelectedCombatSfxCue.Attack,
+                CardCategory.Defense => SelectedCombatSfxCue.Defense,
+                _ => SelectedCombatSfxCue.None
+            };
+            SelectedCombatSfxCue resolvedCue = SelectedCombatSfxPolicy.Resolve(
+                eligibleCue,
+                appliedDamage,
+                grantedBlock);
+            if (resolvedCue == SelectedCombatSfxCue.None)
             {
                 return;
             }
 
             EnsureAudioSources();
-            lastImpactSfxCue = cue;
-            lastImpactSfxTime = Time.unscaledTime;
-
-            if (ImpactSfxCueResolver.UsesPlateLayer(cue))
+            AudioClip clip = resolvedCue == SelectedCombatSfxCue.Attack
+                ? selectedAttackSfxClip
+                : selectedDefenseSfxClip;
+            if (clip == null)
             {
-                PlayOneShot(detailSfxSource, plateSettleClip, 0.58f, 0.018f);
+                return;
             }
 
-            switch (cue)
-            {
-                case ImpactSfxCue.Attack:
-                    PlayVariedOneShot(impactSfxSource, attackImpactClips, 0.92f, 0.045f);
-                    break;
-                case ImpactSfxCue.Critical:
-                    PlayOneShot(impactSfxSource, criticalImpactClip, 0.98f, 0.03f);
-                    break;
-                case ImpactSfxCue.Defense:
-                    PlayVariedOneShot(impactSfxSource, defenseImpactClips, 0.88f, 0.035f);
-                    break;
-                case ImpactSfxCue.Blocked:
-                    PlayVariedOneShot(impactSfxSource, blockedImpactClips, 0.92f, 0.03f);
-                    break;
-                case ImpactSfxCue.Prophecy:
-                    PlayOneShot(impactSfxSource, prophecyDetailClip, 0.78f, 0.025f);
-                    break;
-                case ImpactSfxCue.Trait:
-                    PlayOneShot(impactSfxSource, traitDetailClip, 0.78f, 0.025f);
-                    break;
-                case ImpactSfxCue.Combo:
-                    PlayOneShot(impactSfxSource, comboDetailClip, 0.82f, 0.02f);
-                    break;
-                case ImpactSfxCue.Curse:
-                    PlayOneShot(impactSfxSource, curseDetailClip, 0.84f, 0.018f);
-                    break;
-            }
-        }
-
-        private void PlayBossStartSfx()
-        {
-            EnsureAudioSources();
-            PlayOneShot(impactSfxSource, bossStartImpactClip, 0.90f, 0f);
-        }
-
-        private void PlayBossVictorySfx()
-        {
-            EnsureAudioSources();
-            PlayOneShot(impactSfxSource, bossVictoryImpactClip, 0.92f, 0f);
+            selectedCombatSfxSource.pitch = 1f;
+            selectedCombatSfxSource.PlayOneShot(clip, 1f);
         }
 
         private void ShowClassSelection()
@@ -1385,8 +1304,10 @@ namespace ThreeDoorsOfFate.Game
             SetBackground(classSelectBackground);
             ClearContent();
             combatLog.Clear();
-            titleText.text = "세 개의 운명의 문";
-            subtitleText.text = $"첫 문 앞에 설 운명을 선택하세요 - {GetDifficultyName(currentDifficulty)}";
+            titleText.text = L("app.title");
+            subtitleText.text = LF(
+                "classSelect.prompt",
+                GetDifficultyName(currentDifficulty));
             primaryButton.gameObject.SetActive(false);
 
             topBar.gameObject.SetActive(false);
@@ -1504,9 +1425,9 @@ namespace ThreeDoorsOfFate.Game
         {
             return difficulty switch
             {
-                RunDifficulty.Normal => "보통",
-                RunDifficulty.Hard => "어려움",
-                _ => "쉬움"
+                RunDifficulty.Normal => L("difficulty.normal.name"),
+                RunDifficulty.Hard => L("difficulty.hard.name"),
+                _ => L("difficulty.easy.name")
             };
         }
 
@@ -1650,13 +1571,22 @@ namespace ThreeDoorsOfFate.Game
             nameText.fontStyle = FontStyle.Bold;
             nameText.alignByGeometry = true;
             nameText.raycastTarget = false;
+            nameText.resizeTextForBestFit = true;
+            nameText.resizeTextMinSize = 18;
+            nameText.resizeTextMaxSize = 28;
             AddTextGlow(nameText, new Color(0.01f, 0.008f, 0.006f, 0.94f), new Color(0.72f, 0.56f, 0.30f, 0.72f), new Vector2(1.5f, -1.7f));
-            SetAnchors(nameText.rectTransform, new Vector2(0.150f, 0.245f), new Vector2(0.850f, 0.755f));
+            SetAnchors(
+                nameText.rectTransform,
+                new Vector2(0.120f, 0.120f),
+                new Vector2(0.880f, 0.880f));
             return labelBox;
         }
 
         private void ShowClassDetail(CharacterClass characterClass)
         {
+            selectedClass = characterClass;
+            LoadDiscoveredRunItemsForSelectedClass();
+            LoadEquippedRunItemsForSelectedClass();
             ClassProfile profile = GetClassProfile(characterClass);
             RectTransform detailPanel = CreateClassDetailLayout(characterClass, profile, $"{profile.Name} 세계관", profile.Tagline);
             RectTransform detailTextRoot = AddClassDetailStoneTextRoot(detailPanel, "세계관 텍스트 안전영역");
@@ -1692,11 +1622,19 @@ namespace ThreeDoorsOfFate.Game
             SetAnchors(actionBar, new Vector2(0.110f, 0.000f), new Vector2(0.890f, 0.142f));
 
             Button backButton = AddClassDetailActionButton(actionBar, "뒤로", "다시 선택", 18, classBackButtonSprite);
-            SetAnchors(backButton.GetComponent<RectTransform>(), new Vector2(0.055f, 0.120f), new Vector2(0.350f, 0.880f));
+            SetAnchors(backButton.GetComponent<RectTransform>(), new Vector2(0.015f, 0.120f), new Vector2(0.295f, 0.880f));
             backButton.onClick.AddListener(ShowClassSelection);
 
-            Button confirmButton = AddClassDetailActionButton(actionBar, "캐릭터 확정", "캐릭터 확정", 18, classConfirmButtonSprite);
-            SetAnchors(confirmButton.GetComponent<RectTransform>(), new Vector2(0.650f, 0.120f), new Vector2(0.945f, 0.880f));
+            AddRewardedRelicAction(actionBar, characterClass);
+
+            Button confirmButton = AddClassDetailActionButton(
+                actionBar,
+                "캐릭터 확정",
+                "캐릭터 확정",
+                18,
+                classConfirmButtonSprite,
+                GameSfxCue.ImportantConfirm);
+            SetAnchors(confirmButton.GetComponent<RectTransform>(), new Vector2(0.705f, 0.120f), new Vector2(0.985f, 0.880f));
             confirmButton.onClick.AddListener(() => StartRun(characterClass));
 
             primaryButton.gameObject.SetActive(false);
@@ -1743,7 +1681,12 @@ namespace ThreeDoorsOfFate.Game
             titleText.text = profile.Name;
             subtitleText.text = string.Empty;
 
-            AddTopHeaderLabelBox(contentRoot, "직업 한줄 설명", taglineText, PcUiLayoutPolicy.ClassDetailTagline, 22);
+            AddTopHeaderLabelBox(
+                contentRoot,
+                "직업 한줄 설명",
+                taglineText,
+                PcUiLayoutPolicy.ClassDetailTagline,
+                22);
 
             Sprite classArtSprite = statusSectionTallFrameSprite != null
                 ? statusSectionTallFrameSprite
@@ -1783,7 +1726,13 @@ namespace ThreeDoorsOfFate.Game
             return AddPanel(parent, "하단 선택 버튼 컨테이너", new Color(1f, 1f, 1f, 0f));
         }
 
-        private Button AddClassDetailActionButton(RectTransform parent, string name, string label, int fontSize, Sprite spriteOverride = null)
+        private Button AddClassDetailActionButton(
+            RectTransform parent,
+            string name,
+            string label,
+            int fontSize,
+            Sprite spriteOverride = null,
+            GameSfxCue cue = GameSfxCue.UiAccept)
         {
             Sprite actionButtonSprite = spriteOverride != null ? spriteOverride : GetClassDetailActionButtonSprite();
             RectTransform buttonRoot = AddPanel(parent, name, Color.white, actionButtonSprite);
@@ -1792,7 +1741,7 @@ namespace ThreeDoorsOfFate.Game
             image.color = new Color(1.10f, 1.08f, 1.02f, 1f);
             image.raycastTarget = true;
 
-            Button button = AddSfxButton(buttonRoot.gameObject);
+            Button button = AddSfxButton(buttonRoot.gameObject, cue);
             button.targetGraphic = image;
             button.colors = CreateButtonColors();
 
@@ -1942,7 +1891,12 @@ namespace ThreeDoorsOfFate.Game
             return box;
         }
 
-        private Button AddShopActionButton(RectTransform parent, string name, string label, int fontSize)
+        private Button AddShopActionButton(
+            RectTransform parent,
+            string name,
+            string label,
+            int fontSize,
+            GameSfxCue cue = GameSfxCue.UiAccept)
         {
             Sprite buttonSprite = GetShopButtonSprite();
             RectTransform buttonRoot = AddPanel(parent, name, Color.white, buttonSprite);
@@ -1951,7 +1905,7 @@ namespace ThreeDoorsOfFate.Game
             image.color = new Color(1.10f, 1.08f, 1.02f, 1f);
             image.raycastTarget = true;
 
-            Button button = AddSfxButton(buttonRoot.gameObject);
+            Button button = AddSfxButton(buttonRoot.gameObject, cue);
             button.targetGraphic = image;
             button.colors = CreateButtonColors();
 
@@ -2047,7 +2001,9 @@ namespace ThreeDoorsOfFate.Game
         private void StartRun(CharacterClass characterClass)
         {
             EnsureSelectedDifficultyIsUnlocked();
+            PlayGameSfx(GameSfxCue.RunStart);
             selectedClass = characterClass;
+            newlyCompletedAchievementNames.Clear();
             playerMaxHealth = characterClass switch
             {
                 CharacterClass.Oracle => 58,
@@ -2091,7 +2047,8 @@ namespace ThreeDoorsOfFate.Game
             SetLogVisible(true);
             SetAnchors(contentRoot, new Vector2(0.04f, 0.11f), new Vector2(0.73f, 0.83f));
 
-            titleText.text = "세 개의 운명의 문";
+            titleText.text = L("app.title");
+            BindLocalizedText(titleText, "app.title");
             AddLog($"{GetClassName(selectedClass)}의 {GetDifficultyName(currentDifficulty)} 런을 시작했습니다.");
             AddLog(GetDifficultyDescription(currentDifficulty));
             AddLog(equippedRunItemIds.Count > 0
@@ -2211,11 +2168,17 @@ namespace ThreeDoorsOfFate.Game
                 SetDefaultContentRootPlacement();
             }
 
-            subtitleText.text = bossDoorReady
-                ? endlessModeActive ? "심연의 고리대금업자가 다시 깨어났습니다" : "마지막 문이 깨어났습니다"
+            string subtitleKey = bossDoorReady
+                ? endlessModeActive
+                    ? "doorSelection.subtitle.endlessBoss"
+                    : "doorSelection.subtitle.finalBoss"
                 : ShouldForceCombatDoorOptions()
-                    ? "동굴이 전투를 요구합니다"
-                    : endlessModeActive ? "무한 기록을 향해 더 깊은 문을 선택하세요" : "세 개의 문 중 하나를 선택하세요";
+                    ? "doorSelection.subtitle.forcedCombat"
+                    : endlessModeActive
+                        ? "doorSelection.subtitle.endless"
+                        : "doorSelection.subtitle.default";
+            subtitleText.text = L(subtitleKey);
+            BindLocalizedText(subtitleText, subtitleKey);
             SetSubtitleBoxVisible(true);
 
             List<DoorOption> options = bossDoorReady
@@ -2244,7 +2207,7 @@ namespace ThreeDoorsOfFate.Game
                 Image hitArea = card.GetComponent<Image>();
                 hitArea.color = new Color(1f, 1f, 1f, 0f);
                 hitArea.raycastTarget = true;
-                Button cardButton = AddSfxButton(card.gameObject);
+                Button cardButton = AddSfxButton(card.gameObject, GameSfxCue.ImportantConfirm);
                 cardButton.targetGraphic = hitArea;
                 cardButton.transition = Selectable.Transition.None;
                 cardButton.onClick.AddListener(() => ResolveDoor(option));
@@ -2287,14 +2250,25 @@ namespace ThreeDoorsOfFate.Game
                     17,
                     Color.white);
 
-                Text hintText = AddText(card, "힌트", option.Hint, 12, TextAnchor.MiddleCenter, new Color(0.76f, 1.0f, 0.93f, 1f));
-                hintText.resizeTextForBestFit = false;
-                hintText.resizeTextMinSize = 8;
-                hintText.resizeTextMaxSize = 12;
-                hintText.lineSpacing = 0.90f;
-                AddTextGlow(hintText, new Color(0f, 0f, 0f, 0.82f), new Color(0.04f, 0.38f, 0.35f, 0.34f), new Vector2(1.0f, -1.2f));
+                RectTransform hintSafeArea = AddPanel(
+                    card,
+                    "문 설명 안전영역",
+                    new Color(1f, 1f, 1f, 0f));
+                hintSafeArea.GetComponent<Image>().raycastTarget = false;
+                hintSafeArea.gameObject.AddComponent<RectMask2D>();
+                SetAnchors(
+                    hintSafeArea,
+                    PcUiLayoutPolicy.DoorHintSafe);
+
+                Text hintText = AddText(hintSafeArea, "힌트", option.Hint, 12, TextAnchor.UpperCenter, new Color(0.76f, 1.0f, 0.93f, 1f));
                 hintText.resizeTextForBestFit = true;
-                SetAnchors(hintText.rectTransform, PcUiLayoutPolicy.DoorHintSafe);
+                hintText.resizeTextMinSize = 9;
+                hintText.resizeTextMaxSize = 12;
+                hintText.horizontalOverflow = HorizontalWrapMode.Wrap;
+                hintText.verticalOverflow = VerticalWrapMode.Truncate;
+                hintText.lineSpacing = 0.88f;
+                AddTextGlow(hintText, new Color(0f, 0f, 0f, 0.82f), new Color(0.04f, 0.38f, 0.35f, 0.34f), new Vector2(1.0f, -1.2f));
+                SetAnchors(hintText.rectTransform, new Vector2(0.035f, 0.075f), new Vector2(0.965f, 0.925f));
 
                 Button chooseButton = AddDoorChoiceButton(
                     card,
@@ -2359,7 +2333,7 @@ namespace ThreeDoorsOfFate.Game
             Image image = buttonRoot.GetComponent<Image>();
             image.raycastTarget = true;
 
-            Button button = AddSfxButton(buttonRoot.gameObject);
+            Button button = AddSfxButton(buttonRoot.gameObject, GameSfxCue.ImportantConfirm);
             button.targetGraphic = image;
             button.colors = CreateButtonColors();
             return button;
@@ -2380,19 +2354,6 @@ namespace ThreeDoorsOfFate.Game
                                 : buttonIdleSprite;
         }
 
-        private Sprite GetTopHeaderBoxSprite()
-        {
-            return classBackButtonSprite != null
-                ? classBackButtonSprite
-                : classConfirmButtonSprite != null
-                    ? classConfirmButtonSprite
-                    : statusHintFrameSprite != null
-                        ? statusHintFrameSprite
-                        : classInfoButtonSprite != null
-                            ? classInfoButtonSprite
-                            : buttonIdleSprite;
-        }
-
         private void RenderBossDoorOption(DoorOption option)
         {
             RectTransform bossRoot = AddPanel(contentRoot, "보스 문 중앙 화면", new Color(1f, 1f, 1f, 0f));
@@ -2411,7 +2372,7 @@ namespace ThreeDoorsOfFate.Game
             HoverFloatAnimator hoverAnimator = bossDoor.gameObject.AddComponent<HoverFloatAnimator>();
             hoverAnimator.Configure(1.018f, 0.985f, 0f, 4f, 0.08f);
 
-            Button doorButton = AddSfxButton(bossDoor.gameObject);
+            Button doorButton = AddSfxButton(bossDoor.gameObject, GameSfxCue.ImportantConfirm);
             doorButton.targetGraphic = hitImage;
             doorButton.transition = Selectable.Transition.None;
             doorButton.onClick.AddListener(() => ResolveDoor(option));
@@ -2529,35 +2490,51 @@ namespace ThreeDoorsOfFate.Game
                 new Vector2(0.645f, 0.995f),
                 30);
 
-            RectTransform statusWindow = AddPanel(runStatusMainPanel, "상태 확인 창", Color.white, modalSprite);
+            RectTransform outerFrame = AddPanel(
+                runStatusMainPanel,
+                "상태 확인 외곽 프레임",
+                Color.white,
+                modalSprite);
+            outerFrame.GetComponent<Image>().raycastTarget = false;
+            SetAnchors(
+                outerFrame,
+                new Vector2(0.025f, 0.075f),
+                new Vector2(0.975f, 0.875f));
+
+            RectTransform statusWindow = AddPanel(
+                runStatusMainPanel,
+                "상태 확인 창",
+                new Color(1f, 1f, 1f, 0f));
             SetAnchors(statusWindow, PcUiLayoutPolicy.StatusModalSafe);
 
             AddRunItemEquipmentColumn(statusWindow);
 
             AddRunStatusCard(
                 statusWindow,
-                "카드 시너지 조합법",
+                L("runStatus.section.cardSynergies"),
                 BuildCombinationOverviewText(),
                 PcUiLayoutPolicy.StatusSynergyCard,
-                () => ShowRunStatusDetail("카드 시너지 조합법", BuildCombinationStatusText()));
+                () => ShowRunStatusDetail(L("runStatus.section.cardSynergies"), BuildCombinationStatusText()));
             AddRunStatusCard(
                 statusWindow,
-                "보유 카드",
+                L("runStatus.section.ownedCards"),
                 BuildDeckOverviewCompactText(),
                 PcUiLayoutPolicy.StatusDeckCard,
-                () => ShowRunStatusDetail($"보유 카드 {deck.Count}/{GetMaxDeckSize()}장", $"{BuildDeckOverviewText()}\n\n{BuildDeckListText()}"));
+                () => ShowRunStatusDetail(
+                    LF("runStatus.ownedCardsCount", deck.Count, GetMaxDeckSize()),
+                    $"{BuildDeckOverviewText()}\n\n{BuildDeckListText()}"));
             AddRunStatusCard(
                 statusWindow,
-                "전투 중 각성 요소",
+                L("runStatus.section.combatAwakenings"),
                 BuildCombatAwakeningSummaryText(),
                 PcUiLayoutPolicy.StatusAwakeningCard,
-                () => ShowRunStatusDetail("전투 중 각성 요소", BuildCombatAwakeningText()));
+                () => ShowRunStatusDetail(L("runStatus.section.combatAwakenings"), BuildCombatAwakeningText()));
             AddRunStatusCard(
                 statusWindow,
-                "캐릭터 특성",
+                L("runStatus.section.characterTraits"),
                 BuildCharacterTraitSummaryText(),
                 PcUiLayoutPolicy.StatusTraitsCard,
-                () => ShowRunStatusDetail("캐릭터 특성", BuildCharacterTraitText()));
+                () => ShowRunStatusDetail(L("runStatus.section.characterTraits"), BuildCharacterTraitText()));
         }
 
         private void RefreshRunStatusMainPanel()
@@ -2644,7 +2621,6 @@ namespace ThreeDoorsOfFate.Game
             SetAnchors(labelBox, min, max);
 
             Text text = AddText(labelBox, $"{name} 라벨", label, fontSize, TextAnchor.MiddleCenter, new Color(1f, 0.92f, 0.76f, 1f));
-            text.font = titleFont;
             text.fontStyle = FontStyle.Bold;
             text.resizeTextForBestFit = false;
             text.resizeTextMinSize = Mathf.Max(14, fontSize - 10);
@@ -2652,6 +2628,110 @@ namespace ThreeDoorsOfFate.Game
             AddTextGlow(text, new Color(0f, 0f, 0f, 0.90f), new Color(0.08f, 0.62f, 0.58f, 0.36f), new Vector2(1.0f, -1.1f));
             SetAnchors(text.rectTransform, new Vector2(0.185f, 0.260f), new Vector2(0.815f, 0.740f));
             return labelBox;
+        }
+
+        private RectTransform AddRunStatusContentBox(
+            RectTransform parent,
+            string name,
+            Vector2 min,
+            Vector2 max,
+            Sprite frameSprite = null)
+        {
+            Image image = AddImage(parent, name, new Color(0.018f, 0.024f, 0.028f, 0.985f));
+            RectTransform box = image.rectTransform;
+            SetAnchors(box, min, max);
+            image.raycastTarget = false;
+
+            Sprite resolvedFrameSprite = frameSprite != null
+                ? frameSprite
+                : statusInnerPanelFrameSprite;
+            if (resolvedFrameSprite != null)
+            {
+                Image generatedFrame = AddImage(box, "생성 투명 프레임", Color.white);
+                generatedFrame.sprite = resolvedFrameSprite;
+                generatedFrame.type = Image.Type.Sliced;
+                generatedFrame.raycastTarget = false;
+                Stretch(generatedFrame.rectTransform);
+                return box;
+            }
+
+            image.color = new Color(0.58f, 0.43f, 0.20f, 0.96f);
+            Image innerBorderImage = AddImage(box, "내용 내부 테두리", new Color(0.035f, 0.42f, 0.39f, 0.96f));
+            innerBorderImage.raycastTarget = false;
+            SetAnchors(innerBorderImage.rectTransform, new Vector2(0.006f, 0.010f), new Vector2(0.994f, 0.990f));
+
+            Image stoneBackground = AddImage(box, "내용 암석 배경", new Color(0.018f, 0.024f, 0.028f, 0.985f));
+            stoneBackground.raycastTarget = false;
+            SetAnchors(stoneBackground.rectTransform, new Vector2(0.014f, 0.024f), new Vector2(0.986f, 0.976f));
+            return box;
+        }
+
+        private RectTransform AddRunStatusContentBox(
+            RectTransform parent,
+            string name,
+            UiNormalizedRect bounds,
+            Sprite frameSprite = null)
+        {
+            return AddRunStatusContentBox(
+                parent,
+                name,
+                new Vector2(bounds.MinX, bounds.MinY),
+                new Vector2(bounds.MaxX, bounds.MaxY),
+                frameSprite);
+        }
+
+        private RectTransform AddRunStatusFlatLabelBox(
+            RectTransform parent,
+            string name,
+            string label,
+            Vector2 min,
+            Vector2 max,
+            int fontSize)
+        {
+            RectTransform labelBox = AddRunStatusContentBox(
+                parent,
+                name,
+                min,
+                max,
+                statusInnerHeaderFrameSprite);
+            Text text = AddText(labelBox, $"{name} 라벨", label, fontSize, TextAnchor.MiddleCenter, new Color(1f, 0.92f, 0.76f, 1f));
+            text.font = titleFont;
+            text.fontStyle = FontStyle.Bold;
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = Mathf.Max(12, fontSize - 8);
+            text.resizeTextMaxSize = fontSize;
+            text.raycastTarget = false;
+            AddTextGlow(text, new Color(0f, 0f, 0f, 0.88f), new Color(0.08f, 0.62f, 0.58f, 0.30f), new Vector2(0.9f, -1.0f));
+            SetAnchors(text.rectTransform, new Vector2(0.060f, 0.120f), new Vector2(0.940f, 0.880f));
+            return labelBox;
+        }
+
+        private void SetFramedModalPanelAnchors(RectTransform panel)
+        {
+            SetAnchors(panel, Vector2.zero, new Vector2(1.000f, 0.840f));
+        }
+
+        private RectTransform AddFramedModalTitle(
+            RectTransform parent,
+            string name,
+            string label,
+            float minX,
+            float maxX)
+        {
+            RectTransform titleBox = AddRunStatusLabelBox(
+                parent,
+                name,
+                label,
+                new Vector2(minX, 0.870f),
+                new Vector2(maxX, 1.000f),
+                34);
+            titleBox.SetAsLastSibling();
+            return titleBox;
+        }
+
+        private void SetFramedModalSummaryAnchors(RectTransform summary, float minX, float maxX)
+        {
+            SetAnchors(summary, new Vector2(minX, 0.635f), new Vector2(maxX, 0.720f));
         }
 
         private Button AddRunStatusTextButton(RectTransform parent, string name, string label, Vector2 min, Vector2 max, UnityAction onClick, int fontSize)
@@ -2667,7 +2747,12 @@ namespace ThreeDoorsOfFate.Game
             return button;
         }
 
-        private Button AddRunStatusCard(RectTransform parent, string title, string summary, UiNormalizedRect bounds, UnityAction onClick)
+        private Button AddRunStatusCard(
+            RectTransform parent,
+            string title,
+            string summary,
+            UiNormalizedRect bounds,
+            UnityAction onClick)
         {
             RectTransform card = AddRunStatusContentBox(parent, title, bounds);
 
@@ -2706,14 +2791,17 @@ namespace ThreeDoorsOfFate.Game
 
         private void AddRunItemEquipmentColumn(RectTransform parent)
         {
-            RectTransform equipmentPanel = AddRunStatusContentBox(parent, "보유 효과 패널", PcUiLayoutPolicy.StatusEquipmentPanel);
+            RectTransform equipmentPanel = AddRunStatusContentBox(
+                parent,
+                "보유 효과 패널",
+                PcUiLayoutPolicy.StatusEquipmentPanel);
 
             AddRunStatusFlatLabelBox(
                 equipmentPanel,
                 "장착 아이템 헤더",
-                "보유 효과",
-                new Vector2(0.045f, 0.835f),
-                new Vector2(0.955f, 0.965f),
+                LF("runStatus.items.header", equippedRunItemIds.Count, GetRunItemSlotLimit()),
+                new Vector2(0.075f, 0.825f),
+                new Vector2(0.925f, 0.955f),
                 20);
 
             RunItemType[] slotTypes =
@@ -2726,15 +2814,15 @@ namespace ThreeDoorsOfFate.Game
             {
                 RunItemType type = slotTypes[i];
                 RunItemDefinition item = GetEquippedRunItemByType(type);
-                float top = 0.805f - i * 0.255f;
+                float top = 0.795f - i * 0.245f;
                 AddRunItemSlotButton(
                     equipmentPanel,
                     i,
                     type,
                     item,
                     IsRunItemSlotUnlocked(i),
-                    new Vector2(0.045f, top - 0.210f),
-                    new Vector2(0.955f, top));
+                    new Vector2(0.075f, top - 0.190f),
+                    new Vector2(0.925f, top));
             }
         }
 
@@ -2782,22 +2870,21 @@ namespace ThreeDoorsOfFate.Game
                 SetAnchors(emptyIcon.rectTransform, new Vector2(0.100f, 0.260f), new Vector2(0.375f, 0.760f));
             }
 
-            string typeLabel = unlocked ? $"{GetRunItemTypeName(type)} {(item != null ? "1/1" : "0/1")}" : GetRunItemTypeName(type);
-            Text typeText = AddText(slot, $"장착 아이템 {index + 1} 종류", typeLabel, 14, TextAnchor.MiddleLeft, unlocked ? new Color(0.72f, 1f, 0.94f, 1f) : new Color(0.62f, 0.70f, 0.67f, 0.96f));
+            Text typeText = AddText(slot, $"장착 아이템 {index + 1} 종류", GetRunItemTypeName(type), 11, TextAnchor.MiddleLeft, unlocked ? new Color(0.72f, 1f, 0.94f, 1f) : new Color(0.48f, 0.58f, 0.56f, 0.92f));
             typeText.fontStyle = FontStyle.Bold;
-            typeText.resizeTextForBestFit = true;
-            typeText.resizeTextMinSize = 11;
-            typeText.resizeTextMaxSize = 14;
-            SetAnchors(typeText.rectTransform, new Vector2(0.365f, 0.575f), new Vector2(0.940f, 0.865f));
+            typeText.resizeTextForBestFit = false;
+            typeText.resizeTextMinSize = 8;
+            typeText.resizeTextMaxSize = 11;
+            SetAnchors(typeText.rectTransform, new Vector2(0.455f, 0.595f), new Vector2(0.825f, 0.865f));
 
             string label = unlocked ? item != null ? item.Name : $"선택 {index + 1}" : GetRunItemSlotUnlockLabel(index);
-            Text labelText = AddText(slot, $"장착 아이템 {index + 1} 이름", label, 16, TextAnchor.MiddleLeft, unlocked ? new Color(1f, 0.92f, 0.76f, 1f) : new Color(0.72f, 0.68f, 0.60f, 0.96f));
+            Text labelText = AddText(slot, $"장착 아이템 {index + 1} 이름", label, 13, TextAnchor.MiddleLeft, unlocked ? new Color(1f, 0.92f, 0.76f, 1f) : new Color(0.62f, 0.60f, 0.54f, 0.94f));
             labelText.fontStyle = FontStyle.Bold;
-            labelText.resizeTextForBestFit = true;
-            labelText.resizeTextMinSize = 12;
-            labelText.resizeTextMaxSize = 16;
+            labelText.resizeTextForBestFit = false;
+            labelText.resizeTextMinSize = 9;
+            labelText.resizeTextMaxSize = 13;
             AddTextGlow(labelText, new Color(0f, 0f, 0f, 0.90f), new Color(0.08f, 0.62f, 0.58f, 0.42f), new Vector2(1.0f, -1.2f));
-            SetAnchors(labelText.rectTransform, new Vector2(0.365f, 0.145f), new Vector2(0.940f, 0.545f));
+            SetAnchors(labelText.rectTransform, new Vector2(0.455f, 0.155f), new Vector2(0.825f, 0.545f));
 
             return button;
         }
@@ -2977,7 +3064,7 @@ namespace ThreeDoorsOfFate.Game
                 icon.sprite = iconSprite;
                 icon.preserveAspect = true;
                 icon.raycastTarget = false;
-                SetAnchors(icon.rectTransform, new Vector2(0.070f, 0.200f), new Vector2(0.205f, 0.800f));
+                SetAnchors(icon.rectTransform, new Vector2(0.055f, 0.220f), new Vector2(0.205f, 0.780f));
             }
 
             Text name = AddText(detail, $"{item.Id} 선택 이름", $"{GetRunItemTypeName(item.Type)} | {item.Name}", 22, TextAnchor.MiddleLeft, new Color(1f, 0.92f, 0.72f, 1f));
@@ -2986,7 +3073,7 @@ namespace ThreeDoorsOfFate.Game
             name.resizeTextMinSize = 14;
             name.resizeTextMaxSize = 22;
             AddTextGlow(name, new Color(0f, 0f, 0f, 0.86f), new Color(0.08f, 0.62f, 0.58f, 0.30f), new Vector2(1.0f, -1.1f));
-            SetAnchors(name.rectTransform, new Vector2(0.245f, 0.670f), new Vector2(0.910f, 0.840f));
+            SetAnchors(name.rectTransform, new Vector2(0.245f, 0.675f), new Vector2(0.915f, 0.860f));
 
             Text effect = AddText(detail, $"{item.Id} 선택 효과", item.Effect, 16, TextAnchor.UpperLeft, new Color(0.88f, 0.84f, 0.76f, 1f));
             effect.resizeTextForBestFit = false;
@@ -2995,7 +3082,7 @@ namespace ThreeDoorsOfFate.Game
             effect.horizontalOverflow = HorizontalWrapMode.Wrap;
             effect.verticalOverflow = VerticalWrapMode.Truncate;
             effect.lineSpacing = 0.92f;
-            SetAnchors(effect.rectTransform, new Vector2(0.245f, 0.420f), new Vector2(0.910f, 0.640f));
+            SetAnchors(effect.rectTransform, new Vector2(0.245f, 0.495f), new Vector2(0.915f, 0.650f));
 
             Text description = AddText(detail, $"{item.Id} 선택 설명", item.Description, 15, TextAnchor.UpperLeft, new Color(0.78f, 0.76f, 0.70f, 0.95f));
             description.resizeTextForBestFit = false;
@@ -3004,7 +3091,7 @@ namespace ThreeDoorsOfFate.Game
             description.horizontalOverflow = HorizontalWrapMode.Wrap;
             description.verticalOverflow = VerticalWrapMode.Truncate;
             description.lineSpacing = 0.90f;
-            SetAnchors(description.rectTransform, new Vector2(0.245f, 0.160f), new Vector2(0.910f, 0.390f));
+            SetAnchors(description.rectTransform, new Vector2(0.245f, 0.285f), new Vector2(0.915f, 0.455f));
         }
 
         private RunItemDefinition ResolveSelectedRunItemForCollection(RunItemType type, string selectedItemId, IReadOnlyList<RunItemDefinition> items)
@@ -3055,7 +3142,7 @@ namespace ThreeDoorsOfFate.Game
                     : panelSprite;
             RectTransform detailWindow = AddPanel(runStatusDetailPanel, $"{title} 상세 창", Color.white, detailSprite);
             detailWindow.gameObject.AddComponent<RectMask2D>();
-            SetAnchors(detailWindow, new Vector2(0.025f, 0.035f), new Vector2(0.975f, 0.885f));
+            SetAnchors(detailWindow, PcUiLayoutPolicy.StatusModalSafe);
 
             AddRunStatusLabelBox(
                 runStatusDetailPanel,
@@ -3083,7 +3170,9 @@ namespace ThreeDoorsOfFate.Game
 
         private void PopulateRunStatusDetailBody(RectTransform parent, string title, string body)
         {
-            if (title.StartsWith("보유 카드", StringComparison.Ordinal) || title.StartsWith("보유카드", StringComparison.Ordinal))
+            if (title.StartsWith(L("runStatus.section.ownedCards"), StringComparison.Ordinal)
+                || title.StartsWith("보유 카드", StringComparison.Ordinal)
+                || title.StartsWith("보유카드", StringComparison.Ordinal))
             {
                 AddDetailText(
                     parent,
@@ -3185,79 +3274,6 @@ namespace ThreeDoorsOfFate.Game
                     ? PcUiLayoutPolicy.StatusCompactFrameTextSafe
                     : PcUiLayoutPolicy.StatusFramedTextSafe);
             return detailText;
-        }
-
-        private RectTransform AddRunStatusContentBox(
-            RectTransform parent,
-            string name,
-            Vector2 min,
-            Vector2 max,
-            Sprite frameSprite = null)
-        {
-            Image image = AddImage(parent, name, new Color(0.018f, 0.024f, 0.028f, 0.985f));
-            RectTransform box = image.rectTransform;
-            SetAnchors(box, min, max);
-
-            image.raycastTarget = false;
-            Sprite resolvedFrameSprite = frameSprite != null ? frameSprite : statusInnerPanelFrameSprite;
-            if (resolvedFrameSprite != null)
-            {
-                Image generatedFrame = AddImage(box, "생성 투명 프레임", Color.white);
-                generatedFrame.sprite = resolvedFrameSprite;
-                generatedFrame.type = Image.Type.Sliced;
-                generatedFrame.raycastTarget = false;
-                Stretch(generatedFrame.rectTransform);
-                return box;
-            }
-
-            image.color = new Color(0.58f, 0.43f, 0.20f, 0.96f);
-            Image innerBorderImage = AddImage(box, "내용 내부 테두리", new Color(0.035f, 0.42f, 0.39f, 0.96f));
-            innerBorderImage.raycastTarget = false;
-            SetAnchors(innerBorderImage.rectTransform, new Vector2(0.006f, 0.010f), new Vector2(0.994f, 0.990f));
-
-            Image stoneBackground = AddImage(box, "내용 암석 배경", new Color(0.018f, 0.024f, 0.028f, 0.985f));
-            stoneBackground.raycastTarget = false;
-            SetAnchors(stoneBackground.rectTransform, new Vector2(0.014f, 0.024f), new Vector2(0.986f, 0.976f));
-
-            return box;
-        }
-
-        private RectTransform AddRunStatusContentBox(RectTransform parent, string name, UiNormalizedRect bounds)
-        {
-            return AddRunStatusContentBox(
-                parent,
-                name,
-                new Vector2(bounds.MinX, bounds.MinY),
-                new Vector2(bounds.MaxX, bounds.MaxY));
-        }
-
-        private RectTransform AddRunStatusContentBox(
-            RectTransform parent,
-            string name,
-            UiNormalizedRect bounds,
-            Sprite frameSprite)
-        {
-            return AddRunStatusContentBox(
-                parent,
-                name,
-                new Vector2(bounds.MinX, bounds.MinY),
-                new Vector2(bounds.MaxX, bounds.MaxY),
-                frameSprite);
-        }
-
-        private RectTransform AddRunStatusFlatLabelBox(RectTransform parent, string name, string label, Vector2 min, Vector2 max, int fontSize)
-        {
-            RectTransform labelBox = AddRunStatusContentBox(parent, name, min, max, statusInnerHeaderFrameSprite);
-            Text text = AddText(labelBox, $"{name} 라벨", label, fontSize, TextAnchor.MiddleCenter, new Color(1f, 0.92f, 0.76f, 1f));
-            text.font = titleFont;
-            text.fontStyle = FontStyle.Bold;
-            text.resizeTextForBestFit = true;
-            text.resizeTextMinSize = Mathf.Max(12, fontSize - 8);
-            text.resizeTextMaxSize = fontSize;
-            text.raycastTarget = false;
-            AddTextGlow(text, new Color(0f, 0f, 0f, 0.88f), new Color(0.08f, 0.62f, 0.58f, 0.30f), new Vector2(0.9f, -1.0f));
-            SetAnchors(text.rectTransform, new Vector2(0.060f, 0.120f), new Vector2(0.940f, 0.880f));
-            return labelBox;
         }
 
         private void AddDetailColumns(
@@ -3400,20 +3416,32 @@ namespace ThreeDoorsOfFate.Game
             }
 
             WeightedDoorType[] pool = CreateDebtAdjustedDoorPool();
-
-            List<DoorOption> options = new();
-            while (options.Count < 3)
+            List<WeightedDoorType> remaining = pool.ToList();
+            List<DoorType> selectedTypes = new();
+            while (selectedTypes.Count < 3)
             {
-                DoorType type = PickWeightedDoorType(pool);
-                if (options.Any(option => option.Type == type) && type != DoorType.Battle)
-                {
-                    continue;
-                }
-
-                options.Add(CreateDoorOption(type));
+                DoorType type = PickWeightedDoorType(remaining);
+                selectedTypes.Add(type);
+                remaining.RemoveAll(candidate => candidate.Type == type);
             }
 
-            return options;
+            if (!selectedTypes.Any(IsNonCombatChoice))
+            {
+                WeightedDoorType[] safePool = pool
+                    .Where(candidate => IsNonCombatChoice(candidate.Type))
+                    .ToArray();
+                DoorType safeType = PickWeightedDoorType(safePool);
+                selectedTypes[Random.Range(0, selectedTypes.Count)] = safeType;
+            }
+
+            for (int index = selectedTypes.Count - 1; index > 0; index -= 1)
+            {
+                int swapIndex = Random.Range(0, index + 1);
+                (selectedTypes[index], selectedTypes[swapIndex]) =
+                    (selectedTypes[swapIndex], selectedTypes[index]);
+            }
+
+            return selectedTypes.Select(CreateDoorOption).ToList();
         }
 
         private WeightedDoorType[] CreateDebtAdjustedDoorPool()
@@ -3505,6 +3533,14 @@ namespace ThreeDoorsOfFate.Game
         private static bool IsCombatForcingDoor(DoorType type)
         {
             return type is DoorType.Battle or DoorType.Elite or DoorType.Curse;
+        }
+
+        private static bool IsNonCombatChoice(DoorType type)
+        {
+            return type is DoorType.Shop
+                or DoorType.Treasure
+                or DoorType.Event
+                or DoorType.Rest;
         }
 
         private int GetBaseDoorInsightLevel()
@@ -3969,7 +4005,12 @@ namespace ThreeDoorsOfFate.Game
         {
             ClearContent();
             SetAnchors(contentRoot, new Vector2(0.035f, 0.085f), new Vector2(0.745f, 0.865f));
-            subtitleText.text = enemy.IsBoss ? "보스가 세 번째 문의 계약을 비틀고 있습니다" : "카드, 행동력, 행운으로 턴을 설계하세요";
+            string combatSubtitleSource = enemy.IsBoss
+                ? "보스가 세 번째 문의 계약을 비틀고 있습니다"
+                : "카드, 행동력, 행운으로 턴을 설계하세요";
+            subtitleText.text = GameLocalization.TextFromSource(
+                combatSubtitleSource);
+            BindLocalizedSourceText(subtitleText, combatSubtitleSource);
             SetSubtitleBoxVisible(true);
             primaryButton.gameObject.SetActive(true);
             SetPrimaryButtonDefaultPlacement();
@@ -4001,12 +4042,31 @@ namespace ThreeDoorsOfFate.Game
             enemyStats.resizeTextMinSize = 12;
             SetAnchors(enemyStats.rectTransform, new Vector2(0.280f, 0.430f), new Vector2(0.770f, 0.555f));
 
-            Text candidate = AddText(enemyPanel, "적 후보 카드", $"후보: {enemy.CandidateLabel}", 13, TextAnchor.MiddleLeft, new Color(0.72f, 0.94f, 0.91f, 0.92f));
+            Func<string> resolveCandidateText = () =>
+            {
+                string localizedCandidates = string.Join(
+                    ", ",
+                    enemy.CandidateLabel
+                        .Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(GameLocalization.TextFromSource));
+                return GameLocalization.TextFromSource(
+                    $"후보: {localizedCandidates}");
+            };
+            Text candidate = AddText(enemyPanel, "적 후보 카드", resolveCandidateText(), 13, TextAnchor.MiddleLeft, new Color(0.72f, 0.94f, 0.91f, 0.92f));
+            candidate.GetComponent<LocalizedTextBinding>().Configure(
+                candidate,
+                resolveCandidateText);
             candidate.resizeTextMinSize = 10;
             candidate.lineSpacing = 0.88f;
             SetAnchors(candidate.rectTransform, new Vector2(0.280f, 0.270f), new Vector2(0.770f, 0.405f));
 
-            Text intent = AddText(enemyPanel, "의도", $"{enemy.IntentCardName}\n{enemy.IntentLabel}", 15, TextAnchor.MiddleCenter, GetIntentColor());
+            Func<string> resolveIntentText = () =>
+                $"{GameLocalization.TextFromSource(enemy.IntentCardName)}\n"
+                + GameLocalization.TextFromSource(enemy.IntentLabel);
+            Text intent = AddText(enemyPanel, "의도", resolveIntentText(), 15, TextAnchor.MiddleCenter, GetIntentColor());
+            intent.GetComponent<LocalizedTextBinding>().Configure(
+                intent,
+                resolveIntentText);
             intent.fontStyle = FontStyle.Bold;
             intent.resizeTextMinSize = 10;
             intent.lineSpacing = 0.88f;
@@ -4022,9 +4082,17 @@ namespace ThreeDoorsOfFate.Game
             for (int i = 0; i < hand.Count; i += 1)
             {
                 CardData card = hand[i];
-                Button cardButton = CreateCardButton(handPanel, card, i, hand.Count, true);
+                Button cardButton = CreateCardButton(
+                    handPanel,
+                    card,
+                    i,
+                    hand.Count,
+                    true,
+                    false,
+                    GameSfxCue.UiAccept);
                 int index = i;
-                cardButton.onClick.AddListener(() => PlayCard(index));
+                cardButton.onClick.AddListener(
+                    () => SelectCombatCardForPreview(index, card));
                 cardButton.interactable = CanPlay(card);
             }
 
@@ -4067,6 +4135,9 @@ namespace ThreeDoorsOfFate.Game
                 13,
                 TextAnchor.MiddleCenter,
                 new Color(0.78f, 1f, 0.93f, 0.96f));
+            activeCombinationHudText.GetComponent<LocalizedTextBinding>().Configure(
+                activeCombinationHudText,
+                BuildActiveCombinationHudText);
             activeCombinationHudText.fontStyle = FontStyle.Bold;
             activeCombinationHudText.resizeTextForBestFit = true;
             activeCombinationHudText.resizeTextMinSize = 9;
@@ -4111,19 +4182,24 @@ namespace ThreeDoorsOfFate.Game
             List<CombinationRecipe> activeRecipes = GetCombinationRecipes()
                 .Where(IsCombinationComplete)
                 .OrderByDescending(GetCombinationOwnedCount)
-                .ThenBy(recipe => recipe.Name)
+                .ThenBy(GetLocalizedCombinationName)
                 .ToList();
             if (activeRecipes.Count == 0)
             {
-                return "현재 활성 조합: 없음";
+                return GameLocalization.TextFromSource("현재 활성 조합: 없음");
             }
 
             const int visibleCount = 3;
-            string names = string.Join(", ", activeRecipes.Take(visibleCount).Select(recipe => recipe.Name));
+            string names = string.Join(
+                ", ",
+                activeRecipes
+                    .Take(visibleCount)
+                    .Select(GetLocalizedCombinationName));
             int hiddenCount = activeRecipes.Count - visibleCount;
-            return hiddenCount > 0
+            string source = hiddenCount > 0
                 ? $"현재 활성 조합: {names} 외 {hiddenCount}"
                 : $"현재 활성 조합: {names}";
+            return GameLocalization.TextFromSource(source);
         }
 
         private static string GetCombinationImpactName(string combinationId)
@@ -4148,7 +4224,7 @@ namespace ThreeDoorsOfFate.Game
             {
                 if (recipe.Id == combinationId)
                 {
-                    return recipe.Name;
+                    return GetLocalizedCombinationName(recipe);
                 }
             }
 
@@ -4227,7 +4303,7 @@ namespace ThreeDoorsOfFate.Game
         {
             if (combatFeedbackRoot != null)
             {
-                Destroy(combatFeedbackRoot.gameObject);
+                DestroyUiObject(combatFeedbackRoot.gameObject);
             }
 
             combatFeedbackRoot = null;
@@ -4586,7 +4662,14 @@ namespace ThreeDoorsOfFate.Game
             cardPanel.localEulerAngles = new Vector3(0f, 0f, -fan * 8.0f);
         }
 
-        private Button CreateCardButton(RectTransform parent, CardData card, int index, int count, bool useFanLayout = false, bool enablePreview = true)
+        private Button CreateCardButton(
+            RectTransform parent,
+            CardData card,
+            int index,
+            int count,
+            bool useFanLayout = false,
+            bool enablePreview = true,
+            GameSfxCue cue = GameSfxCue.UiAccept)
         {
             RectTransform cardPanel = AddPanel(parent, $"카드 {index}", Color.white);
             if (useFanLayout)
@@ -4607,6 +4690,32 @@ namespace ThreeDoorsOfFate.Game
             hoverAnimator.Configure(useFanLayout ? 1.070f : 1.035f, 0.985f, useFanLayout ? 18f : 10f, 1.0f, 0.08f);
 
             Image frame = cardPanel.GetComponent<Image>();
+            bool hasLocalizedCard = CardLocalization.Contains(card.CardId);
+            Sprite localizedFullCardSprite = hasLocalizedCard
+                ? GetLocalizedCardFullSprite(card)
+                : card.FullCardSprite;
+            if (localizedFullCardSprite != null)
+            {
+                frame.sprite = localizedFullCardSprite;
+                frame.type = Image.Type.Simple;
+                frame.color = Color.white;
+                frame.preserveAspect = true;
+                if (hasLocalizedCard)
+                {
+                    BindLocalizedCardSprite(frame, card);
+                }
+
+                Button fullCardButton = AddSfxButton(cardPanel.gameObject, cue);
+                fullCardButton.targetGraphic = frame;
+                fullCardButton.colors = CreateStaticButtonColors();
+                if (enablePreview)
+                {
+                    AddCardPreviewHandlers(cardPanel.gameObject, card);
+                }
+
+                return fullCardButton;
+            }
+
             frame.sprite = GetCardFrameSprite(card.Category);
             frame.type = Image.Type.Simple;
             frame.color = Color.white;
@@ -4617,20 +4726,19 @@ namespace ThreeDoorsOfFate.Game
                 : CardPresentationMode.Standard;
             PopulateCardPresentation(cardPanel, card, mode);
 
-            Button button = AddSfxButton(cardPanel.gameObject);
+            Button button = AddSfxButton(cardPanel.gameObject, cue);
             button.targetGraphic = frame;
             button.colors = CreateStaticButtonColors();
-            if (enablePreview)
-            {
-                AddCardPreviewHandlers(cardPanel.gameObject, card);
-            }
-
             return button;
         }
 
-        private void PopulateCardPresentation(RectTransform cardPanel, CardData card, CardPresentationMode mode)
+        private void PopulateCardPresentation(
+            RectTransform cardPanel,
+            CardData card,
+            CardPresentationMode mode)
         {
             CardPresentationStyle style = CardPresentationPolicy.For(mode);
+            bool hasLocalization = CardLocalization.Contains(card.CardId);
 
             Image art = AddImage(cardPanel, "일러스트", Color.white);
             art.sprite = card.Illustration != null ? card.Illustration : cardBackSprite;
@@ -4650,24 +4758,38 @@ namespace ThreeDoorsOfFate.Game
 
             if (style.ShowTitle)
             {
-                Text name = AddText(cardPanel, "카드명", card.DisplayName, style.TitleFontSize, TextAnchor.MiddleCenter, Color.white);
+                string displayName = hasLocalization
+                    ? GetLocalizedCardName(card)
+                    : card.DisplayName;
+                Text name = AddText(cardPanel, "카드명", displayName, style.TitleFontSize, TextAnchor.MiddleCenter, Color.white);
                 name.fontStyle = FontStyle.Bold;
                 name.resizeTextForBestFit = true;
                 name.resizeTextMinSize = Mathf.Max(16, style.TitleFontSize - 6);
                 name.resizeTextMaxSize = style.TitleFontSize;
                 AddTextGlow(name, new Color(0f, 0f, 0f, 0.88f), new Color(0.03f, 0.34f, 0.34f, 0.42f), new Vector2(0.8f, -0.8f));
                 SetAnchors(name.rectTransform, style.Title);
+                if (hasLocalization)
+                {
+                    BindLocalizedCardText(name, card, false);
+                }
             }
 
             if (style.ShowRules)
             {
-                Text rules = AddText(cardPanel, "효과", card.RulesText, style.RulesFontSize, TextAnchor.UpperLeft, new Color(0.94f, 0.91f, 0.84f, 1f));
+                string rulesText = hasLocalization
+                    ? GetLocalizedCardRules(card)
+                    : card.RulesText;
+                Text rules = AddText(cardPanel, "효과", rulesText, style.RulesFontSize, TextAnchor.UpperLeft, new Color(0.94f, 0.91f, 0.84f, 1f));
                 rules.lineSpacing = 0.92f;
                 rules.resizeTextForBestFit = true;
                 rules.resizeTextMinSize = Mathf.Max(12, style.RulesFontSize - 5);
                 rules.resizeTextMaxSize = style.RulesFontSize;
                 rules.alignByGeometry = false;
                 SetAnchors(rules.rectTransform, style.Rules);
+                if (hasLocalization)
+                {
+                    BindLocalizedCardText(rules, card, true);
+                }
             }
         }
 
@@ -4691,30 +4813,113 @@ namespace ThreeDoorsOfFate.Game
 
         private void ShowCardPreview(CardData card, RectTransform previewTarget)
         {
-            if (card == null || phase == GamePhase.GameOver)
+            Sprite sprite = GetLocalizedCardFullSprite(card);
+            if (sprite == null || phase == GamePhase.GameOver)
             {
                 return;
             }
 
-            if (cardPreviewRoot != null)
+            if (cardPreviewImage == null)
             {
-                Destroy(cardPreviewRoot.gameObject);
+                cardPreviewImage = AddImage(root, "카드 확대 프리뷰", Color.white);
+                cardPreviewImage.preserveAspect = true;
+                SetAnchors(cardPreviewImage.rectTransform, new Vector2(0.390f, 0.300f), new Vector2(0.610f, 0.850f));
+
+                Button previewDismissButton = AddSfxButton(
+                    cardPreviewImage.gameObject,
+                    GameSfxCue.None);
+                previewDismissButton.transition = Selectable.Transition.None;
+                previewDismissButton.targetGraphic = cardPreviewImage;
+                previewDismissButton.colors = CreateStaticButtonColors();
+                previewDismissButton.onClick.AddListener(HideCardPreview);
             }
 
-            cardPreviewRoot = AddPanel(root, "카드 확대 프리뷰", Color.white, GetCardFrameSprite(card.Category));
-            Image frame = cardPreviewRoot.GetComponent<Image>();
-            frame.type = Image.Type.Simple;
-            frame.preserveAspect = true;
-            frame.raycastTarget = false;
-            SetAnchors(cardPreviewRoot, new Vector2(0.390f, 0.245f), new Vector2(0.610f, 0.850f));
-            PopulateCardPresentation(cardPreviewRoot, card, CardPresentationMode.Detail);
+            cardPreviewImage.sprite = sprite;
+            cardPreviewImage.color = Color.white;
+            BindLocalizedCardSprite(cardPreviewImage, card);
             cardPreviewTarget = previewTarget;
-            cardPreviewRoot.SetAsLastSibling();
+            bool interactiveSelection = previewTarget == null;
+            cardPreviewImage.raycastTarget = interactiveSelection;
+            Button previewDismiss = cardPreviewImage.GetComponent<Button>();
+            if (previewDismiss != null)
+            {
+                previewDismiss.interactable = interactiveSelection;
+            }
+            cardPreviewImage.gameObject.SetActive(true);
+            cardPreviewImage.transform.SetAsLastSibling();
+        }
+
+        private void SelectCombatCardForPreview(int handIndex, CardData card)
+        {
+            if (phase != GamePhase.Combat
+                || handIndex < 0
+                || handIndex >= hand.Count
+                || card == null
+                || GetLocalizedCardFullSprite(card) == null
+                || !CanPlay(hand[handIndex]))
+            {
+                HideCardPreview();
+                return;
+            }
+
+            EnsureCombatCardPreviewControls();
+            selectedCombatCardIndex = handIndex;
+            ShowCardPreview(card, null);
+            cardPreviewCancelButton.interactable = true;
+            cardPreviewUseButton.gameObject.SetActive(true);
+            cardPreviewUseButton.transform.SetAsLastSibling();
+        }
+
+        private void EnsureCombatCardPreviewControls()
+        {
+            if (cardPreviewCancelButton == null)
+            {
+                cardPreviewCancelButton = AddSfxButton(root.gameObject, GameSfxCue.None);
+                cardPreviewCancelButton.transition = Selectable.Transition.None;
+                cardPreviewCancelButton.targetGraphic = null;
+                Navigation navigation = cardPreviewCancelButton.navigation;
+                navigation.mode = Navigation.Mode.None;
+                cardPreviewCancelButton.navigation = navigation;
+                cardPreviewCancelButton.onClick.AddListener(HideCardPreview);
+                cardPreviewCancelButton.interactable = false;
+            }
+
+            if (cardPreviewUseButton == null)
+            {
+                cardPreviewUseButton = AddSettingsMenuButton(
+                    root,
+                    "카드 사용",
+                    "사용",
+                    24,
+                    GameSfxCue.None);
+                SetAnchors(
+                    cardPreviewUseButton.GetComponent<RectTransform>(),
+                    new Vector2(0.425f, 0.200f),
+                    new Vector2(0.575f, 0.265f));
+                cardPreviewUseButton.onClick.AddListener(UseSelectedCombatCard);
+                cardPreviewUseButton.gameObject.SetActive(false);
+            }
+        }
+
+        private void UseSelectedCombatCard()
+        {
+            int handIndex = selectedCombatCardIndex;
+            if (phase != GamePhase.Combat
+                || handIndex < 0
+                || handIndex >= hand.Count
+                || !CanPlay(hand[handIndex]))
+            {
+                HideCardPreview();
+                return;
+            }
+
+            HideCardPreview();
+            PlayCard(handIndex);
         }
 
         private void UpdateCardPreviewVisibility()
         {
-            if (cardPreviewRoot == null || !cardPreviewRoot.gameObject.activeSelf || cardPreviewTarget == null)
+            if (cardPreviewImage == null || !cardPreviewImage.gameObject.activeSelf || cardPreviewTarget == null)
             {
                 return;
             }
@@ -4751,12 +4956,22 @@ namespace ThreeDoorsOfFate.Game
 
         private void HideCardPreview()
         {
-            if (cardPreviewRoot != null)
+            if (cardPreviewImage != null)
             {
-                Destroy(cardPreviewRoot.gameObject);
-                cardPreviewRoot = null;
+                cardPreviewImage.gameObject.SetActive(false);
             }
 
+            if (cardPreviewUseButton != null)
+            {
+                cardPreviewUseButton.gameObject.SetActive(false);
+            }
+
+            if (cardPreviewCancelButton != null)
+            {
+                cardPreviewCancelButton.interactable = false;
+            }
+
+            selectedCombatCardIndex = -1;
             cardPreviewTarget = null;
         }
 
@@ -4863,7 +5078,7 @@ namespace ThreeDoorsOfFate.Game
             if (runItemCostReduction > 0)
             {
                 runItemSkillDiscountsRemaining = Mathf.Max(0, runItemSkillDiscountsRemaining - 1);
-                AddLog($"Run item: {card.DisplayName} cost -{runItemCostReduction}.");
+                AddLog($"아이템 효과: {card.DisplayName} 비용 -{runItemCostReduction}.");
             }
 
             RecordOracleDefenseResponse(card);
@@ -4873,6 +5088,8 @@ namespace ThreeDoorsOfFate.Game
             activeCardBlockBonusApplied = false;
             activeCardRunItemDamageBonusApplied = false;
             activeCardRunItemBlockBonusApplied = false;
+            int enemyHealthBeforeCard = enemy?.Health ?? 0;
+            int playerBlockBeforeCard = playerBlock;
             int debtBeforePlay = debt;
             foreach (CardEffectDefinition effect in card.Effects)
             {
@@ -4901,6 +5118,10 @@ namespace ThreeDoorsOfFate.Game
             cardsPlayedThisCombat.Add(card.CardId);
             ApplyPostPlayCombinationEffects(card, debtBeforePlay);
             ApplyPostPlayRunItemEffects(card);
+            PlayResolvedCardCombatSfx(
+                card,
+                Mathf.Max(0, enemyHealthBeforeCard - (enemy?.Health ?? enemyHealthBeforeCard)),
+                Mathf.Max(0, playerBlock - playerBlockBeforeCard));
             if (phase == GamePhase.GameOver)
             {
                 return;
@@ -4983,7 +5204,7 @@ namespace ThreeDoorsOfFate.Game
             {
                 playerBlock += 6 + GetHardTraitEndlessBonus();
                 TriggerCombinationImpact("hard_trait_exile_endless_atonement");
-                AddLog("Hard trait: debt clear granted block.");
+                AddLog("어려움 특성: 빚 청산으로 방어도를 얻었습니다.");
             }
 
             if (IsCombinationComplete("debt_reversal"))
@@ -4996,7 +5217,7 @@ namespace ThreeDoorsOfFate.Game
                 }
 
                 TriggerCombinationImpact("debt_reversal");
-                AddLog("Combination: debt reversal primed next attack.");
+                AddLog("조합 준비: 빚 역전이 다음 공격을 강화합니다.");
             }
 
             if (IsCombinationComplete("no_return_path"))
@@ -5004,7 +5225,7 @@ namespace ThreeDoorsOfFate.Game
                 playerBlock += 8;
                 Heal(4);
                 TriggerCombinationImpact("no_return_path");
-                AddLog("Combination: no return path restored you.");
+                AddLog("조합 발동: 돌아갈 길 없음으로 체력을 회복했습니다.");
             }
 
             if (exileCurseEaterAwakened)
@@ -5061,7 +5282,7 @@ namespace ThreeDoorsOfFate.Game
             playerBlock += 10;
             Heal(5);
             TriggerCombinationImpact("rift_survival");
-            AddLog("Combination: rift survival restored you.");
+            AddLog("조합 발동: 균열 생존으로 체력을 회복했습니다.");
         }
 
         private void ApplyEffect(CardEffectDefinition effect)
@@ -5123,7 +5344,7 @@ namespace ThreeDoorsOfFate.Game
                     break;
                 case CardEffectType.ReduceNextDamage:
                     pendingDamageReduction += effect.Amount;
-                    AddLog($"Next damage -{effect.Amount}.");
+                    AddLog($"다음 피해 -{effect.Amount}.");
                     break;
                 case CardEffectType.RevealDoorEffect:
                     AddDoorInsight(effect.Amount + (HasRunItem("curse_watchers_eye") ? 1 : 0));
@@ -5142,7 +5363,7 @@ namespace ThreeDoorsOfFate.Game
                     debt += addedDebt;
                     if (addedDebt <= 0)
                     {
-                        AddLog("Debt +0.");
+                        AddLog("빚 +0.");
                         break;
                     }
                     TriggerCombatFeedback("계약 발현", combatFeedbackCurseSprite, new Color(1f, 0.42f, 0.30f, 1f), 3);
@@ -5219,7 +5440,7 @@ namespace ThreeDoorsOfFate.Game
 
             gold += amount;
             PlayGameSfx(GameSfxCue.GoldGain);
-            AddLog($"Gold +{amount}.");
+            AddLog($"금화 +{amount}.");
             if (phase == GamePhase.Combat && selectedClass == CharacterClass.Gambler && IsHardModeFeatureActive())
             {
                 gamblerHardGoldGainedThisCombat += amount;
@@ -5230,7 +5451,7 @@ namespace ThreeDoorsOfFate.Game
                     pendingCombinationDamageBonus += bonus;
                     pendingCombinationDamageBonusSourceId = "hard_trait_gambler_ruin_wager";
                     TriggerCombinationImpact("hard_trait_gambler_ruin_wager");
-                    AddLog($"Hard trait: next attack damage +{bonus}.");
+                    AddLog($"어려움 특성: 다음 공격 피해 +{bonus}.");
                 }
             }
         }
@@ -5245,7 +5466,7 @@ namespace ThreeDoorsOfFate.Game
             oracleHardProphecyPrimed = true;
             oracleNextCardCostReduction = Mathf.Max(oracleNextCardCostReduction, 1);
             TriggerCombinationImpact("hard_trait_oracle_closed_fate");
-            AddLog("Hard trait: next card cost -1.");
+            AddLog("어려움 특성: 다음 카드 비용 -1.");
         }
 
         private void TryTriggerExileHardDebtlessCleanse()
@@ -5257,7 +5478,7 @@ namespace ThreeDoorsOfFate.Game
 
             Heal(5 + GetHardTraitEndlessBonus());
             TriggerCombinationImpact("hard_trait_exile_endless_atonement");
-            AddLog("Hard trait: debtless cleanse restored health.");
+            AddLog("어려움 특성: 빚 없는 정화로 체력을 회복했습니다.");
         }
 
         private void TryTriggerOracleHardLowHandDraw()
@@ -5274,7 +5495,7 @@ namespace ThreeDoorsOfFate.Game
             oracleHardLowHandDrawTriggeredThisCombat = true;
             DrawCards(1);
             TriggerCombinationImpact("hard_trait_oracle_closed_fate");
-            AddLog("Hard trait: low hand drew 1 card.");
+            AddLog("어려움 특성: 손패가 적어 카드 1장을 뽑았습니다.");
         }
 
         private int GetHardTraitEndlessBonus()
@@ -5321,20 +5542,20 @@ namespace ThreeDoorsOfFate.Game
             if (HasRunItem("blessing_star_seal"))
             {
                 playerBlock += 6;
-                AddLog("Run item: start block +6.");
+                AddLog("아이템 효과: 전투 시작 방어도 +6.");
             }
 
             if (HasRunItem("relic_gate_knocker") && enemy != null && (enemy.WasElite || enemy.IsBoss))
             {
                 playerBlock += 10;
-                AddLog("Run item: elite/boss start block +10.");
+                AddLog("아이템 효과: 정예/보스 전투 시작 방어도 +10.");
             }
 
             if (HasRunItem("relic_black_candle"))
             {
                 action += 1;
                 LoseHealth(2, true);
-                AddLog("Run item: start action +1, health -2.");
+                AddLog("아이템 효과: 전투 시작 행동력 +1, 체력 -2.");
                 if (phase == GamePhase.GameOver)
                 {
                     return;
@@ -5346,25 +5567,25 @@ namespace ThreeDoorsOfFate.Game
                 action += 1;
                 int addedDebt = GetRunItemReducedDebtGain(1);
                 debt += addedDebt;
-                AddLog($"Run item: start action +1, debt +{addedDebt}.");
+                AddLog($"아이템 효과: 전투 시작 행동력 +1, 빚 +{addedDebt}.");
             }
 
             if (HasRunItem("curse_rusted_shackle"))
             {
                 action = Mathf.Max(0, action - 1);
-                AddLog("Run item: first turn action -1.");
+                AddLog("아이템 효과: 첫 턴 행동력 -1.");
             }
 
             if (HasRunItem("relic_teal_hourglass"))
             {
                 DrawCards(1);
-                AddLog("Run item: first turn draw +1.");
+                AddLog("아이템 효과: 첫 턴 카드 1장을 추가로 뽑았습니다.");
             }
 
             if (HasRunItem("blessing_sacred_flame"))
             {
                 DrawCards(1);
-                AddLog("Run item: first turn draw +1.");
+                AddLog("아이템 효과: 첫 턴 카드 1장을 추가로 뽑았습니다.");
             }
 
             if (HasRunItem("curse_blood_candle"))
@@ -5376,7 +5597,7 @@ namespace ThreeDoorsOfFate.Game
                 }
 
                 DrawCards(2);
-                AddLog("Run item: health -3, first turn draw +2.");
+                AddLog("아이템 효과: 체력 -3, 첫 턴 카드 2장을 추가로 뽑았습니다.");
             }
 
             ApplyRunItemTurnStartBonuses();
@@ -5392,7 +5613,7 @@ namespace ThreeDoorsOfFate.Game
             if (HasRunItem("relic_exile_brand") && playerHealth * 2 <= playerMaxHealth)
             {
                 playerBlock += 4;
-                AddLog("Run item: low health block +4.");
+                AddLog("아이템 효과: 낮은 체력에서 방어도 +4.");
             }
 
             TryTriggerRunItemLowHealthBlock();
@@ -5409,7 +5630,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             playerBlock += 18;
-            AddLog("Run item: emergency block +18.");
+            AddLog("아이템 효과: 긴급 방어도 +18.");
         }
 
         private void ApplyPostPlayRunItemEffects(CardData card)
@@ -5422,7 +5643,7 @@ namespace ThreeDoorsOfFate.Game
             if (card.Category == CardCategory.Attack && HasRunItem("curse_thorn_crown"))
             {
                 LoseHealth(1, true);
-                AddLog("Run item: attack health -1.");
+                AddLog("아이템 효과: 공격 카드 사용 시 체력 -1.");
             }
         }
 
@@ -5436,7 +5657,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             DrawCards(1);
-            AddLog("Run item: prophecy draw +1.");
+            AddLog("아이템 효과: 예언 발동으로 카드 1장을 뽑았습니다.");
         }
 
         private void ApplyRunItemDebtReduced(int amount)
@@ -5447,7 +5668,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             playerBlock += 5;
-            AddLog("Run item: debt reduced, block +5.");
+            AddLog("아이템 효과: 빚 증가를 줄이고 방어도 +5.");
         }
 
         private int GetRunItemReducedDebtGain(int amount)
@@ -5459,7 +5680,7 @@ namespace ThreeDoorsOfFate.Game
                 && runItemTriggersThisCombat.Add("blessing_purified_chain"))
             {
                 addedDebt = Mathf.Max(0, addedDebt - 1);
-                AddLog("Run item: debt gain -1.");
+                AddLog("아이템 효과: 빚 증가 -1.");
             }
 
             return addedDebt;
@@ -5507,7 +5728,7 @@ namespace ThreeDoorsOfFate.Game
             {
                 int addedDebt = GetRunItemReducedDebtGain(1);
                 debt += addedDebt;
-                AddLog($"Run item: victory debt +{addedDebt}.");
+                AddLog($"아이템 효과: 승리 후 빚 +{addedDebt}.");
             }
 
             if (bossVictory && HasRunItem("curse_locked_blood_gate"))
@@ -5528,7 +5749,7 @@ namespace ThreeDoorsOfFate.Game
             if (TryAddCardToDeck(card, "보스 추가 보상"))
             {
                 CheckBuildUnlocks();
-                AddLog($"Run item: boss bonus card {card.DisplayName}.");
+                AddLog($"아이템 효과: 보스 보너스 카드 {card.DisplayName}.");
             }
         }
 
@@ -5566,13 +5787,13 @@ namespace ThreeDoorsOfFate.Game
             if (HasRunItem("blessing_star_compass") && Random.value <= 0.20f)
             {
                 count += 1;
-                AddLog("Run item: reward choice +1.");
+                AddLog("아이템 효과: 보상 선택지 +1.");
             }
 
             if (eliteReward && HasRunItem("curse_skeletal_key"))
             {
                 count += 1;
-                AddLog("Run item: elite reward choice +1.");
+                AddLog("아이템 효과: 정예 보상 선택지 +1.");
             }
 
             return count;
@@ -5665,26 +5886,26 @@ namespace ThreeDoorsOfFate.Game
             if (card.CardId == "hard_attack_chain_rend" && enemy != null && enemy.Bleed > 0)
             {
                 DrawCards(1);
-                AddLog("Hard card: drew 1 from bleeding enemy.");
+                AddLog("어려움 카드 효과: 출혈 중인 적에게서 카드 1장을 뽑았습니다.");
             }
 
             if (card.CardId == "hard_attack_gate_execution" && enemy != null && enemy.Health <= 0)
             {
                 GainGold(18);
-                AddLog("Hard card: execution gold gained.");
+                AddLog("어려움 카드 효과: 처형으로 금화를 얻었습니다.");
             }
 
             if (card.CardId == "hard_skill_debt_writ" && debtBeforePlay <= debt)
             {
                 GainGold(18);
-                AddLog("Hard card: no debt to clear, gold gained.");
+                AddLog("어려움 카드 효과: 청산할 빚이 없어 금화를 얻었습니다.");
             }
 
             if (card.CardId == "hard_exile_no_return" && debtBeforePlay > debt)
             {
                 action += 1;
                 TriggerCombinationImpact("hard_trait_exile_endless_atonement");
-                AddLog("Hard card: action +1 after debt cleared.");
+                AddLog("어려움 카드 효과: 빚 청산 후 행동력 +1.");
             }
 
             if (card.Category == CardCategory.Defense
@@ -5697,7 +5918,7 @@ namespace ThreeDoorsOfFate.Game
                 pendingCombinationDamageBonus += 3;
                 pendingCombinationDamageBonusSourceId = "brass_counter_ritual";
                 TriggerCombinationImpact("brass_counter_ritual");
-                AddLog("Combination: brass counter ritual primed next attack.");
+                AddLog("조합 준비: 황동 반격식이 다음 공격을 강화합니다.");
             }
 
             if (IsCombinationComplete("triple_omen_circle")
@@ -5706,7 +5927,7 @@ namespace ThreeDoorsOfFate.Game
             {
                 oracleNextCardCostReduction = Mathf.Max(oracleNextCardCostReduction, 1);
                 TriggerCombinationImpact("triple_omen_circle");
-                AddLog("Combination: next card cost -1.");
+                AddLog("조합 준비: 다음 카드 비용 -1.");
             }
 
             if (IsCombinationComplete("bloody_contract")
@@ -5885,7 +6106,7 @@ namespace ThreeDoorsOfFate.Game
             if (bonus > 0)
             {
                 activeCardRunItemBlockBonusApplied = true;
-                AddLog($"Run item block +{bonus}.");
+                AddLog($"아이템 효과 방어도 +{bonus}.");
             }
 
             return bonus;
@@ -6116,7 +6337,7 @@ namespace ThreeDoorsOfFate.Game
             if (bonus > 0)
             {
                 activeCardRunItemDamageBonusApplied = true;
-                AddLog($"Run item damage +{bonus}.");
+                AddLog($"아이템 효과 피해 +{bonus}.");
             }
 
             return bonus;
@@ -6601,7 +6822,7 @@ namespace ThreeDoorsOfFate.Game
                 if (rewardGold > 0)
                 {
                     gold += rewardGold;
-                    AddLog($"Boss reward gold +{rewardGold}.");
+                    AddLog($"보스 보상 금화 +{rewardGold}.");
                 }
 
                 ApplyRunItemVictorySideEffects(true);
@@ -6776,16 +6997,14 @@ namespace ThreeDoorsOfFate.Game
             SetSubtitleBoxVisible(true);
 
             RectTransform panel = AddPanel(contentRoot, "아이템 보상", new Color(1f, 1f, 1f, 0.88f), statusPanelFrameSprite != null ? statusPanelFrameSprite : panelSprite);
-            SetAnchors(panel, new Vector2(0.000f, 0.000f), new Vector2(1.000f, 0.840f));
+            SetFramedModalPanelAnchors(panel);
 
-            RectTransform titleBox = AddRunStatusLabelBox(
+            AddFramedModalTitle(
                 contentRoot,
                 "아이템 보상 제목 박스",
                 $"{GetRunItemTypeName(item.Type)} 획득",
-                new Vector2(0.325f, 0.870f),
-                new Vector2(0.675f, 1.000f),
-                34);
-            titleBox.SetAsLastSibling();
+                0.325f,
+                0.675f);
 
             Sprite itemIcon = GetRunItemIcon(item);
             Vector2 bodyMin = new(0.120f, 0.505f);
@@ -7123,6 +7342,7 @@ namespace ThreeDoorsOfFate.Game
             if (changed)
             {
                 SaveDiscoveredRunItemsForSelectedClass();
+                TryCompleteAbyssCollectorForSelectedClass();
             }
         }
 
@@ -7139,6 +7359,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             SaveDiscoveredRunItemsForSelectedClass();
+            TryCompleteAbyssCollectorForSelectedClass();
             return true;
         }
 
@@ -7279,7 +7500,7 @@ namespace ThreeDoorsOfFate.Game
             runItemBottleHealthBonusApplied = true;
             playerMaxHealth += BottleOfLightHealthBonus;
             playerHealth = Mathf.Min(playerMaxHealth, playerHealth + BottleOfLightHealthBonus);
-            AddLog($"Run item: max health +{BottleOfLightHealthBonus}, health +{BottleOfLightHealthBonus}.");
+            AddLog($"아이템 효과: 최대 체력 +{BottleOfLightHealthBonus}, 체력 +{BottleOfLightHealthBonus}.");
         }
 
         private void RemoveBottleHealthBonusIfNeeded()
@@ -7292,7 +7513,7 @@ namespace ThreeDoorsOfFate.Game
             runItemBottleHealthBonusApplied = false;
             playerMaxHealth = Mathf.Max(1, playerMaxHealth - BottleOfLightHealthBonus);
             playerHealth = Mathf.Clamp(playerHealth, 1, playerMaxHealth);
-            AddLog($"Run item: max health -{BottleOfLightHealthBonus}.");
+            AddLog($"아이템 효과: 최대 체력 -{BottleOfLightHealthBonus}.");
         }
 
         private void ApplyRunItemRunStartBonuses()
@@ -7425,12 +7646,14 @@ namespace ThreeDoorsOfFate.Game
             SetSubtitleBoxVisible(true);
 
             RectTransform panel = AddPanel(contentRoot, "전투 후 정비", new Color(1f, 1f, 1f, 0.88f), statusPanelFrameSprite != null ? statusPanelFrameSprite : panelSprite);
-            SetAnchors(panel, Vector2.zero, Vector2.one);
+            SetFramedModalPanelAnchors(panel);
 
-            Text title = AddText(panel, "전투 후 정비 제목", "전투 후 정비", 36, TextAnchor.MiddleCenter, new Color(1f, 0.88f, 0.54f, 1f));
-            title.fontStyle = FontStyle.Bold;
-            AddTextGlow(title, new Color(0f, 0f, 0f, 0.94f), new Color(0.12f, 0.78f, 0.76f, 0.46f), new Vector2(2.5f, -2.8f));
-            SetAnchors(title.rectTransform, new Vector2(0.08f, 0.735f), new Vector2(0.92f, 0.895f));
+            AddFramedModalTitle(
+                contentRoot,
+                "전투 후 정비 제목 박스",
+                "전투 후 정비",
+                0.325f,
+                0.675f);
 
             Text body = AddText(panel, "전투 후 정비 설명", "어려움과 무한 모드에서는 전투가 길어집니다. 카드 보상 전에 작은 정비를 선택합니다.", 22, TextAnchor.MiddleCenter, new Color(0.88f, 0.84f, 0.76f, 1f));
             body.resizeTextForBestFit = true;
@@ -7506,23 +7729,21 @@ namespace ThreeDoorsOfFate.Game
             SetSubtitleBoxVisible(true);
 
             RectTransform panel = AddPanel(contentRoot, "10문 이후 선택", new Color(1f, 1f, 1f, 0.88f), statusPanelFrameSprite != null ? statusPanelFrameSprite : panelSprite);
-            SetAnchors(panel, new Vector2(0.000f, 0.000f), new Vector2(1.000f, 0.840f));
+            SetFramedModalPanelAnchors(panel);
 
-            RectTransform titleBox = AddRunStatusLabelBox(
+            AddFramedModalTitle(
                 contentRoot,
                 "10문 클리어 제목 박스",
                 $"{GetDifficultyName(currentDifficulty)} 10문 클리어",
-                new Vector2(0.265f, 0.870f),
-                new Vector2(0.735f, 1.000f),
-                34);
-            titleBox.SetAsLastSibling();
+                0.265f,
+                0.735f);
 
             string recordText = $"현재 빚 {debt} / 금화 {gold} / 무한 최고 기록 {GetEndlessRecord()}문";
             Text body = AddText(panel, "10문 클리어 설명", recordText, 22, TextAnchor.MiddleCenter, new Color(0.88f, 0.84f, 0.76f, 1f));
             body.resizeTextForBestFit = true;
             body.resizeTextMinSize = 16;
             body.resizeTextMaxSize = 22;
-            SetAnchors(body.rectTransform, new Vector2(0.135f, 0.735f), new Vector2(0.865f, 0.820f));
+            SetFramedModalSummaryAnchors(body.rectTransform, 0.135f, 0.865f);
 
             bool canEnterEndless = currentDifficulty == RunDifficulty.Hard;
             Vector2 returnMin = canEnterEndless ? new Vector2(0.100f, 0.515f) : new Vector2(0.100f, 0.470f);
@@ -7658,12 +7879,14 @@ namespace ThreeDoorsOfFate.Game
             SetSubtitleBoxVisible(true);
 
             RectTransform panel = AddPanel(contentRoot, "무한 체크포인트", new Color(1f, 1f, 1f, 0.88f), statusPanelFrameSprite != null ? statusPanelFrameSprite : panelSprite);
-            SetAnchors(panel, Vector2.zero, Vector2.one);
+            SetFramedModalPanelAnchors(panel);
 
-            Text title = AddText(panel, "무한 체크포인트 제목", $"무한 기록 {roomsCleared}문", 36, TextAnchor.MiddleCenter, new Color(1f, 0.88f, 0.54f, 1f));
-            title.fontStyle = FontStyle.Bold;
-            AddTextGlow(title, new Color(0f, 0f, 0f, 0.94f), new Color(0.12f, 0.78f, 0.76f, 0.46f), new Vector2(2.5f, -2.8f));
-            SetAnchors(title.rectTransform, new Vector2(0.08f, 0.750f), new Vector2(0.92f, 0.900f));
+            AddFramedModalTitle(
+                contentRoot,
+                "무한 체크포인트 제목 박스",
+                $"무한 기록 {roomsCleared}문",
+                0.290f,
+                0.710f);
 
             Text detail = AddText(panel, "무한 체크포인트 설명", $"최고 기록 {GetEndlessRecord()}문 / 다음 심연 보스 {nextEndlessBossRoom}문 / 현재 빚 {debt}", 22, TextAnchor.MiddleCenter, new Color(0.88f, 0.84f, 0.76f, 1f));
             SetAnchors(detail.rectTransform, new Vector2(0.10f, 0.610f), new Vector2(0.90f, 0.720f));
@@ -8389,7 +8612,9 @@ namespace ThreeDoorsOfFate.Game
             SetBackground(shopBackground);
             ClearContent();
             SetDefaultContentRootPlacement();
-            subtitleText.text = "상점: 카드 조합 효과를 확인합니다";
+            const string subtitleSource = "상점: 카드 조합 효과를 확인합니다";
+            subtitleText.text = GameLocalization.TextFromSource(subtitleSource);
+            BindLocalizedSourceText(subtitleText, subtitleSource);
             SetSubtitleBoxVisible(true);
             primaryButton.gameObject.SetActive(true);
             SetButtonLabel(primaryButton, "상점으로");
@@ -8503,19 +8728,21 @@ namespace ThreeDoorsOfFate.Game
                 }
             }
             subtitleText.text = string.Empty;
-            AddCenteredMessage(
-                "보물: 봉인된 상자가 열렸습니다",
-                cardAdded
-                    ? $"금화 +{rewardGold}\n카드 획득: {card.DisplayName}"
-                    : card == null
-                        ? $"금화 +{rewardGold}"
-                        : $"금화 +{rewardGold}\n덱 한도 {deck.Count}/{GetMaxDeckSize()}로 카드 보상은 넘겼습니다.");
-            ShowContinueButton();
-            AddLog(cardAdded
-                ? $"보물: 금화 {rewardGold}, {card.DisplayName}."
-                : $"보물: 금화 {rewardGold}.");
+            RenderTreasureResult(rewardGold, card, cardAdded);
+            AddLog(BuildTreasureLog(rewardGold, card, cardAdded));
             RefreshTopBar();
             RefreshLog();
+        }
+
+        private string BuildTreasureLog(
+            int rewardGold,
+            CardData card,
+            bool cardAdded)
+        {
+            string source = cardAdded && card != null
+                ? $"보물: 금화 {rewardGold}, {GetLocalizedCardName(card)}."
+                : $"보물: 금화 {rewardGold}.";
+            return GameLocalization.TextFromSource(source);
         }
 
         private void ShowEvent()
@@ -8539,8 +8766,14 @@ namespace ThreeDoorsOfFate.Game
             Text body = AddText(message, "본문", "동굴은 자비와 탐욕을 모두 기억합니다.", 24, TextAnchor.UpperCenter, new Color(0.88f, 0.83f, 0.74f, 1f));
             SetAnchors(body.rectTransform, new Vector2(0.14f, 0.260f), new Vector2(0.86f, 0.485f));
 
-            Button blood = AddSettingsMenuButton(contentRoot, "피의 거래", "체력 6 잃기 / 금화 55", 21);
+            Button blood = AddSettingsMenuButton(
+                contentRoot,
+                "피의 거래",
+                BuildBloodBargainLabel(),
+                21,
+                GameSfxCue.ImportantConfirm);
             SetAnchors(blood.GetComponent<RectTransform>(), new Vector2(0.16f, 0.12f), new Vector2(0.45f, 0.23f));
+            ConfigureDecisionChoiceButton(blood);
             blood.onClick.AddListener(() =>
             {
                 PlayGameSfx(GameSfxCue.EventChoice);
@@ -8550,8 +8783,14 @@ namespace ThreeDoorsOfFate.Game
                 ShowDoors();
             });
 
-            Button read = AddSettingsMenuButton(contentRoot, "운명 읽기", CanAddCardToDeck() ? "카드 1장 / 빚 +1" : $"덱 한도 {deck.Count}/{GetMaxDeckSize()}", 21);
+            Button read = AddSettingsMenuButton(
+                contentRoot,
+                "운명 읽기",
+                CanAddCardToDeck() ? BuildReadFateLabel() : $"덱 한도 {deck.Count}/{GetMaxDeckSize()}",
+                21,
+                GameSfxCue.ImportantConfirm);
             SetAnchors(read.GetComponent<RectTransform>(), new Vector2(0.55f, 0.12f), new Vector2(0.84f, 0.23f));
+            ConfigureDecisionChoiceButton(read);
             read.interactable = CanAddCardToDeck();
             read.onClick.AddListener(() =>
             {
@@ -8580,6 +8819,7 @@ namespace ThreeDoorsOfFate.Game
                 ShowDoors();
             });
 
+            AddDecisionStateSummary();
             RefreshTopBar();
             RefreshLog();
         }
@@ -8597,16 +8837,28 @@ namespace ThreeDoorsOfFate.Game
             primaryButton.gameObject.SetActive(false);
 
             int restHealAmount = GetRestHealAmount();
-            Button heal = AddSettingsMenuButton(contentRoot, "회복", $"체력 {restHealAmount} 회복", 21);
+            Button heal = AddSettingsMenuButton(
+                contentRoot,
+                "회복",
+                BuildRestChoiceLabel(restHealAmount),
+                21,
+                GameSfxCue.ImportantConfirm);
             SetAnchors(heal.GetComponent<RectTransform>(), new Vector2(0.16f, 0.12f), new Vector2(0.45f, 0.23f));
+            ConfigureDecisionChoiceButton(heal);
             heal.onClick.AddListener(() =>
             {
                 Heal(restHealAmount);
                 ShowDoors();
             });
 
-            Button purse = AddSettingsMenuButton(contentRoot, "주머니", "금화 30 획득", 21);
+            Button purse = AddSettingsMenuButton(
+                contentRoot,
+                "주머니",
+                "금화 30 획득",
+                21,
+                GameSfxCue.ImportantConfirm);
             SetAnchors(purse.GetComponent<RectTransform>(), new Vector2(0.55f, 0.12f), new Vector2(0.84f, 0.23f));
+            ConfigureDecisionChoiceButton(purse);
             purse.onClick.AddListener(() =>
             {
                 GainGold(30);
@@ -8614,6 +8866,7 @@ namespace ThreeDoorsOfFate.Game
                 ShowDoors();
             });
 
+            AddDecisionStateSummary();
             RefreshTopBar();
             RefreshLog();
         }
@@ -8629,7 +8882,12 @@ namespace ThreeDoorsOfFate.Game
             AddCenteredMessage("대가: 문이 빚을 요구합니다", "붉은 계약이 문 앞에 펼쳐집니다.\n빚을 새기고 정예 위협을 마주해야 합니다.");
             primaryButton.gameObject.SetActive(false);
 
-            Button enter = AddSettingsMenuButton(contentRoot, "대가 입장", "빚을 지고 입장", 21);
+            Button enter = AddSettingsMenuButton(
+                contentRoot,
+                "대가 입장",
+                "빚을 지고 입장",
+                21,
+                GameSfxCue.ImportantConfirm);
             SetAnchors(enter.GetComponent<RectTransform>(), new Vector2(0.32f, 0.12f), new Vector2(0.68f, 0.23f));
             enter.onClick.AddListener(() =>
             {
@@ -8887,9 +9145,7 @@ namespace ThreeDoorsOfFate.Game
             if (roomsCleared >= 4 || state.WasElite || state.IsBoss)
             {
                 cards.Add(new EnemyCardDefinition("균열 강타", attacks: true, attackBonus: 4));
-                cards.Add(new EnemyCardDefinition(
-                    "동굴 재생",
-                    healAmount: GetEnemyRegenerationAmount(state)));
+                cards.Add(new EnemyCardDefinition("동굴 재생", healAmount: GetEnemyRegenerationAmount(state)));
             }
 
             if (state.WasElite)
@@ -9234,7 +9490,7 @@ namespace ThreeDoorsOfFate.Game
                     damage = Mathf.Max(0, damage - reduced);
                     if (reduced > 0)
                     {
-                        AddLog($"Damage reduced by {reduced}.");
+                        AddLog($"피해 {reduced} 감소.");
                     }
                 }
 
@@ -9269,7 +9525,7 @@ namespace ThreeDoorsOfFate.Game
                 }
 
                 TriggerCombinationImpact("hard_trait_exile_endless_atonement");
-                AddLog("Hard trait: fatal damage endured at 1 health.");
+                AddLog("어려움 특성: 치명적인 피해를 버티고 체력 1로 남았습니다.");
                 return;
             }
 
@@ -9437,7 +9693,6 @@ namespace ThreeDoorsOfFate.Game
             }
 
             phase = GamePhase.GameOver;
-            MobileAdsService.RecordRunCompleted();
             topBar.gameObject.SetActive(false);
             SetLogVisible(false);
             SetSubtitleBoxVisible(false);
@@ -9450,8 +9705,7 @@ namespace ThreeDoorsOfFate.Game
             {
                 primaryButton.gameObject.SetActive(true);
                 primaryButton.onClick.RemoveAllListeners();
-                primaryButton.onClick.AddListener(
-                    () => RunAfterInterstitial(ShowClassSelection));
+                primaryButton.onClick.AddListener(ShowClassSelection);
                 SetPrimaryButtonDefaultPlacement();
                 SetButtonLabel(primaryButton, "다시하기");
                 SetBackground(bossBackground);
@@ -9464,7 +9718,8 @@ namespace ThreeDoorsOfFate.Game
                 return;
             }
 
-            if (TryShowHiddenGameOver())
+            string localizedCause = ResolveGameOverCause(message);
+            if (TryShowHiddenGameOver(localizedCause))
             {
                 return;
             }
@@ -9492,25 +9747,27 @@ namespace ThreeDoorsOfFate.Game
                 SetAnchors(logoText.rectTransform, new Vector2(0.160f, 0.720f), new Vector2(0.840f, 0.935f));
             }
 
-            Sprite messageSprite = GetGameOverMessageSprite(variantIndex);
+            Sprite messageSprite = GameLocalization.IsEnglish
+                ? null
+                : GetGameOverMessageSprite(variantIndex);
             if (messageSprite != null)
             {
                 Image messageImage = AddImage(gameOverOverlay, "Game Over Message Image", Color.white);
                 messageImage.sprite = messageSprite;
                 messageImage.preserveAspect = true;
                 messageImage.raycastTarget = false;
-                SetAnchors(messageImage.rectTransform, new Vector2(0.120f, 0.365f), new Vector2(0.880f, 0.570f));
+                SetAnchors(messageImage.rectTransform, new Vector2(0.120f, 0.505f), new Vector2(0.880f, 0.670f));
             }
             else
             {
-                Text deathMessage = AddText(gameOverOverlay, "Game Over Message", message, 46, TextAnchor.MiddleCenter, new Color(0.94f, 0.88f, 0.76f, 1f));
+                Text deathMessage = AddText(gameOverOverlay, "Game Over Message", localizedCause, 46, TextAnchor.MiddleCenter, new Color(0.94f, 0.88f, 0.76f, 1f));
                 deathMessage.fontStyle = FontStyle.Bold;
                 deathMessage.resizeTextForBestFit = true;
                 deathMessage.resizeTextMinSize = 30;
                 deathMessage.resizeTextMaxSize = 48;
                 deathMessage.lineSpacing = 0.94f;
                 AddTextGlow(deathMessage, new Color(0f, 0f, 0f, 0.94f), new Color(0.68f, 0.48f, 0.18f, 0.72f), new Vector2(2.8f, -3.2f));
-                SetAnchors(deathMessage.rectTransform, new Vector2(0.180f, 0.390f), new Vector2(0.820f, 0.560f));
+                SetAnchors(deathMessage.rectTransform, new Vector2(0.180f, 0.505f), new Vector2(0.820f, 0.670f));
             }
 
             if (gameOverCrackOverlaySprite != null)
@@ -9523,10 +9780,11 @@ namespace ThreeDoorsOfFate.Game
                 crackOverlay.transform.SetAsLastSibling();
             }
 
-            AddGameOverRestartButton();
+            AddGameOverSummary(localizedCause, false);
+            AddGameOverActions();
         }
 
-        private bool TryShowHiddenGameOver()
+        private bool TryShowHiddenGameOver(string localizedCause)
         {
             Sprite hiddenSprite = GetHiddenGameOverSprite();
             if (hiddenSprite == null || Random.value >= Mathf.Clamp01(hiddenGameOverChance))
@@ -9536,7 +9794,8 @@ namespace ThreeDoorsOfFate.Game
 
             SetBackground(hiddenSprite);
             CreateGameOverOverlay("Hidden Game Over Overlay", new Color(0f, 0f, 0f, 0.001f));
-            AddGameOverRestartButton();
+            AddGameOverSummary(localizedCause, true);
+            AddGameOverActions();
             return true;
         }
 
@@ -9571,13 +9830,6 @@ namespace ThreeDoorsOfFate.Game
                 CharacterClass.Exile => exileHiddenGameOverSprite,
                 _ => null
             };
-        }
-
-        private void AddGameOverRestartButton()
-        {
-            Button restartButton = AddGameOverButton(gameOverOverlay, "Restart Button", "다시하기", 24);
-            SetAnchors(restartButton.GetComponent<RectTransform>(), new Vector2(0.380f, 0.055f), new Vector2(0.620f, 0.165f));
-            restartButton.onClick.AddListener(() => RunAfterInterstitial(() => StartRun(selectedClass)));
         }
 
         private Button AddGameOverButton(RectTransform parent, string name, string label, int fontSize)
@@ -9621,7 +9873,6 @@ namespace ThreeDoorsOfFate.Game
             PlayGameSfx(GameSfxCue.Ending);
             PlayMainMenuMusic();
             phase = GamePhase.GameOver;
-            MobileAdsService.RecordRunCompleted();
             topBar.gameObject.SetActive(false);
             SetLogVisible(false);
             SetSubtitleBoxVisible(false);
@@ -9685,7 +9936,7 @@ namespace ThreeDoorsOfFate.Game
             string nextButtonLabel = currentJourneyEndingKind == JourneyEndingKind.TrueDebtCleared ? "해금 확인" : "다음 여정으로";
             Button nextJourneyButton = AddClassDetailButton(gameOverOverlay, "다음 여정 버튼", nextButtonLabel, classConfirmButtonSprite, 24);
             SetAnchors(nextJourneyButton.GetComponent<RectTransform>(), new Vector2(0.360f, 0.070f), new Vector2(0.640f, 0.165f));
-            nextJourneyButton.onClick.AddListener(() => RunAfterInterstitial(ShowMainMenu));
+            nextJourneyButton.onClick.AddListener(ShowMainMenu);
         }
 
         private Sprite GetJourneyEndingBackgroundSprite()
@@ -9726,22 +9977,22 @@ namespace ThreeDoorsOfFate.Game
             {
                 return selectedClass switch
                 {
-                    CharacterClass.Oracle => "The prophecy is paid in full",
-                    CharacterClass.Exile => "The exile owns the road",
-                    _ => "The final debt leaves the table"
+                    CharacterClass.Oracle => L("ending.title.true.oracle"),
+                    CharacterClass.Exile => L("ending.title.true.exile"),
+                    _ => L("ending.title.true.gambler")
                 };
             }
 
             if (currentJourneyEndingKind == JourneyEndingKind.EndlessReturn)
             {
-                return "The record remains beyond the door";
+                return L("ending.title.endlessReturn");
             }
 
             return selectedClass switch
             {
-                CharacterClass.Oracle => "I witness yet another ending",
-                CharacterClass.Exile => "To me, exile is freedom",
-                _ => "The start of another gamble"
+                CharacterClass.Oracle => L("ending.title.return.oracle"),
+                CharacterClass.Exile => L("ending.title.return.exile"),
+                _ => L("ending.title.return.gambler")
             };
         }
 
@@ -9821,20 +10072,27 @@ namespace ThreeDoorsOfFate.Game
             }
 
             subtitleFrame.gameObject.SetActive(visible);
-            UpdatePlayerStatsTextVisibility();
-            if (visible)
+            if (subtitleText != null)
             {
-                SetAnchors(subtitleFrame, PcUiLayoutPolicy.HeaderPromptRoot);
-                SetAnchors(subtitleText.rectTransform, new Vector2(0.145f, 0.235f), new Vector2(0.855f, 0.765f));
-                return;
+                SetAnchors(
+                    subtitleText.rectTransform,
+                    new Vector2(0.145f, 0.235f),
+                    new Vector2(0.855f, 0.765f));
             }
+
+            UpdatePlayerStatsTextVisibility();
         }
 
         private bool ShouldShowTopPlayerStats()
         {
-            return phase == GamePhase.Combat
-                && subtitleFrame != null
-                && !subtitleFrame.gameObject.activeSelf;
+            return phase == GamePhase.DoorSelection
+                || phase == GamePhase.Combat
+                || phase == GamePhase.Reward
+                || phase == GamePhase.Shop
+                || phase == GamePhase.Event
+                || phase == GamePhase.Rest
+                || phase == GamePhase.Treasure
+                || phase == GamePhase.Curse;
         }
 
         private void UpdatePlayerStatsTextVisibility()
@@ -9865,15 +10123,38 @@ namespace ThreeDoorsOfFate.Game
         {
             if (playerStatsText != null)
             {
-                playerStatsText.text = $"체력 {playerHealth}/{playerMaxHealth}   방어 {playerBlock}   행동 {action}";
+                playerStatsText.text = LF(
+                    "hud.playerStats",
+                    playerHealth,
+                    playerMaxHealth,
+                    playerBlock,
+                    action);
                 UpdatePlayerStatsTextVisibility();
             }
 
             string roomText = endlessModeActive
-                ? $"무한 {roomsCleared}문"
-                : $"방 {Mathf.Min(roomsCleared, TargetRooms)}/{TargetRooms}";
-            runStatsText.text = $"{GetDifficultyName(currentDifficulty)}  {roomText}  금 {gold}  빚 {debt}  덱 {deck.Count}/{GetMaxDeckSize()}  아이템 {equippedRunItemIds.Count}/{GetRunItemSlotLimit()}";
-            diceText.text = $"행운 {luck}";
+                ? LF("hud.endlessRoom", roomsCleared)
+                : LF("hud.room", Mathf.Min(roomsCleared, TargetRooms), TargetRooms);
+            if (runProgressText != null)
+            {
+                runProgressText.text = LF(
+                    "hud.progress",
+                    GetDifficultyName(currentDifficulty),
+                    roomText);
+            }
+
+            if (runResourcesText != null)
+            {
+                runResourcesText.text = LF(
+                    "hud.resources",
+                    gold,
+                    debt,
+                    deck.Count,
+                    GetMaxDeckSize(),
+                    equippedRunItemIds.Count,
+                    GetRunItemSlotLimit());
+            }
+            diceText.text = LF("hud.luck", luck);
             Sprite luckSprite = GetDiceSprite(luck);
             bool showTopBarDice = phase != GamePhase.Combat;
             diceText.gameObject.SetActive(showTopBarDice);
@@ -9894,7 +10175,7 @@ namespace ThreeDoorsOfFate.Game
 
             if (combatDiceText != null)
             {
-                combatDiceText.text = $"행운 {luck}";
+                combatDiceText.text = LF("hud.luck", luck);
             }
         }
 
@@ -9907,7 +10188,7 @@ namespace ThreeDoorsOfFate.Game
 
             for (int i = logBodyRoot.childCount - 1; i >= 0; i -= 1)
             {
-                Destroy(logBodyRoot.GetChild(i).gameObject);
+                DestroyUiObject(logBodyRoot.GetChild(i).gameObject);
             }
 
             int maxVisibleEntries = phase == GamePhase.Combat ? 8 : 6;
@@ -9915,12 +10196,13 @@ namespace ThreeDoorsOfFate.Game
             List<string> entries = new();
             for (int i = start; i < combatLog.Count; i += 1)
             {
-                entries.Add(WrapDisplayLine($"- {combatLog[i]}", 18, "  "));
+                string localizedEntry =
+                    GameLocalization.TextFromSource(combatLog[i]);
+                entries.Add(WrapDisplayLine($"- {localizedEntry}", 18, "  "));
             }
 
             Text body = AddText(logBodyRoot, "기록 내용", string.Join("\n", entries), 14, TextAnchor.UpperLeft, new Color(0.88f, 0.86f, 0.78f, 1f));
             body.lineSpacing = 0.94f;
-            body.resizeTextForBestFit = true;
             body.resizeTextMinSize = 10;
             body.resizeTextMaxSize = 14;
             SetAnchors(body.rectTransform, PcUiLayoutPolicy.LogTextSafe);
@@ -10069,12 +10351,13 @@ namespace ThreeDoorsOfFate.Game
             }
 
             gameOverOverlay.gameObject.SetActive(false);
-            Destroy(gameOverOverlay.gameObject);
+            DestroyUiObject(gameOverOverlay.gameObject);
             gameOverOverlay = null;
         }
 
         private void ClearContent()
         {
+            AppleGameServicesRuntime.SetAccessPointVisible(false);
             if (phase != GamePhase.Combat)
             {
                 ResetCombatFeedbackState();
@@ -10093,8 +10376,25 @@ namespace ThreeDoorsOfFate.Game
             {
                 GameObject child = contentRoot.GetChild(i).gameObject;
                 child.SetActive(false);
-                Destroy(child);
+                DestroyUiObject(child);
             }
+        }
+
+        private static void DestroyUiObject(GameObject target)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                UnityEngine.Object.DestroyImmediate(target);
+                return;
+            }
+#endif
+            UnityEngine.Object.Destroy(target);
         }
 
         private void SetBackground(Sprite sprite)
@@ -10287,6 +10587,16 @@ namespace ThreeDoorsOfFate.Game
             };
         }
 
+        private static string GetLocalizedCombinationName(CombinationRecipe recipe)
+        {
+            return GameLocalization.Text($"combination.{recipe.Id}.name");
+        }
+
+        private static string GetLocalizedCombinationEffect(CombinationRecipe recipe)
+        {
+            return GameLocalization.Text($"combination.{recipe.Id}.effect");
+        }
+
         private static CombinationRecipe GetCombinationRecipe(string id)
         {
             return GetCombinationRecipes().First(recipe => recipe.Id == id);
@@ -10349,6 +10659,7 @@ namespace ThreeDoorsOfFate.Game
         private void CheckBuildUnlocks()
         {
             BuildRecipe recipe = GetCurrentBuildRecipe();
+            TryCompleteBuildAchievement();
             if (buildUpgradeLevels.ContainsKey(recipe.Id) || !HasRequiredBuildCards(recipe))
             {
                 return;
@@ -10451,8 +10762,8 @@ namespace ThreeDoorsOfFate.Game
             int nearlyCompleteCount = recipes.Count(recipe => !IsCombinationComplete(recipe) && GetCombinationOwnedCount(recipe) >= recipe.RequiredCardIds.Count - 1);
             string activeNames = string.Join(", ", recipes
                 .Where(IsCombinationComplete)
-                .OrderBy(recipe => recipe.Name)
-                .Select(recipe => recipe.Name)
+                .OrderBy(GetLocalizedCombinationName)
+                .Select(GetLocalizedCombinationName)
                 .Take(2));
 
             return string.Join("\n", new[]
@@ -10478,12 +10789,14 @@ namespace ThreeDoorsOfFate.Game
             lines.AddRange(recipes
                 .OrderByDescending(IsCombinationComplete)
                 .ThenByDescending(GetCombinationOwnedCount)
-                .ThenBy(recipe => recipe.Name)
+                .ThenBy(GetLocalizedCombinationName)
                 .Select(recipe =>
                 {
                     int ownedCount = GetCombinationOwnedCount(recipe);
-                    string state = IsCombinationComplete(recipe) ? "완성" : $"{ownedCount}/{recipe.RequiredCardIds.Count}";
-                    string line = $"{state} {recipe.Name}: {CondenseCombinationSummary(recipe.EffectSummary)}";
+                    string state = IsCombinationComplete(recipe)
+                        ? GameLocalization.Text("combination.status.complete")
+                        : $"{ownedCount}/{recipe.RequiredCardIds.Count}";
+                    string line = $"{state} {GetLocalizedCombinationName(recipe)}: {CondenseCombinationSummary(GetLocalizedCombinationEffect(recipe))}";
                     return WrapDisplayLine(line, 36, "  ");
                 }));
 
@@ -10504,13 +10817,13 @@ namespace ThreeDoorsOfFate.Game
             lines.AddRange(recipes
                 .OrderByDescending(IsCombinationComplete)
                 .ThenByDescending(GetCombinationOwnedCount)
-                .ThenBy(recipe => recipe.Name)
+                .ThenBy(GetLocalizedCombinationName)
                 .Select(recipe =>
                 {
                     string state = IsCombinationComplete(recipe)
-                        ? "완성"
+                        ? GameLocalization.Text("combination.status.complete")
                         : $"{GetCombinationOwnedCount(recipe)}/{recipe.RequiredCardIds.Count}";
-                    return $"{state} {recipe.Name}: {CondenseCombinationSummary(recipe.EffectSummary)}";
+                    return $"{state} {GetLocalizedCombinationName(recipe)}: {CondenseCombinationSummary(GetLocalizedCombinationEffect(recipe))}";
                 }));
 
             return string.Join("\n", lines);
@@ -10521,7 +10834,7 @@ namespace ThreeDoorsOfFate.Game
             return GetCombinationRecipes()
                 .OrderByDescending(IsCombinationComplete)
                 .ThenByDescending(GetCombinationOwnedCount)
-                .ThenBy(recipe => recipe.Name)
+                .ThenBy(GetLocalizedCombinationName)
                 .ToList();
         }
 
@@ -10535,15 +10848,20 @@ namespace ThreeDoorsOfFate.Game
             return string.Join("\n", recipes.Select(recipe =>
             {
                 string state = IsCombinationComplete(recipe)
-                    ? "완성"
+                    ? GameLocalization.Text("combination.status.complete")
                     : $"{GetCombinationOwnedCount(recipe)}/{recipe.RequiredCardIds.Count}";
-                string line = $"{state} {recipe.Name}: {CondenseCombinationSummary(recipe.EffectSummary)}";
+                string line = $"{state} {GetLocalizedCombinationName(recipe)}: {CondenseCombinationSummary(GetLocalizedCombinationEffect(recipe))}";
                 return WrapDisplayLine(line, maxCharacters, "  ");
             }));
         }
 
         private static string CondenseCombinationSummary(string summary)
         {
+            if (GameLocalization.IsEnglish)
+            {
+                return summary;
+            }
+
             return summary
                 .Replace("전투 시작 ", string.Empty, StringComparison.Ordinal)
                 .Replace("이번 턴 ", string.Empty, StringComparison.Ordinal)
@@ -10723,11 +11041,11 @@ namespace ThreeDoorsOfFate.Game
         {
             IReadOnlyList<CombinationRecipe> completedRecipes = GetCombinationRecipes()
                 .Where(IsCombinationComplete)
-                .OrderBy(recipe => recipe.Name)
+                .OrderBy(GetLocalizedCombinationName)
                 .ToList();
             string completedText = completedRecipes.Count == 0
                 ? "아직 완성된 카드 시너지 조합이 없습니다."
-                : string.Join("\n", completedRecipes.Select(recipe => $"- {recipe.Name}: {recipe.EffectSummary}"));
+                : string.Join("\n", completedRecipes.Select(recipe => $"- {GetLocalizedCombinationName(recipe)}: {GetLocalizedCombinationEffect(recipe)}"));
 
             return string.Join("\n\n", new[]
             {
@@ -10875,10 +11193,10 @@ namespace ThreeDoorsOfFate.Game
         {
             return characterClass switch
             {
-                CharacterClass.Gambler => "도박사",
-                CharacterClass.Oracle => "점술가",
-                CharacterClass.Exile => "추방자",
-                _ => "방랑자"
+                CharacterClass.Gambler => L("class.gambler.name"),
+                CharacterClass.Oracle => L("class.oracle.name"),
+                CharacterClass.Exile => L("class.exile.name"),
+                _ => L("class.wanderer.name")
             };
         }
 
@@ -10998,7 +11316,7 @@ namespace ThreeDoorsOfFate.Game
             rectTransform.SetParent(parent, false);
             Text uiText = child.GetComponent<Text>();
             uiText.font = uiFont;
-            uiText.text = text;
+            uiText.text = GameLocalization.TextFromSource(text);
             uiText.fontSize = fontSize;
             uiText.alignment = alignment;
             uiText.color = color;
@@ -11010,6 +11328,7 @@ namespace ThreeDoorsOfFate.Game
             uiText.resizeTextForBestFit = false;
             uiText.resizeTextMinSize = Mathf.Max(9, fontSize - 8);
             uiText.resizeTextMaxSize = fontSize;
+            BindLocalizedSourceText(uiText, text);
             return uiText;
         }
 
@@ -11076,14 +11395,19 @@ namespace ThreeDoorsOfFate.Game
             return button;
         }
 
-        private Button AddSettingsMenuButton(RectTransform parent, string name, string label, int fontSize)
+        private Button AddSettingsMenuButton(
+            RectTransform parent,
+            string name,
+            string label,
+            int fontSize,
+            GameSfxCue cue = GameSfxCue.UiAccept)
         {
             Image image = AddImage(parent, name, Color.white);
             image.sprite = settingsButtonSprite != null ? settingsButtonSprite : buttonIdleSprite;
             image.type = GetImageType(image.sprite);
             image.raycastTarget = true;
 
-            Button button = AddSfxButton(image.gameObject);
+            Button button = AddSfxButton(image.gameObject, cue);
             button.targetGraphic = image;
             button.colors = CreateButtonColors();
             SpriteState spriteState = button.spriteState;
@@ -11245,35 +11569,42 @@ namespace ThreeDoorsOfFate.Game
             return button;
         }
 
-        private Sprite GetSettingsGearSprite()
+        private Sprite GetTopHeaderBoxSprite()
         {
-            if (runtimeSettingsGearSprite == null && settingsIconSprite != null)
-            {
-                runtimeSettingsGearSprite = SettingsGearSpriteFactory.Create(settingsIconSprite);
-            }
-
-            return runtimeSettingsGearSprite != null ? runtimeSettingsGearSprite : settingsIconSprite;
+            return classBackButtonSprite != null
+                ? classBackButtonSprite
+                : classConfirmButtonSprite != null
+                    ? classConfirmButtonSprite
+                    : statusHintFrameSprite != null
+                        ? statusHintFrameSprite
+                        : classInfoButtonSprite != null
+                            ? classInfoButtonSprite
+                            : buttonIdleSprite;
         }
 
-        private void AddButtonIcon(Button button, string name, Sprite sprite, Vector2 min, Vector2 max)
+        private RectTransform AddTopHeaderLabelBox(
+            RectTransform parent,
+            string name,
+            string label,
+            UiNormalizedRect bounds,
+            int fontSize)
         {
-            if (button == null || sprite == null)
-            {
-                return;
-            }
+            RectTransform box = AddPanel(parent, name, Color.white, GetTopHeaderBoxSprite());
+            Image boxImage = box.GetComponent<Image>();
+            boxImage.type = Image.Type.Simple;
+            boxImage.raycastTarget = false;
+            SetAnchors(box, bounds);
 
-            RectTransform buttonRoot = button.GetComponent<RectTransform>();
-            Image icon = AddImage(buttonRoot, name, Color.white);
-            icon.sprite = sprite;
-            icon.preserveAspect = true;
-            icon.raycastTarget = false;
-            SetAnchors(icon.rectTransform, min, max);
-
-            Text label = button.GetComponentInChildren<Text>();
-            if (label != null)
-            {
-                SetAnchors(label.rectTransform, new Vector2(0.08f, 0.14f), new Vector2(0.92f, 0.86f));
-            }
+            Text text = AddText(box, $"{name} 라벨", label, fontSize, TextAnchor.MiddleCenter, new Color(0.78f, 0.96f, 0.90f, 1f));
+            text.font = titleFont;
+            text.fontStyle = FontStyle.Bold;
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = Mathf.Max(12, fontSize - 8);
+            text.resizeTextMaxSize = fontSize;
+            text.raycastTarget = false;
+            AddTextGlow(text, new Color(0f, 0f, 0f, 0.88f), new Color(0.08f, 0.62f, 0.58f, 0.32f), new Vector2(0.9f, -1.0f));
+            SetAnchors(text.rectTransform, new Vector2(0.145f, 0.235f), new Vector2(0.855f, 0.765f));
+            return box;
         }
 
         private static void SetButtonLabel(Button button, string label)
@@ -11281,7 +11612,8 @@ namespace ThreeDoorsOfFate.Game
             Text text = button.GetComponentInChildren<Text>();
             if (text != null)
             {
-                text.text = label;
+                text.text = GameLocalization.TextFromSource(label);
+                BindLocalizedSourceText(text, label);
             }
         }
 
@@ -11720,3 +12052,4 @@ namespace ThreeDoorsOfFate.Game
         }
     }
 }
+

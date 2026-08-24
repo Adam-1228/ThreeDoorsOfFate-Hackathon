@@ -171,13 +171,13 @@ namespace ThreeDoorsOfFate.UI
         public static readonly UiNormalizedRect AchievementCardTextSafe = new UiNormalizedRect(0.070f, 0.140f, 0.930f, 0.860f);
 
         public static readonly UiNormalizedRect StatusModalSafe = new UiNormalizedRect(0.07f, 0.09f, 0.93f, 0.86f);
-        public static readonly UiNormalizedRect StatusEquipmentPanel = new UiNormalizedRect(0.035f, 0.145f, 0.315f, 0.845f);
-        public static readonly UiNormalizedRect StatusSynergyCard = new UiNormalizedRect(0.335f, 0.515f, 0.635f, 0.845f);
-        public static readonly UiNormalizedRect StatusDeckCard = new UiNormalizedRect(0.655f, 0.515f, 0.955f, 0.845f);
-        public static readonly UiNormalizedRect StatusAwakeningCard = new UiNormalizedRect(0.335f, 0.145f, 0.635f, 0.485f);
-        public static readonly UiNormalizedRect StatusTraitsCard = new UiNormalizedRect(0.655f, 0.145f, 0.955f, 0.485f);
+        public static readonly UiNormalizedRect StatusEquipmentPanel = new UiNormalizedRect(0.070f, 0.175f, 0.315f, 0.815f);
+        public static readonly UiNormalizedRect StatusSynergyCard = new UiNormalizedRect(0.340f, 0.515f, 0.625f, 0.815f);
+        public static readonly UiNormalizedRect StatusDeckCard = new UiNormalizedRect(0.650f, 0.515f, 0.930f, 0.815f);
+        public static readonly UiNormalizedRect StatusAwakeningCard = new UiNormalizedRect(0.340f, 0.175f, 0.625f, 0.485f);
+        public static readonly UiNormalizedRect StatusTraitsCard = new UiNormalizedRect(0.650f, 0.175f, 0.930f, 0.485f);
         public static readonly UiNormalizedRect StatusDetailBody = new UiNormalizedRect(0.090f, 0.160f, 0.910f, 0.770f);
-        public static readonly UiNormalizedRect StatusFramedTextSafe = new UiNormalizedRect(0.085f, 0.120f, 0.915f, 0.880f);
+        public static readonly UiNormalizedRect StatusFramedTextSafe = new UiNormalizedRect(0.120f, 0.120f, 0.880f, 0.880f);
         public static readonly UiNormalizedRect StatusCompactFrameTextSafe = new UiNormalizedRect(0.080f, 0.190f, 0.920f, 0.810f);
         public static readonly UiNormalizedRect CollectionGrid = new UiNormalizedRect(0.10f, 0.46f, 0.90f, 0.80f);
         public static readonly UiNormalizedRect CollectionDetail = new UiNormalizedRect(0.11f, 0.19f, 0.89f, 0.43f);
@@ -185,7 +185,7 @@ namespace ThreeDoorsOfFate.UI
         public static readonly UiNormalizedRect LogHeading = new UiNormalizedRect(0.04f, 0.91f, 0.96f, 0.985f);
         public static readonly UiNormalizedRect LogBody = new UiNormalizedRect(0.105f, 0.075f, 0.895f, 0.855f);
         public static readonly UiNormalizedRect LogTextSafe = new UiNormalizedRect(0.045f, 0.055f, 0.955f, 0.945f);
-        public static readonly UiNormalizedRect DoorHintSafe = new UiNormalizedRect(0.160f, 0.180f, 0.840f, 0.310f);
+        public static readonly UiNormalizedRect DoorHintSafe = new UiNormalizedRect(0.160f, 0.180f, 0.840f, 0.275f);
 
         private static readonly UiNormalizedRect[] SafeAreas =
         {

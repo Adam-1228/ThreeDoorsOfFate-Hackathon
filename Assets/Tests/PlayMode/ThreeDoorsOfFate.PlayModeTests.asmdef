@@ -1,0 +1,20 @@
+{
+  "name": "ThreeDoorsOfFate.PlayModeTests",
+  "rootNamespace": "ThreeDoorsOfFate.Tests",
+  "references": [
+    "ThreeDoorsOfFate.Platform",
+    "ThreeDoorsOfFate.Ads"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "designId": "single-sealed-fate-door-v1",
+  "generatedAt": "2026-08-05T14:58:53+09:00",
+  "generator": "OpenAI built-in ImageGen",
+  "productionPath": "Assets/Art/Branding/AppIcon/three_doors_app_icon_1024.png",
+  "productionSha256": "3e46dfb37fe7b574cd38e7d770948c0a06cdf01c721963fc745e05f20dd4a8dd",
+  "previousPath": "/Users/apple/Documents/game/Builds/AppIcon/Previous/three_doors_app_icon_1024_20260805.png",
+  "previousSha256": "3e21b7ce27578500511fdcc9c6c8169c5a9a5d7dacec9a9a4b914d4d59268c9a",
+  "metaGuid": "f1454d7d40b174ed19f443eba524129b",
+  "metaSha256": "f0c24da60bc8fb53f77394b356c17fe16b27a1ef154a3baa72c4f5139c7dab6b",
+  "generatedSourcePath": "/Users/apple/Documents/game/Builds/AppIcon/Generated/single_sealed_fate_door_source.png",
+  "normalizedSourcePath": "/Users/apple/Documents/game/Builds/AppIcon/Generated/single_sealed_fate_door_1024.png",
+  "qaContactSheetPath": "/Users/apple/Documents/game/Builds/AppIcon/QA/single_sealed_fate_door_contact_sheet.png",
+  "referencePaths": [
+    "Assets/Art/Backgrounds/bg_main_menu_three_doors.png",
+    "Assets/Art/UI/MainMenu/title_logo_three_doors.png",
+    "Assets/Art/Branding/AppIcon/three_doors_app_icon_1024.png"
+  ],
+  "finalPrompt": "Use case: stylized-concept. Asset type: final iOS game app icon for Three Doors of Fate. Image 1 is a style reference for cavern stone, teal illumination, and aged-gold materials; Image 2 is a style reference for gold edge treatment and teal inset material; Image 3 is a tonal reference only and its three-door composition must become one door. Create a brand-new square app icon showing exactly one centered closed monumental gothic fate door occupying about 75 percent of the square, immediately recognizable at 40 pixels. Use charcoal-black stone, one broad aged-gold arch and frame, one bright teal vertical fissure, and one large three-faceted diamond fate seal at the optical center. Use a restrained black-to-deep-teal carved-stone backdrop, front-facing near-perfect symmetry, thick readable shapes, a generous safe margin, opaque full-bleed square artwork, and premium dark-fantasy painted game-icon styling. No transparency, title, letters, words, numbers, runic writing, text-like marks, characters, faces, skulls, dice, cards, UI panels, buttons, watermark, logo text, Apple hardware, baked rounded corners, multiple doors, dominant purple or red, or tiny decorative clutter."
+}

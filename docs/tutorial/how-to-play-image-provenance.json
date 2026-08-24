@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "createdOn": "2026-08-08",
+  "ownership": "project-owned gameplay captures and project-owned game art",
+  "generator": "OpenAI built-in ImageGen",
+  "policy": "Existing Korean gameplay text is never intentionally generated or rewritten. Accuracy wins over decorative emphasis.",
+  "outputs": [
+    {
+      "asset": "how_to_play_01_class.png",
+      "source": "/Users/apple/Documents/game/Builds/Tutorial/Sources/how_to_play_source_01_class.png",
+      "sourceSha256": "9b65abe047e76537681643e84bd6782edbe0cfaeaf36bc930ddd9ba88d64bed3",
+      "sha256": "e7b564f8be8de510dc9ad5673baeee82c60da6ef9a3af5af6f59e75d462b8ca4",
+      "generatedKoreanExplanation": false,
+      "selection": "accepted ImageGen edit",
+      "selectedFrom": "/Users/apple/.codex/generated_images/019f5bd3-0654-7980-9535-88cceadab1e8/exec-0f8bee7d-f056-426f-8209-ccf9e2da8e16.png",
+      "editIntent": "Subtle teal focus around the three current character cards and antique-gold emphasis near the current difficulty row; no added explanation text."
+    },
+    {
+      "asset": "how_to_play_02_doors.png",
+      "source": "/Users/apple/Documents/game/Builds/Tutorial/Sources/how_to_play_source_02_doors.png",
+      "sourceSha256": "0248c73916512dc54d329e49dd7f0b369ba1d5a3fc7f35d2a3863b2153844ccf",
+      "sha256": "0248c73916512dc54d329e49dd7f0b369ba1d5a3fc7f35d2a3863b2153844ccf",
+      "generatedKoreanExplanation": false,
+      "selection": "unmodified gameplay capture selected after two rejected ImageGen edits",
+      "rejectedCandidateSha256": [
+        "0278ac1ef6b3daf7441b10fef5941f098b97d9d97efbc1444c75b0c30442c8c6",
+        "821e695385ceecb9820976bdd4d7e3ea88c06fdc812c4874e3800373462d61d2"
+      ],
+      "editIntent": "ImageGen changed door and button labels, so the exact current gameplay capture was retained."
+    },
+    {
+      "asset": "how_to_play_03_combat.png",
+      "source": "/Users/apple/Documents/game/Builds/Tutorial/Sources/how_to_play_source_03_combat.png",
+      "sourceSha256": "67f991023f636837d402d6f5221734594258e2061327e82792559479fa82791d",
+      "sha256": "67f991023f636837d402d6f5221734594258e2061327e82792559479fa82791d",
+      "generatedKoreanExplanation": false,
+      "selection": "unmodified gameplay capture selected after two rejected ImageGen edits",
+      "rejectedCandidateSha256": [
+        "f6a74978996b76a9321ce210dc09c648e227af009cf3bb62c15fe14ca8461c07",
+        "4466a5b55842b09d6e9f5493b5650fb2bdee9b1b5f7392795d18222ec7dd6dd1"
+      ],
+      "editIntent": "ImageGen changed progress-log text, so the exact current gameplay capture was retained."
+    },
+    {
+      "asset": "how_to_play_04_card_use.png",
+      "source": "/Users/apple/Documents/game/Builds/Tutorial/Sources/how_to_play_source_04_card_use.png",
+      "sourceSha256": "20fdc26f6835e82882cc022276b7ba02bb851cac2d2569f47d12e0acf30c192a",
+      "sha256": "f16113b621ef7237b2464e5f5f9839f02cfa3944317432d62da01d873d3b44df",
+      "generatedKoreanExplanation": false,
+      "selection": "accepted ImageGen edit",
+      "selectedFrom": "/Users/apple/.codex/generated_images/019f5bd3-0654-7980-9535-88cceadab1e8/exec-323a37fa-a4ee-40b6-a139-c51c3f95d70f.png",
+      "editIntent": "Teal highlight and antique-gold nonverbal path from a small hand card to the enlarged preview and existing use button."
+    },
+    {
+      "asset": "how_to_play_05_growth.png",
+      "source": "/Users/apple/Documents/game/Builds/Tutorial/Sources/how_to_play_source_05_growth.png",
+      "sourceSha256": "1b6bcb3dd2212251ccad33e05aa879adf2256236905a317e16620872c8b3e450",
+      "sha256": "fcfff948c6c86ce4f6c254e52477d71c2a757fd7513d5e4d35c7bf652266e708",
+      "generatedKoreanExplanation": false,
+      "selection": "accepted narrowed ImageGen edit after one rejected draft",
+      "selectedFrom": "/Users/apple/.codex/generated_images/019f5bd3-0654-7980-9535-88cceadab1e8/exec-e5f4f45c-e351-4fa6-becf-f302badec1fa.png",
+      "rejectedCandidateSha256": [
+        "0bccb885777898bd7a8bbb5e268f66aeffdd194e5474051f6df8f10d9b90b98d"
+      ],
+      "editIntent": "Faint teal outlines distinguish feature, trait and build choices; antique-gold emphasis keeps the rewarded relic strip visible."
+    }
+  ]
+}
