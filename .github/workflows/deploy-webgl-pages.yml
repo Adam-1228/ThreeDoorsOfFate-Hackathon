@@ -1,0 +1,92 @@
+name: Deploy WebGL release to GitHub Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: GitHub release tag containing the WebGL ZIP
+        required: true
+        default: v1.1.0
+        type: string
+      asset_name:
+        description: WebGL ZIP asset name
+        required: true
+        default: ThreeDoorsOfFate-WebGL-v1.1.0.zip
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Download WebGL release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          ASSET_NAME: ${{ inputs.asset_name }}
+        run: |
+          set -euo pipefail
+          mkdir -p download
+          gh release download "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "$ASSET_NAME" \
+            --dir download
+          test -f "download/$ASSET_NAME"
+
+      - name: Prepare and validate Pages site
+        env:
+          ASSET_NAME: ${{ inputs.asset_name }}
+        run: |
+          set -euo pipefail
+          mkdir -p extracted site
+          unzip -q "download/$ASSET_NAME" -d extracted
+
+          index_path="$(find extracted -type f -name index.html -print -quit)"
+          if [[ -z "$index_path" ]]; then
+            echo "No index.html was found in $ASSET_NAME" >&2
+            exit 1
+          fi
+
+          source_root="$(dirname "$index_path")"
+          cp -a "$source_root"/. site/
+          touch site/.nojekyll
+
+          if find site -type l -print -quit | grep -q .; then
+            echo "The Pages site must not contain symbolic links." >&2
+            exit 1
+          fi
+
+          site_bytes="$(du -sb site | cut -f1)"
+          pages_limit_bytes=1000000000
+          if (( site_bytes > pages_limit_bytes )); then
+            echo "Site size $site_bytes exceeds the 1 GB GitHub Pages limit." >&2
+            exit 1
+          fi
+
+          test -f site/index.html
+          echo "Prepared Pages site: $site_bytes bytes"
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

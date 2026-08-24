@@ -32,7 +32,7 @@
 
 - Windows 배포 빌드의 실행 파일 선택과 최신성 검사를 강화했습니다.
 - Unity EditMode 147개와 Python 저장소 계약 테스트 10개가 통과한 상태를 기준으로 기록했습니다.
-- Windows 빌드는 확인했지만 Mac, Xcode, iOS 실기기 서명·실행은 Windows 환경에서 새로 확인하지 않았습니다.
+- Windows 빌드와 실제 Mac의 macOS 로컬 플레이를 확인하고, Codex로 연결한 Windows–Mac 양방향 테스트를 수행했습니다. Xcode·iOS 실기기 서명 및 실행은 별도 검증이 필요합니다.
 
 ### 밸런스와 콘텐츠 호환성
 
