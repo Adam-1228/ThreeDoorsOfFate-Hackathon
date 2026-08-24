@@ -72,8 +72,8 @@ Windows 배치 빌드:
 ## 검증 상태
 
 - v1.1.0 Windows 플레이어 빌드: 성공
-- Unity EditMode: 138/138 통과
-- Apple 플랫폼 보조 스크립트 테스트: 7/7 통과
+- Unity EditMode: 147/147 통과
+- Python 저장소 계약 테스트: 10/10 통과 (Apple 플랫폼 7개, 밸런스 3개)
 - v1.0.0 WebGL BuildReport: 성공, 반환 코드 0
 - WebGL 빌드는 로컬 HTTP 서버 실행을 전제로 합니다.
 - macOS/iOS 빌드 자동화는 포함하지만, 실제 Mac·Xcode·실기기 실행은 아직 검증하지 않았습니다.
