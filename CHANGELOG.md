@@ -44,8 +44,9 @@
 
 ### 배포 참고
 
-- v1.1.0은 최신 소스와 태그를 제공하는 릴리스입니다.
-- v1.0.0 릴리스의 WebGL 압축 파일은 계속 받을 수 있지만 v1.1.0 변경을 포함하지 않는 레거시 빌드입니다.
+- v1.1.0 릴리스에 `ThreeDoorsOfFate-WebGL-v1.1.0.zip`을 추가했습니다.
+- [GitHub Pages](https://adam-1228.github.io/ThreeDoorsOfFate-Hackathon/)에서 설치나 로그인 없이 v1.1.0 WebGL 빌드를 실행할 수 있습니다.
+- WebGL 사이트 17개 파일의 합계는 723,438,354바이트이며, 로컬 Chrome과 공개 Pages에서 게임 시작 흐름을 확인했습니다.
 - 밸런스 동기화용 Python 계약 3개와 Windows Unity EditMode 회귀 테스트 9개가 모두 통과했습니다.
 
 ## [v1.0.0] - 2026-07-14

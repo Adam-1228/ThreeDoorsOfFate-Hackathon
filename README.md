@@ -2,7 +2,7 @@
 
 세 개의 문 중 하나를 고르고, 카드와 주사위로 빚과 운명을 돌파하는 한국어 덱빌딩 로그라이크입니다.
 
-[최신 릴리스 보기](https://github.com/Adam-1228/ThreeDoorsOfFate-Hackathon/releases/latest) · [변경 이력](CHANGELOG.md)
+[브라우저에서 바로 플레이](https://adam-1228.github.io/ThreeDoorsOfFate-Hackathon/) · [최신 릴리스 보기](https://github.com/Adam-1228/ThreeDoorsOfFate-Hackathon/releases/latest) · [변경 이력](CHANGELOG.md)
 
 ![직업 선택](docs/screenshots/class-selection.png)
 
@@ -26,9 +26,11 @@
 - 카드·문·직업 초상에 포인터를 올리면 추가 정보와 시각 반응을 확인할 수 있습니다.
 - 설정 화면에서 음악과 효과음 음량을 조절할 수 있습니다.
 
-## WebGL 실행 (v1.0.0 레거시 빌드)
+## 브라우저에서 플레이 (v1.1.0)
 
-현재 공개 WebGL 바이너리는 [v1.0.0 릴리스](https://github.com/Adam-1228/ThreeDoorsOfFate-Hackathon/releases/tag/v1.0.0)의 `ThreeDoorsOfFate-WebGL-v1.0.0.zip`입니다. 이 파일은 v1.1.0의 UI·오디오·Apple 플랫폼 개선을 포함하지 않는 레거시 빌드입니다. 내려받아 압축을 푼 뒤, `index.html`이 있는 폴더를 로컬 HTTP 서버로 제공합니다.
+[GitHub Pages 플레이 링크](https://adam-1228.github.io/ThreeDoorsOfFate-Hackathon/)에서 설치나 로그인 없이 v1.1.0 WebGL 빌드를 실행할 수 있습니다. 공개 사이트는 723,438,354바이트이며 첫 실행은 대용량 데이터를 내려받아 압축 해제하므로 네트워크와 기기 성능에 따라 몇 분 걸릴 수 있습니다.
+
+오프라인 보관용 파일은 [v1.1.0 릴리스](https://github.com/Adam-1228/ThreeDoorsOfFate-Hackathon/releases/tag/v1.1.0)의 `ThreeDoorsOfFate-WebGL-v1.1.0.zip`입니다. 내려받아 압축을 푼 뒤, `index.html`이 있는 폴더를 로컬 HTTP 서버로 제공합니다.
 
 ```powershell
 python -m http.server 8000
@@ -36,7 +38,7 @@ python -m http.server 8000
 
 브라우저에서 <http://localhost:8000>을 엽니다. 브라우저 보안 정책 때문에 `index.html`을 파일 탐색기에서 직접 여는 방식은 지원하지 않습니다.
 
-현재 `WebGL.data.unityweb`은 707,096,956바이트이므로 GitHub의 일반 파일 한도를 넘습니다. 따라서 GitHub Pages 대신 Release 다운로드 빌드로 제공합니다.
+브라우저 빌드는 GitHub Release 자산을 GitHub Actions가 검증·추출해 Pages에 배포합니다. 대용량 `WebGL.data.unityweb`은 저장소 커밋에 포함하지 않습니다.
 
 ## 소스 열기와 빌드
 
@@ -74,8 +76,9 @@ Windows 배치 빌드:
 - v1.1.0 Windows 플레이어 빌드: 성공
 - Unity EditMode: 147/147 통과
 - Python 저장소 계약 테스트: 10/10 통과 (Apple 플랫폼 7개, 밸런스 3개)
-- v1.0.0 WebGL BuildReport: 성공, 반환 코드 0
-- WebGL 빌드는 로컬 HTTP 서버 실행을 전제로 합니다.
+- v1.1.0 WebGL BuildReport: 성공, 반환 코드 0
+- 로컬 HTTP/Chrome 플레이: 메인 메뉴 → 난이도·직업 선택 → 도박사 상세 → 세 개 문 선택 화면까지 확인
+- GitHub Pages 배포: Actions 실행 `32687257949` 성공, 공개 HTTPS 로드 100% 및 게임 시작 확인
 - macOS 로컬 플레이는 실제 Mac에서 확인했으며, Codex로 연결한 Windows–Mac 양방향 테스트를 수행했습니다.
 - iOS 실기기·스토어 제출은 별도 검증이 필요하며, 모바일 스토어 제출 준비 완료를 주장하지 않습니다.
 
@@ -106,4 +109,4 @@ Windows 배치 빌드:
 
 ## English summary
 
-Three Doors of Fate is a Korean-first, single-player deck-building roguelike built with Unity. Choose one of three doors, manage cards, dice, debt and status effects, defeat bosses, and extend the run through an endless record mode. The v1.1.0 release contains the latest source and Windows-oriented improvements; the downloadable WebGL binary remains the legacy v1.0.0 build.
+Three Doors of Fate is a Korean-first, single-player deck-building roguelike built with Unity. Choose one of three doors, manage cards, dice, debt and status effects, defeat bosses, and extend the run through an endless record mode. The v1.1.0 WebGL build is playable through GitHub Pages, and the release also provides the verified downloadable WebGL archive.
