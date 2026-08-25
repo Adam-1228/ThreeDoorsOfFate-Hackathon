@@ -44,15 +44,19 @@ The user explicitly authorized Unity use for this submission. Unity `6000.4.11f1
 
 At 2026-08-25 22:18 KST, Xcode reported `Upload succeeded`, `Uploaded package is processing`, and `EXPORT SUCCEEDED` for the fresh archive. The upload returned exit code `0`. Xcode emitted one non-blocking symbol warning because the Unity installation does not provide a matching `UnityRuntime.framework` dSYM; the app and UnityFramework dSYMs were present and UUID-matched.
 
-## App Store submission gate
+## App Store Review submission — 2026-08-26 KST
 
-The binary is uploaded. Review submission remains gated until App Store Connect exposes the processed build whose bundle identifier, marketing version, and build number are exactly:
-
-- `com.adam.threedoorsfate`
-- `1.2.0`
-- `12000`
-
-After processing, select only that build, create the 12 prepared Game Center achievements, verify 20 achievements and 1,000 points in total, preserve manual release and the existing distribution/privacy settings, and submit the version plus Game Center components together.
+- App Store Connect exposed processed build `1.2.0 (12000)` as `제출 준비 완료`; no invalid-binary or export-compliance error was present.
+- The exact Korean and English (U.S.) version metadata and the complete English App Review notes were saved and reread against the prepared source files.
+- Twelve hidden, non-replayable Game Center achievements were created with both localizations and their matching images. The authoritative Game Center list showed `20` achievements and `1,000` points, with all 12 new identifiers in `심사 준비됨` state.
+- The selected build was exactly `1.2.0 (12000)`. The archive evidence remained `ITSAppUsesNonExemptEncryption=false`; App Store Connect did not present an additional encryption questionnaire after build selection.
+- The release method was explicitly changed to `자동으로 버전 출시` (automatic release after approval), superseding the earlier manual-release preparation instruction for this submission. Immediate, non-phased automatic update release and existing ratings were retained.
+- Immediately before submission, the Korean and English metadata matched their JSON sources, the App Review notes matched the Markdown source, build `12000` was selected, automatic release was checked, and Game Center was reverified at 20 achievements / 1,000 points.
+- Submitted at `2026-08-26 08:57 KST` by `성치용`.
+- Submission ID: `8a2ce9d1-c7fa-4d48-bfc5-b95c6fbcdb96`.
+- Submitted components: `13` total — iOS app `1.2.0 (12000)` plus `12` Game Center achievements.
+- Authoritative post-submit App Store Connect status: `심사 대기 중` for the submission, the app version, and all 12 achievements.
+- Existing territories, price, App Privacy, age rating, DSA/trader state, screenshots, review contact values, and unrelated settings were not changed.
 
 Prepared submission sources:
 
