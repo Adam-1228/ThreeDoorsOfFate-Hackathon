@@ -43,6 +43,19 @@ namespace ThreeDoorsOfFate.Platform
     public static class AchievementProgress
     {
         private const string CompletionKeySegment = "Achievement.";
+        private const int PersistentAbyssCollectionSize = 30;
+        private static readonly string[] PersistentCharacterNames =
+        {
+            "Gambler",
+            "Oracle",
+            "Exile"
+        };
+        private static readonly string[] PersistentDifficultyNames =
+        {
+            "Easy",
+            "Normal",
+            "Hard"
+        };
 
         private static readonly AchievementDefinition AbyssCollectorDefinition = new(
             "com.adam.threedoorsfate.achievement.abyss_collector",
@@ -375,6 +388,97 @@ namespace ThreeDoorsOfFate.Platform
                     : null;
         }
 
+        public static bool BackfillPersistentPlayerPrefs(string keyPrefix)
+        {
+            ValidateKeyPart(keyPrefix, nameof(keyPrefix));
+            bool changed = false;
+
+            bool reachedTwentiethDoor = PersistentCharacterNames.Any(character =>
+                PersistentDifficultyNames.Any(difficulty =>
+                    IsTwentiethDoorRecord(PlayerPrefs.GetInt(
+                        $"{keyPrefix}EndlessRecord.{character}.{difficulty}",
+                        0))));
+            if (reachedTwentiethDoor)
+            {
+                changed |= Complete(keyPrefix, TwentiethDoorDefinition);
+            }
+
+            int survivorCount = PersistentCharacterNames.Count(character =>
+                PlayerPrefs.GetInt(
+                    $"{keyPrefix}SurvivorTitle.{character}",
+                    0) > 0);
+            if (HasThreeSurvivors(survivorCount))
+            {
+                changed |= Complete(keyPrefix, ThreeSurvivorsDefinition);
+            }
+
+            foreach (string character in PersistentCharacterNames)
+            {
+                PersistentEquippedItemSaveData savedEquipment = ReadJson<
+                    PersistentEquippedItemSaveData>(
+                    PlayerPrefs.GetString(
+                        $"{keyPrefix}EquippedItems.{character}",
+                        string.Empty));
+                PersistentEquippedItemSaveData savedDiscoveries = ReadJson<
+                    PersistentEquippedItemSaveData>(
+                    PlayerPrefs.GetString(
+                        $"{keyPrefix}DiscoveredItems.{character}",
+                        string.Empty));
+                HashSet<string> discoveredItems = ToIdSet(savedDiscoveries?.itemIds);
+                discoveredItems.UnionWith(ToIdSet(savedEquipment?.itemIds));
+                if (discoveredItems.Count(IsRecognizedRunItemId)
+                    >= PersistentAbyssCollectionSize)
+                {
+                    changed |= Complete(keyPrefix, AbyssCollectorDefinition);
+                }
+
+                if (!HasAllRunItemTypes(savedEquipment?.itemIds))
+                {
+                    continue;
+                }
+
+                changed |= Complete(keyPrefix, TripleContractDefinition);
+                break;
+            }
+
+            PersistentRunSaveData savedRun = ReadJson<PersistentRunSaveData>(
+                PlayerPrefs.GetString(
+                    $"{keyPrefix}HardRunSave",
+                    string.Empty));
+            if (savedRun == null)
+            {
+                return changed;
+            }
+
+            IReadOnlyList<string> savedDeck =
+                savedRun.deckCardIds ?? new List<string>();
+            if (IsDeckFifty(savedDeck.Count))
+            {
+                changed |= Complete(keyPrefix, DeckFiftyDefinition);
+            }
+
+            if (HasAllRunItemTypes(savedRun.equippedItemIds))
+            {
+                changed |= Complete(keyPrefix, TripleContractDefinition);
+            }
+
+            if ((savedRun.buildUpgradeLevels ?? new List<PersistentBuildUpgrade>())
+                .Any(upgrade => upgrade != null && IsMasterpieceLevel(upgrade.level)))
+            {
+                changed |= Complete(keyPrefix, BuildMasterpieceDefinition);
+            }
+
+            foreach (KeyValuePair<string, AchievementDefinition> build in BuildDefinitions)
+            {
+                if (IsBuildComplete(build.Key, savedDeck))
+                {
+                    changed |= Complete(keyPrefix, build.Value);
+                }
+            }
+
+            return changed;
+        }
+
         public static string GetCompletionKey(string keyPrefix, string storageSuffix)
         {
             ValidateKeyPart(keyPrefix, nameof(keyPrefix));
@@ -417,6 +521,62 @@ namespace ThreeDoorsOfFate.Platform
                 1);
             PlayerPrefs.Save();
             return true;
+        }
+
+        private static bool HasAllRunItemTypes(IEnumerable<string> itemIds)
+        {
+            HashSet<string> ids = ToIdSet(itemIds);
+            return HasTripleContract(
+                ids.Any(id => id.StartsWith("relic_", StringComparison.Ordinal)),
+                ids.Any(id => id.StartsWith("blessing_", StringComparison.Ordinal)),
+                ids.Any(id => id.StartsWith("curse_", StringComparison.Ordinal)));
+        }
+
+        private static bool IsRecognizedRunItemId(string itemId)
+        {
+            return !string.IsNullOrWhiteSpace(itemId)
+                && (itemId.StartsWith("relic_", StringComparison.Ordinal)
+                    || itemId.StartsWith("blessing_", StringComparison.Ordinal)
+                    || itemId.StartsWith("curse_", StringComparison.Ordinal));
+        }
+
+        private static T ReadJson<T>(string json)
+            where T : class
+        {
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return null;
+            }
+
+            try
+            {
+                return JsonUtility.FromJson<T>(json);
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
+        }
+
+        [Serializable]
+        private sealed class PersistentEquippedItemSaveData
+        {
+            public List<string> itemIds = new();
+        }
+
+        [Serializable]
+        private sealed class PersistentRunSaveData
+        {
+            public List<string> deckCardIds = new();
+            public List<string> equippedItemIds = new();
+            public List<PersistentBuildUpgrade> buildUpgradeLevels = new();
+        }
+
+        [Serializable]
+        private sealed class PersistentBuildUpgrade
+        {
+            public string id = string.Empty;
+            public int level;
         }
 
         private static HashSet<string> ToIdSet(IEnumerable<string> ids)

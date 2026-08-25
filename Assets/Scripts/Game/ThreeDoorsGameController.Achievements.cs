@@ -841,14 +841,18 @@ namespace ThreeDoorsOfFate.Game
                 CompleteAchievementAndTrack(AchievementProgress.FateCleaver);
             }
 
-            if (AchievementProgress.IsIronWallBlock(playerBlock))
-            {
-                CompleteAchievementAndTrack(AchievementProgress.IronWall);
-            }
-
             if (AchievementProgress.IsFiveCardTurn(cardsPlayedThisTurn))
             {
                 CompleteAchievementAndTrack(AchievementProgress.FiveCardsTurn);
+            }
+        }
+
+        private void TryCompleteIronWallAchievement()
+        {
+            if (phase == GamePhase.Combat
+                && AchievementProgress.IsIronWallBlock(playerBlock))
+            {
+                CompleteAchievementAndTrack(AchievementProgress.IronWall);
             }
         }
 
@@ -933,6 +937,8 @@ namespace ThreeDoorsOfFate.Game
 
         private void TryCompletePersistentAchievements()
         {
+            AchievementProgress.BackfillPersistentPlayerPrefs(
+                PlayerPrefsProgressStore.ProductionPrefix);
             TryCompleteAbyssCollectorFromSavedCharacters();
             TryCompleteBuildAchievement();
             TryCompleteDeckFiftyAchievement();

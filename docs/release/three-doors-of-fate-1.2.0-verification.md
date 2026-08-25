@@ -20,23 +20,26 @@ Prepared: 2026-08-25 (Asia/Seoul)
 - Fixed Settings access on character confirmation/class detail.
 - Progress-log safe padding and wrapping adjustments.
 - Shop relic artwork viewport clipping with one top frame overlay.
+- Centralized every positive Block gain behind the Iron Wall milestone gate.
+- Backfilled persistent achievement signals before startup reporting and after iCloud merges.
 - Version, upload helper, App Store metadata, review notes, changelog, and submission validator updated for `1.2.0 (12000)`.
 
 ## Verification boundary
 
 Fresh local verification on 2026-08-25 produced:
 
-- Python repository contracts: `105` tests, `0` failures.
+- Python repository contracts: `107` tests, `0` failures.
 - App Store local submission validator: passed.
+- Public marketing, support, privacy, and root `app-ads.txt` validation: passed.
 - Python `compileall`: passed.
 - iOS build/export/upload helper `bash -n`: passed.
 - Changed runtime/submission JSON files: `4` parsed successfully.
 - `git diff --check`: passed.
 - Twelve release achievement PNG pointers: canonical Git LFS pointers; all local objects matched their declared SHA-256 and byte size.
 
-The first full-suite pass in the sparse release clone exposed missing pre-existing asset paths plus one obsolete static marker. Only the required existing App icon, iOS bridge, fonts, localized-card assets, tutorial assets, and data paths were hydrated; the obsolete marker was updated for the localized discovery component. The fresh full rerun above then passed all 105 tests.
+The first full-suite pass in the sparse release clone exposed missing pre-existing asset paths plus one obsolete static marker. Only the required existing App icon, iOS bridge, fonts, localized-card assets, tutorial assets, and data paths were hydrated; the obsolete marker was updated for the localized discovery component. Independent source review then identified two release gaps: non-card Block gains did not all reach the Iron Wall completion check, and persistent completion keys could be reported before startup/cloud-merge backfill. Both paths now have regression coverage. The fresh full rerun above then passed all 107 tests.
 
-Unity Editor, Unity batch-mode tests, a new Unity iOS export, Xcode archive creation, TestFlight upload, device execution, and App Store review submission were not run on this Mac. Local policy explicitly prohibits Unity use, and the data volume had less than the required 12 GiB of free space during this release pass.
+Unity EditMode regression tests were added for the centralized Block gate and persistent backfill, but Unity Editor, Unity batch-mode tests, a new Unity iOS export, Xcode archive creation, TestFlight upload, device execution, and App Store review submission were not run on this Mac. Local policy explicitly prohibits Unity use, and the data volume had less than the required 12 GiB of free space during this release pass.
 
 No prior archive or processed build may be relabeled as `1.2.0 (12000)`. A fresh archive built from the `v1.2.0` tag is required.
 

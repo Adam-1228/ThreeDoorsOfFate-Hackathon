@@ -515,6 +515,7 @@ namespace ThreeDoorsOfFate.Game
             EnsureEventSystem();
             GameLocalization.Initialize(Application.systemLanguage);
             RegisterCardLocalizationSources();
+            TryCompletePersistentAchievements();
             BuildShell();
             InitializeRewardedRelicAds();
             EnsureAudioSources();
@@ -5221,7 +5222,7 @@ namespace ThreeDoorsOfFate.Game
 
             if (IsHardModeFeatureActive())
             {
-                playerBlock += 6 + GetHardTraitEndlessBonus();
+                AddPlayerBlock(6 + GetHardTraitEndlessBonus());
                 TriggerCombinationImpact("hard_trait_exile_endless_atonement");
                 AddLog("어려움 특성: 빚 청산으로 방어도를 얻었습니다.");
             }
@@ -5241,7 +5242,7 @@ namespace ThreeDoorsOfFate.Game
 
             if (IsCombinationComplete("no_return_path"))
             {
-                playerBlock += 8;
+                AddPlayerBlock(8);
                 Heal(4);
                 TriggerCombinationImpact("no_return_path");
                 AddLog("조합 발동: 돌아갈 길 없음으로 체력을 회복했습니다.");
@@ -5283,7 +5284,7 @@ namespace ThreeDoorsOfFate.Game
             int level = GetBuildUpgradeLevel(recipe.Id);
             int block = IsBuildUnlocked(recipe) ? 12 + level * 3 : 8;
             exileWoundOathTriggeredThisCombat = true;
-            playerBlock += block;
+            AddPlayerBlock(block);
             TriggerCombinationImpact("trait_exile_wound_oath");
             AddLog($"특성 발동: 상처의 맹세. 방어도 +{block}.");
         }
@@ -5299,7 +5300,7 @@ namespace ThreeDoorsOfFate.Game
                 return;
             }
 
-            playerBlock += 10;
+            AddPlayerBlock(10);
             Heal(5);
             TriggerCombinationImpact("rift_survival");
             AddLog("조합 발동: 균열 생존으로 체력을 회복했습니다.");
@@ -5550,7 +5551,7 @@ namespace ThreeDoorsOfFate.Game
         {
             if (IsCombinationComplete("old_gear_mastery"))
             {
-                playerBlock += 3;
+                AddPlayerBlock(3);
                 combinationTriggersThisCombat.Add("old_gear_mastery_start");
                 QueueEnemyRevealCombinationImpact("old_gear_mastery");
                 AddLog("조합 발동: 낡은 장비 숙련. 전투 시작 방어도 +3.");
@@ -5561,13 +5562,13 @@ namespace ThreeDoorsOfFate.Game
         {
             if (HasRunItem("blessing_star_seal"))
             {
-                playerBlock += 6;
+                AddPlayerBlock(6);
                 AddLog("아이템 효과: 전투 시작 방어도 +6.");
             }
 
             if (HasRunItem("relic_gate_knocker") && enemy != null && (enemy.WasElite || enemy.IsBoss))
             {
-                playerBlock += 10;
+                AddPlayerBlock(10);
                 AddLog("아이템 효과: 정예/보스 전투 시작 방어도 +10.");
             }
 
@@ -5632,7 +5633,7 @@ namespace ThreeDoorsOfFate.Game
 
             if (HasRunItem("relic_exile_brand") && playerHealth * 2 <= playerMaxHealth)
             {
-                playerBlock += 4;
+                AddPlayerBlock(4);
                 AddLog("아이템 효과: 낮은 체력에서 방어도 +4.");
             }
 
@@ -5649,7 +5650,7 @@ namespace ThreeDoorsOfFate.Game
                 return;
             }
 
-            playerBlock += 18;
+            AddPlayerBlock(18);
             AddLog("아이템 효과: 긴급 방어도 +18.");
         }
 
@@ -5687,7 +5688,7 @@ namespace ThreeDoorsOfFate.Game
                 return;
             }
 
-            playerBlock += 5;
+            AddPlayerBlock(5);
             AddLog("아이템 효과: 빚 증가를 줄이고 방어도 +5.");
         }
 
@@ -5862,7 +5863,7 @@ namespace ThreeDoorsOfFate.Game
                 && enemy.IntentAttack > 0
                 && combinationTriggersThisTurn.Add("gap_breaker_block"))
             {
-                playerBlock += 3;
+                AddPlayerBlock(3);
                 TriggerCombinationImpact("gap_breaker");
                 AddLog("조합 발동: 틈새 공략. 방어도 +3.");
             }
@@ -5878,7 +5879,7 @@ namespace ThreeDoorsOfFate.Game
                 && IsCombinationComplete("starlight_guard")
                 && combinationTriggersThisTurn.Add("starlight_guard_block"))
             {
-                playerBlock += 4;
+                AddPlayerBlock(4);
                 TriggerCombinationImpact("starlight_guard");
                 AddLog("조합 발동: 별빛 방어식. 방어도 +4.");
             }
@@ -5975,12 +5976,21 @@ namespace ThreeDoorsOfFate.Game
             return 1;
         }
 
+        private void AddPlayerBlock(int amount)
+        {
+            playerBlock += amount;
+            if (amount > 0)
+            {
+                TryCompleteIronWallAchievement();
+            }
+        }
+
         private void GainBlock(int amount)
         {
             int bonus = GetBuildBlockBonus();
             int combinationBonus = GetCombinationBlockBonus(activeCard) + GetRunItemBlockBonus(activeCard);
             int total = amount + bonus + combinationBonus;
-            playerBlock += total;
+            AddPlayerBlock(total);
             if (total > 0)
             {
                 TriggerCombatFeedback("방어 성공", combatFeedbackDefenseSprite, new Color(0.50f, 1f, 0.94f, 1f));

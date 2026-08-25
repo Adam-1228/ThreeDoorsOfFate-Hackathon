@@ -478,14 +478,33 @@ namespace ThreeDoorsOfFate.Tests
             played.Add("e");
             InvokeWithResult("TryCompleteCombatCardAchievements", 50);
             AssertCompleted("combat.fate_cleaver_50", true);
-            AssertCompleted("combat.iron_wall_40", true);
+            AssertCompleted("combat.iron_wall_40", false);
             AssertCompleted("combat.five_cards_turn", true);
 
             List<string> tracked =
                 GetField<List<string>>("newlyCompletedAchievementNames");
-            Assert.That(tracked, Has.Count.EqualTo(3));
+            Assert.That(tracked, Has.Count.EqualTo(2));
             InvokeWithResult("TryCompleteCombatCardAchievements", 99);
-            Assert.That(tracked, Has.Count.EqualTo(3));
+            Assert.That(tracked, Has.Count.EqualTo(2));
+        }
+
+        [Test]
+        public void EveryBlockSource_UsesTheCentralIronWallMilestoneGate()
+        {
+            SetEnumField("phase", "Combat");
+            SetField("playerBlock", 39);
+
+            InvokeWithResult("AddPlayerBlock", 1);
+
+            Assert.That(GetField<int>("playerBlock"), Is.EqualTo(40));
+            AssertCompleted("combat.iron_wall_40", true);
+            List<string> tracked =
+                GetField<List<string>>("newlyCompletedAchievementNames");
+            Assert.That(tracked, Has.Count.EqualTo(1));
+
+            InvokeWithResult("AddPlayerBlock", 10);
+            Assert.That(GetField<int>("playerBlock"), Is.EqualTo(50));
+            Assert.That(tracked, Has.Count.EqualTo(1));
         }
 
         [Test]

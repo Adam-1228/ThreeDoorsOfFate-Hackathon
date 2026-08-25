@@ -239,5 +239,98 @@ namespace ThreeDoorsOfFate.Tests
                 PlayerPrefs.DeleteKey(key);
             }
         }
+
+        [Test]
+        public void PersistentBackfill_DerivesSavedRunEquipmentRecordsAndTitles()
+        {
+            string prefix = $"ThreeDoorsOfFate.Tests.{Guid.NewGuid():N}.";
+            string[] rawKeys =
+            {
+                prefix + "EndlessRecord.Gambler.Easy",
+                prefix + "SurvivorTitle.Gambler",
+                prefix + "SurvivorTitle.Oracle",
+                prefix + "SurvivorTitle.Exile",
+                prefix + "EquippedItems.Gambler",
+                prefix + "DiscoveredItems.Gambler",
+                prefix + "HardRunSave"
+            };
+            string[] deckCardIds = new[]
+            {
+                "class_gambler_attack_wager_dagger",
+                "class_gambler_defense_stake_shield",
+                "class_gambler_skill_turn_the_table"
+            }
+                .Concat(Enumerable.Range(0, 47).Select(index => $"filler_{index:00}"))
+                .ToArray();
+
+            try
+            {
+                PlayerPrefs.SetInt(rawKeys[0], 20);
+                PlayerPrefs.SetInt(rawKeys[1], 1);
+                PlayerPrefs.SetInt(rawKeys[2], 1);
+                PlayerPrefs.SetInt(rawKeys[3], 1);
+                PlayerPrefs.SetString(
+                    rawKeys[4],
+                    "{\"itemIds\":[\"relic_test\",\"blessing_test\",\"curse_test\"]}");
+                PlayerPrefs.SetString(
+                    rawKeys[5],
+                    "{\"itemIds\":[\""
+                    + string.Join("\",\"", Enumerable.Range(0, 30)
+                        .Select(index => $"relic_discovered_{index:00}"))
+                    + "\"]}");
+                PlayerPrefs.SetString(
+                    rawKeys[6],
+                    "{\"deckCardIds\":[\""
+                    + string.Join("\",\"", deckCardIds)
+                    + "\"],\"equippedItemIds\":[],"
+                    + "\"buildUpgradeLevels\":[{\"id\":\"gambler_high_roll\",\"level\":2}]}");
+                PlayerPrefs.Save();
+
+                Assert.That(
+                    AchievementProgress.BackfillPersistentPlayerPrefs(prefix),
+                    Is.True);
+                Assert.That(
+                    AchievementProgress.IsCompleted(prefix, AchievementProgress.DeckFifty),
+                    Is.True);
+                Assert.That(
+                    AchievementProgress.IsCompleted(prefix, AchievementProgress.TripleContract),
+                    Is.True);
+                Assert.That(
+                    AchievementProgress.IsCompleted(prefix, AchievementProgress.BuildMasterpiece),
+                    Is.True);
+                Assert.That(
+                    AchievementProgress.IsCompleted(prefix, AchievementProgress.TwentiethDoor),
+                    Is.True);
+                Assert.That(
+                    AchievementProgress.IsCompleted(prefix, AchievementProgress.ThreeSurvivors),
+                    Is.True);
+                Assert.That(
+                    AchievementProgress.IsCompleted(prefix, AchievementProgress.AbyssCollector),
+                    Is.True);
+                Assert.That(
+                    AchievementProgress.IsCompleted(
+                        prefix,
+                        AchievementProgress.GetDefinitionForBuild("gambler_high_roll")),
+                    Is.True);
+                Assert.That(
+                    AchievementProgress.BackfillPersistentPlayerPrefs(prefix),
+                    Is.False,
+                    "Backfill must be monotonic and report no duplicate changes.");
+            }
+            finally
+            {
+                foreach (string key in rawKeys)
+                {
+                    PlayerPrefs.DeleteKey(key);
+                }
+
+                foreach (string key in AchievementProgress.GetCompletionKeys(prefix))
+                {
+                    PlayerPrefs.DeleteKey(key);
+                }
+
+                PlayerPrefs.Save();
+            }
+        }
     }
 }

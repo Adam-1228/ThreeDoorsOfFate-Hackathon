@@ -16,6 +16,9 @@ ACHIEVEMENT_CONTROLLER_SOURCE = (
 PERSISTENCE_SOURCE = (
     PROJECT_ROOT / "Assets/Scripts/Game/ThreeDoorsGameController.Persistence.cs"
 )
+APPLE_RUNTIME_SOURCE = (
+    PROJECT_ROOT / "Assets/Scripts/Platform/AppleGameServicesRuntime.cs"
+)
 
 EXPECTED = {
     "combat.gambler_card_reading": (
@@ -182,6 +185,39 @@ class Achievement120CatalogContractTests(unittest.TestCase):
                     self.fail(f"missing runtime transition call: {call}")
         if "TryCompletePersistentAchievements();" not in persistence:
             self.fail("hard-run restore does not backfill persistent achievements")
+
+    def test_every_positive_block_mutation_routes_through_one_milestone_gate(self) -> None:
+        controller = CONTROLLER_SOURCE.read_text(encoding="utf-8")
+        achievements = ACHIEVEMENT_CONTROLLER_SOURCE.read_text(encoding="utf-8")
+        self.assertIn("private void AddPlayerBlock(int amount)", controller)
+        self.assertEqual(
+            1,
+            controller.count("playerBlock += amount;"),
+            "raw positive Block writes must exist only inside AddPlayerBlock",
+        )
+        raw_writes = [
+            expression.strip()
+            for expression in re.findall(r"playerBlock\s*\+=\s*([^;]+);", controller)
+        ]
+        self.assertEqual(["amount"], raw_writes)
+        self.assertIn("TryCompleteIronWallAchievement();", controller)
+        self.assertIn("private void TryCompleteIronWallAchievement()", achievements)
+
+    def test_persisted_milestones_backfill_before_initial_and_post_merge_reports(self) -> None:
+        controller = CONTROLLER_SOURCE.read_text(encoding="utf-8")
+        achievement_progress = ACHIEVEMENT_SOURCE.read_text(encoding="utf-8")
+        apple_runtime = APPLE_RUNTIME_SOURCE.read_text(encoding="utf-8")
+        marker = "AchievementProgress.BackfillPersistentPlayerPrefs("
+        self.assertIn("public static bool BackfillPersistentPlayerPrefs(", achievement_progress)
+        self.assertIn("TryCompletePersistentAchievements();", controller)
+        self.assertGreaterEqual(apple_runtime.count(marker), 3)
+        report_method = apple_runtime[apple_runtime.index(
+            "private async Task ReportGameCenterProgressAsync()"
+        ):]
+        self.assertLess(
+            report_method.index(marker),
+            report_method.index("AppleGameServices.CaptureGameCenterProgress("),
+        )
 
     def test_gallery_uses_two_pages_of_ten_hidden_discovery_slots(self) -> None:
         source = ACHIEVEMENT_CONTROLLER_SOURCE.read_text(encoding="utf-8")

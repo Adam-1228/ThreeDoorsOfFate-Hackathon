@@ -77,6 +77,8 @@ namespace ThreeDoorsOfFate.Platform
                 return;
             }
 
+            AchievementProgress.BackfillPersistentPlayerPrefs(
+                PlayerPrefsProgressStore.ProductionPrefix);
             NativeCloudBridge.Initialize(RuntimeObjectName);
             try
             {
@@ -174,6 +176,8 @@ namespace ThreeDoorsOfFate.Platform
             try
             {
                 long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                AchievementProgress.BackfillPersistentPlayerPrefs(
+                    PlayerPrefsProgressStore.ProductionPrefix);
                 string localJson = PlayerProgressSyncState.CaptureLocalJson(
                     PlayerPrefsProgressStore.ProductionPrefix,
                     now);
@@ -236,6 +240,15 @@ namespace ThreeDoorsOfFate.Platform
                         Debug.LogWarning(
                             "An invalid iCloud progress snapshot was ignored. " + exception.Message);
                     }
+                }
+
+                if (AchievementProgress.BackfillPersistentPlayerPrefs(
+                        PlayerPrefsProgressStore.ProductionPrefix))
+                {
+                    mergedJson = PlayerProgressSyncState.CaptureLocalJson(
+                        PlayerPrefsProgressStore.ProductionPrefix,
+                        now);
+                    contentChanged = true;
                 }
 
                 if (validRemoteCount == 0 && invalidRemoteFound)
@@ -317,6 +330,12 @@ namespace ThreeDoorsOfFate.Platform
                         "The iCloud conflict contained no valid progress snapshot.");
                 }
 
+                AchievementProgress.BackfillPersistentPlayerPrefs(
+                    PlayerPrefsProgressStore.ProductionPrefix);
+                mergedJson = PlayerProgressSyncState.CaptureLocalJson(
+                    PlayerPrefsProgressStore.ProductionPrefix,
+                    now);
+
                 EnsureSuccess(await ResolveCloudAsync(
                     AppleGameServices.CloudSaveName,
                     mergedJson));
@@ -335,6 +354,8 @@ namespace ThreeDoorsOfFate.Platform
 
         private async Task ReportGameCenterProgressAsync()
         {
+            AchievementProgress.BackfillPersistentPlayerPrefs(
+                PlayerPrefsProgressStore.ProductionPrefix);
             GameCenterProgressReport report = AppleGameServices.CaptureGameCenterProgress(
                 PlayerPrefsProgressStore.ProductionPrefix);
             int previousScore = PlayerPrefs.GetInt(ReportedScoreKey, 0);
