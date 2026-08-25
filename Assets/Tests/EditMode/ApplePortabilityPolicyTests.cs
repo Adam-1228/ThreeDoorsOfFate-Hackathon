@@ -220,6 +220,7 @@ namespace ThreeDoorsOfFate.Tests
                     prefix,
                     definition.StorageSuffix))
                 .ToArray();
+            Assert.That(keys, Has.Length.EqualTo(16));
 
             try
             {
@@ -236,7 +237,7 @@ namespace ThreeDoorsOfFate.Tests
                 ProgressSnapshotData snapshot = JsonUtility.FromJson<ProgressSnapshotData>(json);
                 Assert.That(
                     keys.Select(key => GetInt(snapshot, key)),
-                    Is.EqualTo(new[] { 1, 1, 1, 1 }));
+                    Is.All.EqualTo(1));
 
                 foreach (string key in keys)
                 {
@@ -246,7 +247,7 @@ namespace ThreeDoorsOfFate.Tests
                 PlayerPrefsProgressStore.ApplyJson(prefix, json);
                 Assert.That(
                     keys.Select(key => PlayerPrefs.GetInt(key, 0)),
-                    Is.EqualTo(new[] { 1, 1, 1, 1 }));
+                    Is.All.EqualTo(1));
             }
             finally
             {
@@ -580,9 +581,9 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(GetPublicConstant(configurationType, "MinimumOSVersion"),
                 Is.EqualTo("15.0"));
             Assert.That(GetPublicConstant(configurationType, "DefaultVersion"),
-                Is.EqualTo("1.1.1"));
+                Is.EqualTo("1.2.0"));
             Assert.That(GetPublicConstant(configurationType, "DefaultBuildNumber"),
-                Is.EqualTo("11100"));
+                Is.EqualTo("12000"));
         }
 
         [Test]
@@ -634,6 +635,10 @@ namespace ThreeDoorsOfFate.Tests
                 Assert.That(output, Does.Not.Contain("NSUserTrackingUsageDescription"));
                 Assert.That(output, Does.Contain("ITSAppUsesNonExemptEncryption"));
                 Assert.That(output, Does.Contain("CFBundleIdentifier"));
+                Assert.That(
+                    output,
+                    Does.Not.Contain("PropertyList-1.0.dtd\"[]>"),
+                    "The saved plist must remain readable by Apple's plist tools.");
             }
             finally
             {

@@ -41,6 +41,21 @@ class UnityBuildTargetTests(unittest.TestCase):
             "ThreeDoorsOfFate.Editor.PlayableGameBuilder.BuildIOSSimulatorPlayable",
         )
 
+    def test_ios_commands_activate_ios_before_loading_editor_code(self) -> None:
+        for target in ("ios", "ios-simulator"):
+            with self.subTest(target=target):
+                command = unity_build.build_command(
+                    Path("/Applications/Unity.app/Contents/MacOS/Unity"),
+                    Path("/tmp/ThreeDoorsofFate"),
+                    target,
+                    "-",
+                )
+
+                self.assertIn("-buildTarget", command)
+                build_target_index = command.index("-buildTarget")
+                self.assertEqual(command[build_target_index + 1], "iOS")
+                self.assertLess(build_target_index, command.index("-executeMethod"))
+
 
 if __name__ == "__main__":
     unittest.main()

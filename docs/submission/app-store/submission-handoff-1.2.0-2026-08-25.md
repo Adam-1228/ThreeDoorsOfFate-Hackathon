@@ -13,7 +13,7 @@ The user explicitly authorized creating and submitting version `1.2.0` for App R
 - Release method to preserve: manual
 - Existing availability to preserve: 29 territories (South Korea, EU 27, and United States)
 
-Do not select or relabel a prior build. Submission requires a processed build produced from the `v1.2.0` tag and reporting exactly `1.2.0 (12000)`.
+Do not select or relabel a prior build. Submission requires the newly uploaded build reporting exactly `1.2.0 (12000)`. Runtime source is pinned by `v1.2.0`; submission build hardening is pinned by `v1.2.0+build.12000`.
 
 ## Prepared sources
 
@@ -42,6 +42,15 @@ Use these values exactly. Do not paraphrase the What's New text or review notes.
 
 Stop without changing unrelated settings if the exact build is absent, processing fails, points would exceed 1,000, an achievement identifier already exists with conflicting immutable fields, the submission contains unexpected items, or App Store Connect asks for a new legal/privacy/rating/territory decision not covered by the prepared evidence.
 
-## Current blocker
+## Completed local and transport stages
 
-At handoff creation, no fresh `1.2.0 (12000)` archive or processed App Store Connect build existed in the local evidence. App Store Connect API credentials were not present in the environment or standard private-key directories. This long image-heavy task must not start a new browser-control runtime; final web submission therefore belongs in a short dedicated task after the processed build is visible.
+- Fresh Unity EditMode result: `285/285` passed.
+- Fresh Python contracts: `108/108` passed.
+- Signed arm64 archive: `/Users/apple/Builds/iOS/ThreeDoorsOfFate.xcarchive`.
+- Archive contract, entitlements, privacy manifests, production ads, native bridge symbols, and app/UnityFramework dSYM UUIDs: verified.
+- App Store Connect upload at 2026-08-25 22:18 KST: `Upload succeeded`; package reported as processing; exit code `0`.
+- Non-blocking Xcode warning: the installed Unity package did not include a matching `UnityRuntime.framework` dSYM. App and UnityFramework dSYMs are present and UUID-matched.
+
+## Remaining blocker
+
+App Store Connect must finish processing build `1.2.0 (12000)` before it can be selected. App Store Connect API credentials are not present, and this long image-heavy task must not start a new browser-control runtime. Final metadata/Game Center setup and the review-submission click therefore belong in a short dedicated task after the processed build is visible. Completion still requires `Waiting for Review` / `심사 대기 중` or a later valid review state.

@@ -378,7 +378,7 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
-        public void AchievementGallery_ReadsAllEightExistingProgressSignals()
+        public void AchievementGallery_CombinesFourLegacyAndSixteenReleaseAchievements()
         {
             string source = File.ReadAllText(AchievementControllerPath);
 
@@ -387,7 +387,8 @@ namespace ThreeDoorsOfFate.Tests
             StringAssert.Contains("GetTrueEndingKey(CharacterClass.Oracle)", source);
             StringAssert.Contains("GetTrueEndingKey(CharacterClass.Exile)", source);
             StringAssert.Contains("AchievementProgress.NewDefinitions", source);
-            StringAssert.Contains("AchievementCardsPerPage = 4", source);
+            StringAssert.Contains("AchievementSlotsPerPage = 10", source);
+            StringAssert.Contains("GetAchievementCardModels()", source);
         }
 
         [Test]
@@ -397,7 +398,8 @@ namespace ThreeDoorsOfFate.Tests
             string achievements = File.ReadAllText(AchievementControllerPath);
 
             StringAssert.Contains("achievementCardsRoot", achievements);
-            StringAssert.Contains("AddAchievementCard(", achievements);
+            StringAssert.Contains("achievementDetailRoot", achievements);
+            StringAssert.Contains("AddAchievementSlot(", achievements);
             StringAssert.Contains("const float columnGap", achievements);
             StringAssert.Contains("const float rowGap", achievements);
             StringAssert.Contains("AddRunStatusContentBox(", source);

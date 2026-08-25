@@ -8,8 +8,8 @@ Prepared: 2026-08-25 (Asia/Seoul)
 - iOS build number: `12000`
 - Bundle identifier: `com.adam.threedoorsfate`
 - App Store Connect app ID: `6798086296`
-- Source branch: `codex/v1.2.0-achievements`
-- Base: `v1.1.2` / `6ec3d89`
+- Runtime release tag: `v1.2.0` / `68391b3`
+- Submission-source tag: `v1.2.0+build.12000`
 
 ## Implemented scope
 
@@ -28,7 +28,8 @@ Prepared: 2026-08-25 (Asia/Seoul)
 
 Fresh local verification on 2026-08-25 produced:
 
-- Python repository contracts: `107` tests, `0` failures.
+- Python repository contracts: `108` tests, `0` failures.
+- Unity EditMode suite: `285` tests, `285` passed, `0` failed.
 - App Store local submission validator: passed.
 - Public marketing, support, privacy, and root `app-ads.txt` validation: passed.
 - Python `compileall`: passed.
@@ -37,19 +38,21 @@ Fresh local verification on 2026-08-25 produced:
 - `git diff --check`: passed.
 - Twelve release achievement PNG pointers: canonical Git LFS pointers; all local objects matched their declared SHA-256 and byte size.
 
-The first full-suite pass in the sparse release clone exposed missing pre-existing asset paths plus one obsolete static marker. Only the required existing App icon, iOS bridge, fonts, localized-card assets, tutorial assets, and data paths were hydrated; the obsolete marker was updated for the localized discovery component. Independent source review then identified two release gaps: non-card Block gains did not all reach the Iron Wall completion check, and persistent completion keys could be reported before startup/cloud-merge backfill. Both paths now have regression coverage. The fresh full rerun above then passed all 107 tests.
+The first full-suite pass in the sparse release clone exposed missing pre-existing asset paths plus one obsolete static marker. Only the required existing App icon, iOS bridge, fonts, localized-card assets, tutorial assets, and data paths were hydrated; the obsolete marker was updated for the localized discovery component. Independent source review then identified two release gaps: non-card Block gains did not all reach the Iron Wall completion check, and persistent completion keys could be reported before startup/cloud-merge backfill. Both paths now have regression coverage.
 
-Unity EditMode regression tests were added for the centralized Block gate and persistent backfill, but Unity Editor, Unity batch-mode tests, a new Unity iOS export, Xcode archive creation, TestFlight upload, device execution, and App Store review submission were not run on this Mac. Local policy explicitly prohibits Unity use, and the data volume had less than the required 12 GiB of free space during this release pass.
+The user explicitly authorized Unity use for this submission. Unity `6000.4.11f1` produced the iOS export, and Xcode `26.6` produced a fresh arm64 archive for `1.2.0 (12000)`. Archive verification confirmed the exact bundle/version/build, production ad configuration, 50 SKAdNetwork identifiers, Game Center plus explicit iCloud entitlements, five privacy manifests, seven exported native bridge symbols, deep code signing, and matching app/UnityFramework dSYM UUIDs.
 
-No prior archive or processed build may be relabeled as `1.2.0 (12000)`. A fresh archive built from the `v1.2.0` tag is required.
+At 2026-08-25 22:18 KST, Xcode reported `Upload succeeded`, `Uploaded package is processing`, and `EXPORT SUCCEEDED` for the fresh archive. The upload returned exit code `0`. Xcode emitted one non-blocking symbol warning because the Unity installation does not provide a matching `UnityRuntime.framework` dSYM; the app and UnityFramework dSYMs were present and UUID-matched.
 
 ## App Store submission gate
 
-Review submission is blocked until App Store Connect exposes a processed build whose bundle identifier, marketing version, and build number are exactly:
+The binary is uploaded. Review submission remains gated until App Store Connect exposes the processed build whose bundle identifier, marketing version, and build number are exactly:
 
 - `com.adam.threedoorsfate`
 - `1.2.0`
 - `12000`
+
+After processing, select only that build, create the 12 prepared Game Center achievements, verify 20 achievements and 1,000 points in total, preserve manual release and the existing distribution/privacy settings, and submit the version plus Game Center components together.
 
 Prepared submission sources:
 

@@ -93,18 +93,23 @@ def build_command(
     log_file: str,
 ) -> list[str]:
     method = BUILD_METHODS[target]
-    return [
+    command = [
         str(unity),
         "-batchmode",
         "-quit",
         "-nographics",
         "-projectPath",
         str(project_root),
+    ]
+    if target in {"ios", "ios-simulator"}:
+        command.extend(["-buildTarget", "iOS"])
+    command.extend([
         "-executeMethod",
         method,
         "-logFile",
         log_file,
-    ]
+    ])
+    return command
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:

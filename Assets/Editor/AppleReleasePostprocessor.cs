@@ -17,6 +17,30 @@ namespace ThreeDoorsOfFate.Editor
     {
 #if UNITY_IOS
         private const string PrivacyManifestFileName = "PrivacyInfo.xcprivacy";
+        private const string ExistingExportEnvironmentVariable =
+            "UNITY_IOS_EXISTING_EXPORT";
+
+        public static void ConfigureExistingXcodeProjectFromEnvironment()
+        {
+            string configuredPath = Environment.GetEnvironmentVariable(
+                ExistingExportEnvironmentVariable);
+            if (string.IsNullOrWhiteSpace(configuredPath))
+            {
+                throw new BuildFailedException(
+                    $"Set {ExistingExportEnvironmentVariable} to an existing iOS export path.");
+            }
+
+            string buildPath = Path.GetFullPath(configuredPath.Trim());
+            string projectPath = PBXProject.GetPBXProjectPath(buildPath);
+            if (!Directory.Exists(buildPath) || !File.Exists(projectPath))
+            {
+                throw new BuildFailedException(
+                    $"The iOS export does not contain an Xcode project: {buildPath}");
+            }
+
+            ConfigureXcodeProject(BuildTarget.iOS, buildPath);
+            Debug.Log($"Configured existing iOS export: {buildPath}");
+        }
 
         [PostProcessBuild(900)]
         public static void ConfigureXcodeProject(BuildTarget target, string buildPath)
@@ -59,8 +83,30 @@ namespace ThreeDoorsOfFate.Editor
                 false,
                 new[] { containerIdentifier });
             capabilities.WriteToFile();
+            ConfigureExplicitICloudContainerEntitlements(
+                buildPath,
+                containerIdentifier);
 
             ConfigureInfoPlist(buildPath);
+        }
+
+        private static void ConfigureExplicitICloudContainerEntitlements(
+            string buildPath,
+            string containerIdentifier)
+        {
+            string entitlementsPath = Path.Combine(
+                buildPath,
+                IOSReleaseConfiguration.EntitlementsFileName);
+            PlistDocument entitlements = new();
+            entitlements.ReadFromFile(entitlementsPath);
+
+            PlistElementArray cloudContainers = entitlements.root.CreateArray(
+                "com.apple.developer.icloud-container-identifiers");
+            cloudContainers.AddString(containerIdentifier);
+            PlistElementArray ubiquityContainers = entitlements.root.CreateArray(
+                "com.apple.developer.ubiquity-container-identifiers");
+            ubiquityContainers.AddString(containerIdentifier);
+            entitlements.WriteToFile(entitlementsPath);
         }
 
         private static void AddPrivacyManifest(
@@ -107,6 +153,16 @@ namespace ThreeDoorsOfFate.Editor
                 dictionary,
                 "ITSAppUsesNonExemptEncryption",
                 false);
+            XDocumentType documentType = infoPlist.DocumentType;
+            if (documentType != null
+                && string.IsNullOrEmpty(documentType.InternalSubset))
+            {
+                documentType.ReplaceWith(new XDocumentType(
+                    documentType.Name,
+                    documentType.PublicId,
+                    documentType.SystemId,
+                    null));
+            }
             infoPlist.Save(infoPlistPath, SaveOptions.DisableFormatting);
         }
 
