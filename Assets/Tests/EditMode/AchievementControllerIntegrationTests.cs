@@ -114,8 +114,7 @@ namespace ThreeDoorsOfFate.Tests
             RestoreLanguagePreference();
         }
 
-        [Test]
-        public void MainMenuAchievementModal_PagesEightReadableCardsFourAtATime()
+        private void LegacyAchievementModal_PagesEightReadableCardsFourAtATime()
         {
             Sprite artworkFrame = AssetDatabase.LoadAssetAtPath<Sprite>(
                 "Assets/Art/UI/GeneratedFrames/ui_status_inner_panel_frame_ai.png");
@@ -227,6 +226,70 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
+        public void MainMenuAchievementModal_UsesTwentyRelicStyleSlotsTenAtATime()
+        {
+            Sprite slotFrame = AssetDatabase.LoadAssetAtPath<Sprite>(
+                "Assets/Art/UI/GeneratedFrames/ui_status_section_medium_frame_v2.png");
+            Sprite detailFrame = AssetDatabase.LoadAssetAtPath<Sprite>(
+                "Assets/Art/UI/GeneratedFrames/ui_status_inner_panel_frame_ai.png");
+            Sprite selectionFrame = AssetDatabase.LoadAssetAtPath<Sprite>(
+                "Assets/Art/UI/Frames/selection_hover_frame.png");
+            Assert.That(slotFrame, Is.Not.Null);
+            Assert.That(detailFrame, Is.Not.Null);
+            Assert.That(selectionFrame, Is.Not.Null);
+            SetField("statusSectionMediumFrameSprite", slotFrame);
+            SetField("statusInnerPanelFrameSprite", detailFrame);
+            SetField("selectionFrameSprite", selectionFrame);
+            AchievementProgress.Complete(Prefix, AchievementProgress.AbyssCollector);
+
+            Invoke("ShowAchievements");
+            Canvas.ForceUpdateCanvases();
+
+            RectTransform grid = GetField<RectTransform>("achievementCardsRoot");
+            List<RectTransform> slots = Enumerable.Range(0, grid.childCount)
+                .Select(index => grid.GetChild(index) as RectTransform)
+                .Where(candidate => candidate != null
+                    && candidate.name.StartsWith("업적 슬롯 ", StringComparison.Ordinal))
+                .ToList();
+            Assert.That(slots, Has.Count.EqualTo(10));
+            Assert.That(GetField<Text>("achievementPageText").text, Is.EqualTo("1 / 2"));
+            Assert.That(GetField<Text>("achievementCompletionText").text, Is.EqualTo("달성 1/20"));
+            Assert.That(slots.All(slot => slot.GetComponent<Image>().sprite == slotFrame), Is.True);
+
+            RectTransform completed = slots.Single(slot =>
+                FindDescendants(slot).Any(candidate =>
+                    candidate.name == "업적 이름"
+                    && candidate.GetComponent<Text>().text == "심연의 수집가"));
+            Assert.That(completed.GetComponent<Button>().interactable, Is.True);
+            completed.GetComponent<Button>().onClick.Invoke();
+            Canvas.ForceUpdateCanvases();
+
+            RectTransform detailRoot = GetField<RectTransform>("achievementDetailRoot");
+            RectTransform detail = FindRequired(detailRoot, "업적 상세 패널");
+            Assert.That(detail.GetComponent<Image>().sprite, Is.SameAs(detailFrame));
+            Assert.That(
+                FindRequired(detail, "업적 상세 제목").GetComponent<Text>().text,
+                Does.Contain("심연의 수집가"));
+            Assert.That(
+                FindRequired(detail, "업적 상세 상태").GetComponent<Text>().text,
+                Does.Contain("100점"));
+            Assert.That(
+                FindDescendants(completed).Single(candidate => candidate.name == "업적 선택 표시")
+                    .GetComponent<Image>().sprite,
+                Is.SameAs(selectionFrame));
+
+            GetField<Button>("achievementNextButton").onClick.Invoke();
+            Canvas.ForceUpdateCanvases();
+            slots = Enumerable.Range(0, grid.childCount)
+                .Select(index => grid.GetChild(index) as RectTransform)
+                .Where(candidate => candidate != null
+                    && candidate.name.StartsWith("업적 슬롯 ", StringComparison.Ordinal))
+                .ToList();
+            Assert.That(slots, Has.Count.EqualTo(10));
+            Assert.That(GetField<Text>("achievementPageText").text, Is.EqualTo("2 / 2"));
+        }
+
+        [Test]
         public void RunStatusMainPanel_KeepsOuterPanelsAndEquipmentSlotsInsideTheirFrames()
         {
             Invoke("ShowRunStatusPanel");
@@ -286,7 +349,19 @@ namespace ThreeDoorsOfFate.Tests
                 "Assets/Resources/Achievements/achievement_abyss_collector.png",
                 "Assets/Resources/Achievements/achievement_gambler_high_roll.png",
                 "Assets/Resources/Achievements/achievement_oracle_rift_engine.png",
-                "Assets/Resources/Achievements/achievement_exile_last_oath.png"
+                "Assets/Resources/Achievements/achievement_exile_last_oath.png",
+                "Assets/Resources/Achievements/achievement_gambler_card_reading.png",
+                "Assets/Resources/Achievements/achievement_oracle_precise_prediction.png",
+                "Assets/Resources/Achievements/achievement_exile_curse_eater.png",
+                "Assets/Resources/Achievements/achievement_fate_cleaver_50.png",
+                "Assets/Resources/Achievements/achievement_iron_wall_40.png",
+                "Assets/Resources/Achievements/achievement_five_cards_turn.png",
+                "Assets/Resources/Achievements/achievement_deck_50.png",
+                "Assets/Resources/Achievements/achievement_cliffside_victory.png",
+                "Assets/Resources/Achievements/achievement_triple_contract.png",
+                "Assets/Resources/Achievements/achievement_build_masterpiece.png",
+                "Assets/Resources/Achievements/achievement_twentieth_door.png",
+                "Assets/Resources/Achievements/achievement_three_survivors.png"
             };
 
             foreach (string assetPath in assetPaths)
@@ -386,6 +461,68 @@ namespace ThreeDoorsOfFate.Tests
             AssertCompleted("build.oracle_rift_engine", true);
         }
 
+        [Test]
+        public void CombatCardMilestones_UseLiveStateAndTrackOnlyOnce()
+        {
+            SetEnumField("phase", "Combat");
+            SetField("playerBlock", 39);
+            HashSet<string> played = GetField<HashSet<string>>("cardsPlayedThisTurn");
+            played.UnionWith(new[] { "a", "b", "c", "d" });
+
+            InvokeWithResult("TryCompleteCombatCardAchievements", 49);
+            AssertCompleted("combat.fate_cleaver_50", false);
+            AssertCompleted("combat.iron_wall_40", false);
+            AssertCompleted("combat.five_cards_turn", false);
+
+            SetField("playerBlock", 40);
+            played.Add("e");
+            InvokeWithResult("TryCompleteCombatCardAchievements", 50);
+            AssertCompleted("combat.fate_cleaver_50", true);
+            AssertCompleted("combat.iron_wall_40", true);
+            AssertCompleted("combat.five_cards_turn", true);
+
+            List<string> tracked =
+                GetField<List<string>>("newlyCompletedAchievementNames");
+            Assert.That(tracked, Has.Count.EqualTo(3));
+            InvokeWithResult("TryCompleteCombatCardAchievements", 99);
+            Assert.That(tracked, Has.Count.EqualTo(3));
+        }
+
+        [Test]
+        public void ExistingAwakeningSignals_CompleteTheirThreeAchievements()
+        {
+            SetField("gamblerCardReadingAwakened", true);
+            SetField("oraclePrecisePredictionAwakened", true);
+            SetField("exileCurseEaterAwakened", true);
+
+            Invoke("TryCompleteCombatAwakeningAchievements");
+
+            AssertCompleted("combat.gambler_card_reading", true);
+            AssertCompleted("combat.oracle_precise_prediction", true);
+            AssertCompleted("combat.exile_curse_eater", true);
+        }
+
+        [Test]
+        public void DeckAndCliffsideChecks_RespectLiveBoundaries()
+        {
+            AddDeckCards(49);
+            Invoke("TryCompleteDeckFiftyAchievement");
+            AssertCompleted("collection.deck_50", false);
+
+            AddDeckCards(1, false);
+            Invoke("TryCompleteDeckFiftyAchievement");
+            AssertCompleted("collection.deck_50", true);
+
+            SetField("playerMaxHealth", 100);
+            SetField("playerHealth", 21);
+            Invoke("TryCompleteCliffsideVictoryAchievement");
+            AssertCompleted("combat.cliffside_victory", false);
+
+            SetField("playerHealth", 20);
+            Invoke("TryCompleteCliffsideVictoryAchievement");
+            AssertCompleted("combat.cliffside_victory", true);
+        }
+
         private void SetTestRunItemCatalog(int count)
         {
             TextAsset catalog = new(BuildCatalogJson(count));
@@ -405,6 +542,29 @@ namespace ThreeDoorsOfFate.Tests
             {
                 ScriptableObject card = ScriptableObject.CreateInstance(cardType);
                 createdObjects.Add(card);
+                SetObjectField(card, "cardId", cardId);
+                SetObjectField(card, "displayName", cardId);
+                cardPool.Add(card);
+                deck.Add(card);
+            }
+        }
+
+        private void AddDeckCards(int count, bool clear = true)
+        {
+            IList cardPool = GetField<IList>("cardPool");
+            IList deck = GetField<IList>("deck");
+            if (clear)
+            {
+                cardPool.Clear();
+                deck.Clear();
+            }
+
+            int start = deck.Count;
+            for (int index = 0; index < count; index += 1)
+            {
+                ScriptableObject card = ScriptableObject.CreateInstance(cardType);
+                createdObjects.Add(card);
+                string cardId = $"achievement_test_card_{start + index:00}";
                 SetObjectField(card, "cardId", cardId);
                 SetObjectField(card, "displayName", cardId);
                 cardPool.Add(card);

@@ -307,6 +307,8 @@ namespace ThreeDoorsOfFate.Game
                 }
             }
 
+            TryCompletePersistentAchievements();
+
             combatLog.Clear();
             if (saveData.combatLog != null)
             {
@@ -318,8 +320,6 @@ namespace ThreeDoorsOfFate.Game
                     }
                 }
             }
-
-            TryCompleteBuildAchievement();
 
             return true;
         }

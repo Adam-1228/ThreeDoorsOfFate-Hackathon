@@ -80,6 +80,114 @@ namespace ThreeDoorsOfFate.Platform
             "Achievements/achievement_exile_last_oath",
             100);
 
+        private static readonly AchievementDefinition GamblerCardReadingDefinition = new(
+            "com.adam.threedoorsfate.achievement.combat.gambler_card_reading",
+            "combat.gambler_card_reading",
+            "패를 읽은 자",
+            "도박사로 한 전투에서 카드 뽑기와 버리기를 합쳐 15회 기록하세요.",
+            "흐르는 패의 결을 읽고 운명의 고점을 붙잡았습니다.",
+            "Achievements/achievement_gambler_card_reading",
+            10);
+
+        private static readonly AchievementDefinition OraclePrecisePredictionDefinition = new(
+            "com.adam.threedoorsfate.achievement.combat.oracle_precise_prediction",
+            "combat.oracle_precise_prediction",
+            "정확한 예언",
+            "예언가로 공격 의도에 방어 카드로 세 번 대응하세요.",
+            "세 번의 공격을 미리 읽고 정확한 방벽을 세웠습니다.",
+            "Achievements/achievement_oracle_precise_prediction",
+            10);
+
+        private static readonly AchievementDefinition ExileCurseEaterDefinition = new(
+            "com.adam.threedoorsfate.achievement.combat.exile_curse_eater",
+            "combat.exile_curse_eater",
+            "저주를 삼킨 자",
+            "추방자로 한 전투에서 빚을 2 이상 제거하세요.",
+            "채무의 저주를 삼키고 끊어진 사슬을 힘으로 바꿨습니다.",
+            "Achievements/achievement_exile_curse_eater",
+            10);
+
+        private static readonly AchievementDefinition FateCleaverDefinition = new(
+            "com.adam.threedoorsfate.achievement.combat.fate_cleaver_50",
+            "combat.fate_cleaver_50",
+            "운명을 가르는 일격",
+            "카드 한 장으로 실제 체력 피해를 50 이상 입히세요.",
+            "하나의 일격으로 적의 운명을 갈랐습니다.",
+            "Achievements/achievement_fate_cleaver_50",
+            15);
+
+        private static readonly AchievementDefinition IronWallDefinition = new(
+            "com.adam.threedoorsfate.achievement.combat.iron_wall_40",
+            "combat.iron_wall_40",
+            "철벽의 맹세",
+            "전투 중 방어도를 40 이상 쌓으세요.",
+            "겹겹의 방벽으로 어떤 맹세도 꺾이지 않게 지켰습니다.",
+            "Achievements/achievement_iron_wall_40",
+            15);
+
+        private static readonly AchievementDefinition FiveCardsTurnDefinition = new(
+            "com.adam.threedoorsfate.achievement.combat.five_cards_turn",
+            "combat.five_cards_turn",
+            "한 호흡의 다섯 패",
+            "한 턴에 서로 다른 카드 다섯 장을 사용하세요.",
+            "한 호흡 안에 다섯 갈래 운명을 이어 냈습니다.",
+            "Achievements/achievement_five_cards_turn",
+            15);
+
+        private static readonly AchievementDefinition DeckFiftyDefinition = new(
+            "com.adam.threedoorsfate.achievement.collection.deck_50",
+            "collection.deck_50",
+            "쉰 장의 운명",
+            "덱에 카드 50장을 모으세요.",
+            "쉰 장의 선택이 하나의 거대한 운명으로 엮였습니다.",
+            "Achievements/achievement_deck_50",
+            15);
+
+        private static readonly AchievementDefinition CliffsideVictoryDefinition = new(
+            "com.adam.threedoorsfate.achievement.combat.cliffside_victory",
+            "combat.cliffside_victory",
+            "벼랑 끝의 생환",
+            "최대 체력의 20% 이하로 전투에서 승리하세요.",
+            "마지막 불씨를 지킨 채 벼랑 끝에서 돌아왔습니다.",
+            "Achievements/achievement_cliffside_victory",
+            20);
+
+        private static readonly AchievementDefinition TripleContractDefinition = new(
+            "com.adam.threedoorsfate.achievement.collection.triple_contract",
+            "collection.triple_contract",
+            "세 겹의 계약",
+            "유물과 축복과 저주를 동시에 장착하세요.",
+            "서로 다른 세 계약을 하나의 운명에 묶었습니다.",
+            "Achievements/achievement_triple_contract",
+            20);
+
+        private static readonly AchievementDefinition BuildMasterpieceDefinition = new(
+            "com.adam.threedoorsfate.achievement.build.masterpiece",
+            "build.masterpiece",
+            "완성된 설계",
+            "현재 직업의 대표 빌드를 2단계까지 강화하세요.",
+            "운명의 설계를 마지막 단계까지 완성했습니다.",
+            "Achievements/achievement_build_masterpiece",
+            20);
+
+        private static readonly AchievementDefinition TwentiethDoorDefinition = new(
+            "com.adam.threedoorsfate.achievement.endless.twentieth_door",
+            "endless.twentieth_door",
+            "스무 번째 문 너머",
+            "무한 모드에서 스무 번째 문에 도달하세요.",
+            "끝없는 길의 스무 번째 문 너머에 발자국을 남겼습니다.",
+            "Achievements/achievement_twentieth_door",
+            25);
+
+        private static readonly AchievementDefinition ThreeSurvivorsDefinition = new(
+            "com.adam.threedoorsfate.achievement.meta.three_survivors",
+            "meta.three_survivors",
+            "세 운명의 생존자",
+            "세 직업 모두 어려움 귀환 칭호를 획득하세요.",
+            "세 운명이 모두 심연의 문을 지나 살아 돌아왔습니다.",
+            "Achievements/achievement_three_survivors",
+            25);
+
         private static readonly IReadOnlyDictionary<string, string[]> BuildRequirements =
             new Dictionary<string, string[]>(StringComparer.Ordinal)
             {
@@ -117,10 +225,107 @@ namespace ThreeDoorsOfFate.Platform
                 AbyssCollectorDefinition,
                 GamblerHighRollDefinition,
                 OracleRiftEngineDefinition,
-                ExileLastOathDefinition
+                ExileLastOathDefinition,
+                GamblerCardReadingDefinition,
+                OraclePrecisePredictionDefinition,
+                ExileCurseEaterDefinition,
+                FateCleaverDefinition,
+                IronWallDefinition,
+                FiveCardsTurnDefinition,
+                DeckFiftyDefinition,
+                CliffsideVictoryDefinition,
+                TripleContractDefinition,
+                BuildMasterpieceDefinition,
+                TwentiethDoorDefinition,
+                ThreeSurvivorsDefinition
             };
 
         public static AchievementDefinition AbyssCollector => AbyssCollectorDefinition;
+
+        public static AchievementDefinition GamblerCardReading => GamblerCardReadingDefinition;
+
+        public static AchievementDefinition OraclePrecisePrediction => OraclePrecisePredictionDefinition;
+
+        public static AchievementDefinition ExileCurseEater => ExileCurseEaterDefinition;
+
+        public static AchievementDefinition FateCleaver => FateCleaverDefinition;
+
+        public static AchievementDefinition IronWall => IronWallDefinition;
+
+        public static AchievementDefinition FiveCardsTurn => FiveCardsTurnDefinition;
+
+        public static AchievementDefinition DeckFifty => DeckFiftyDefinition;
+
+        public static AchievementDefinition CliffsideVictory => CliffsideVictoryDefinition;
+
+        public static AchievementDefinition TripleContract => TripleContractDefinition;
+
+        public static AchievementDefinition BuildMasterpiece => BuildMasterpieceDefinition;
+
+        public static AchievementDefinition TwentiethDoor => TwentiethDoorDefinition;
+
+        public static AchievementDefinition ThreeSurvivors => ThreeSurvivorsDefinition;
+
+        public static AchievementDefinition GetDefinition(string storageSuffix)
+        {
+            return string.IsNullOrWhiteSpace(storageSuffix)
+                ? null
+                : NewDefinitions.FirstOrDefault(definition =>
+                    string.Equals(
+                        definition.StorageSuffix,
+                        storageSuffix,
+                        StringComparison.Ordinal));
+        }
+
+        public static bool IsFateCleaverDamage(int damage)
+        {
+            return damage >= 50;
+        }
+
+        public static bool IsIronWallBlock(int block)
+        {
+            return block >= 40;
+        }
+
+        public static bool IsFiveCardTurn(IEnumerable<string> cardIds)
+        {
+            return ToIdSet(cardIds).Count >= 5;
+        }
+
+        public static bool IsDeckFifty(int cardCount)
+        {
+            return cardCount >= 50;
+        }
+
+        public static bool IsCliffsideVictory(int health, int maximumHealth)
+        {
+            return health > 0
+                && maximumHealth > 0
+                && (long)health * 100L <= (long)maximumHealth * 20L;
+        }
+
+        public static bool HasTripleContract(
+            bool hasRelic,
+            bool hasBlessing,
+            bool hasCurse)
+        {
+            return hasRelic && hasBlessing && hasCurse;
+        }
+
+        public static bool IsMasterpieceLevel(int level)
+        {
+            return level >= 2;
+        }
+
+        public static bool IsTwentiethDoorRecord(int roomCount)
+        {
+            return roomCount >= 20;
+        }
+
+        public static bool HasThreeSurvivors(int survivorCount)
+        {
+            return survivorCount >= 3;
+        }
 
         public static bool IsCollectionComplete(
             IEnumerable<string> discoveredItemIds,

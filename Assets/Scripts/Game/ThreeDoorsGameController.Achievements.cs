@@ -11,15 +11,17 @@ namespace ThreeDoorsOfFate.Game
 {
     public sealed partial class ThreeDoorsGameController
     {
-        private const int AchievementCardsPerPage = 4;
+        private const int AchievementSlotsPerPage = 10;
         private RectTransform achievementOverlay;
         private RectTransform achievementCardsRoot;
+        private RectTransform achievementDetailRoot;
         private Text achievementPageText;
         private Text achievementCompletionText;
         private Button achievementPreviousButton;
         private Button achievementNextButton;
         private IReadOnlyList<AchievementCardModel> achievementCardModels;
         private int achievementPageIndex;
+        private int selectedAchievementIndex = -1;
         private readonly List<string> newlyCompletedAchievementNames = new();
 
         private sealed class AchievementCardModel
@@ -31,8 +33,6 @@ namespace ThreeDoorsOfFate.Game
                 string resourcePath,
                 int points,
                 bool completed,
-                int progressCurrent,
-                int progressTarget,
                 Sprite fallbackSprite = null)
             {
                 DisplayName = displayName;
@@ -41,8 +41,6 @@ namespace ThreeDoorsOfFate.Game
                 ResourcePath = resourcePath;
                 Points = points;
                 Completed = completed;
-                ProgressCurrent = progressCurrent;
-                ProgressTarget = Mathf.Max(1, progressTarget);
                 FallbackSprite = fallbackSprite;
             }
 
@@ -52,14 +50,13 @@ namespace ThreeDoorsOfFate.Game
             public string ResourcePath { get; }
             public int Points { get; }
             public bool Completed { get; }
-            public int ProgressCurrent { get; }
-            public int ProgressTarget { get; }
             public Sprite FallbackSprite { get; }
         }
 
         private void ShowAchievements()
         {
             HideAchievements();
+            TryCompletePersistentAchievements();
             AppleGameServicesRuntime.SetAccessPointVisible(true);
             if (contentRoot != null)
             {
@@ -142,8 +139,22 @@ namespace ThreeDoorsOfFate.Game
             }
             SetAnchors(
                 achievementCardsRoot,
-                new Vector2(0.035f, 0.145f),
+                new Vector2(0.035f, 0.445f),
                 new Vector2(0.965f, 0.895f));
+
+            achievementDetailRoot = AddPanel(
+                modal,
+                "업적 상세 영역",
+                new Color(0f, 0f, 0f, 0f));
+            Image detailRootImage = achievementDetailRoot.GetComponent<Image>();
+            if (detailRootImage != null)
+            {
+                detailRootImage.raycastTarget = false;
+            }
+            SetAnchors(
+                achievementDetailRoot,
+                new Vector2(0.035f, 0.145f),
+                new Vector2(0.965f, 0.425f));
 
             achievementPreviousButton = AddLocalizedSettingsMenuButton(
                 modal,
@@ -185,6 +196,7 @@ namespace ThreeDoorsOfFate.Game
                 () => ShowAchievementPage(achievementPageIndex + 1));
 
             achievementCardModels = GetAchievementCardModels();
+            selectedAchievementIndex = -1;
             ShowAchievementPage(0);
 
             achievementOverlay.SetAsLastSibling();
@@ -211,8 +223,6 @@ namespace ThreeDoorsOfFate.Game
                     string.Empty,
                     100,
                     hardUnlocked,
-                    hardUnlocked ? 1 : 0,
-                    1,
                     hardBossDoorSprite != null ? hardBossDoorSprite : bossSprite),
                 new AchievementCardModel(
                     "도박사의 진엔딩",
@@ -221,8 +231,6 @@ namespace ThreeDoorsOfFate.Game
                     string.Empty,
                     100,
                     gamblerEnding,
-                    gamblerEnding ? 1 : 0,
-                    1,
                     gamblerSelectSprite),
                 new AchievementCardModel(
                     "예언가의 진엔딩",
@@ -231,8 +239,6 @@ namespace ThreeDoorsOfFate.Game
                     string.Empty,
                     100,
                     oracleEnding,
-                    oracleEnding ? 1 : 0,
-                    1,
                     oracleSelectSprite),
                 new AchievementCardModel(
                     "추방자의 진엔딩",
@@ -241,8 +247,6 @@ namespace ThreeDoorsOfFate.Game
                     string.Empty,
                     100,
                     exileEnding,
-                    exileEnding ? 1 : 0,
-                    1,
                     exileSelectSprite)
             };
 
@@ -251,8 +255,6 @@ namespace ThreeDoorsOfFate.Game
                 bool completed = AchievementProgress.IsCompleted(
                     PlayerPrefsProgressStore.ProductionPrefix,
                     definition);
-                (int progressCurrent, int progressTarget) =
-                    GetAchievementProgress(definition, completed);
                 models.Add(new AchievementCardModel(
                     definition.DisplayName,
                     definition.LockedDescription,
@@ -260,156 +262,325 @@ namespace ThreeDoorsOfFate.Game
                     definition.ImageResourcePath,
                     definition.Points,
                     completed,
-                    progressCurrent,
-                    progressTarget,
                     mainTitleLogoSprite));
             }
 
             return models;
         }
 
-        private void AddAchievementCard(
+        private void AddAchievementSlot(
             RectTransform cardsRoot,
             AchievementCardModel model,
             int absoluteIndex,
             int pageSlot)
         {
+            const int columns = 5;
+            const int rows = 2;
             const float left = 0.010f;
             const float right = 0.990f;
-            const float columnGap = 0.020f;
-            const float rowBottom = 0.015f;
-            const float rowTop = 0.985f;
-            const float rowGap = 0.025f;
-            float cardWidth = (right - left - columnGap) / 2f;
-            float cardHeight = (rowTop - rowBottom - rowGap) / 2f;
-            int column = pageSlot % 2;
-            int row = pageSlot / 2;
-            float minX = left + column * (cardWidth + columnGap);
-            float maxY = rowTop - row * (cardHeight + rowGap);
+            const float columnGap = 0.012f;
+            const float rowBottom = 0.020f;
+            const float rowTop = 0.980f;
+            const float rowGap = 0.040f;
+            float slotWidth =
+                (right - left - columnGap * (columns - 1)) / columns;
+            float slotHeight =
+                (rowTop - rowBottom - rowGap * (rows - 1)) / rows;
+            int column = pageSlot % columns;
+            int row = pageSlot / columns;
+            float minX = left + column * (slotWidth + columnGap);
+            float maxY = rowTop - row * (slotHeight + rowGap);
 
-            RectTransform card = AddPanel(
+            Sprite slotFrame = statusSectionMediumFrameSprite != null
+                ? statusSectionMediumFrameSprite
+                : GetRunStatusSlotFrameSprite();
+            RectTransform slot = AddPanel(
                 cardsRoot,
-                $"업적 카드 {absoluteIndex + 1}",
-                model.Completed
-                    ? Color.white
-                    : new Color(0.72f, 0.75f, 0.78f, 0.96f),
-                statusCategoryCardFrameSprite != null
-                    ? statusCategoryCardFrameSprite
-                    : panelSprite);
+                $"업적 슬롯 {absoluteIndex + 1}",
+                Color.white,
+                slotFrame);
             SetAnchors(
-                card,
-                new Vector2(minX, maxY - cardHeight),
-                new Vector2(minX + cardWidth, maxY));
+                slot,
+                new Vector2(minX, maxY - slotHeight),
+                new Vector2(minX + slotWidth, maxY));
+
+            Image slotImage = slot.GetComponent<Image>();
+            slotImage.raycastTarget = true;
+            slotImage.type = GetImageType(slotFrame);
+            Button button = AddSfxButton(slot.gameObject, GameSfxCue.None);
+            button.targetGraphic = slotImage;
+            button.colors = CreateButtonColors();
+            button.interactable = model.Completed;
+            Navigation navigation = button.navigation;
+            navigation.mode = Navigation.Mode.None;
+            button.navigation = navigation;
+
+            if (!model.Completed)
+            {
+                Image blank = AddImage(
+                    slot,
+                    "업적 미발견 공란",
+                    new Color(0.008f, 0.012f, 0.020f, 0.92f));
+                blank.raycastTarget = false;
+                SetAnchors(
+                    blank.rectTransform,
+                    new Vector2(0.135f, 0.205f),
+                    new Vector2(0.865f, 0.830f));
+
+                Text undiscovered = AddText(
+                    slot,
+                    "업적 미발견",
+                    L("common.undiscovered"),
+                    16,
+                    TextAnchor.MiddleCenter,
+                    new Color(0.60f, 0.64f, 0.66f, 1f));
+                ConfigureAchievementText(undiscovered, 11, 16, true);
+                SetAnchors(
+                    undiscovered.rectTransform,
+                    new Vector2(0.145f, 0.300f),
+                    new Vector2(0.855f, 0.735f));
+                return;
+            }
 
             Sprite artwork = string.IsNullOrWhiteSpace(model.ResourcePath)
                 ? null
                 : Resources.Load<Sprite>(model.ResourcePath);
             artwork ??= model.FallbackSprite;
 
-            RectTransform artworkSlot = AddPanel(
-                card,
-                "업적 이미지 슬롯",
-                Color.white,
-                statusInnerPanelFrameSprite != null
-                    ? statusInnerPanelFrameSprite
-                    : panelSprite);
-            artworkSlot.GetComponent<Image>().raycastTarget = false;
-            SetAnchors(
-                artworkSlot,
-                new Vector2(0.035f, 0.140f),
-                new Vector2(0.315f, 0.860f));
-
-            Image image = AddImage(
-                artworkSlot,
+            Image achievementImage = AddImage(
+                slot,
                 "업적 이미지",
                 artwork != null
-                    ? model.Completed
-                        ? Color.white
-                        : new Color(0.52f, 0.54f, 0.58f, 0.96f)
-                    : new Color(0.04f, 0.08f, 0.09f, 0.68f));
-            image.sprite = artwork;
-            image.preserveAspect = true;
-            image.raycastTarget = false;
-            SetAnchors(image.rectTransform, new Vector2(0.070f, 0.075f), new Vector2(0.930f, 0.925f));
+                    ? Color.white
+                    : new Color(0.03f, 0.07f, 0.08f, 0.90f));
+            achievementImage.sprite = artwork;
+            achievementImage.preserveAspect = true;
+            achievementImage.raycastTarget = false;
+            SetAnchors(
+                achievementImage.rectTransform,
+                new Vector2(0.160f, 0.275f),
+                new Vector2(0.840f, 0.875f));
 
             if (artwork == null)
             {
                 Text fallback = AddText(
-                    artworkSlot,
+                    slot,
                     "업적 이미지 대체",
-                    model.Completed ? "◆" : "◇",
-                    42,
+                    "◆",
+                    32,
                     TextAnchor.MiddleCenter,
-                    new Color(0.20f, 0.86f, 0.80f, model.Completed ? 0.92f : 0.50f));
-                ConfigureAchievementText(fallback, 24, 42, true);
-                SetAnchors(fallback.rectTransform, new Vector2(0.070f, 0.075f), new Vector2(0.930f, 0.925f));
+                    new Color(0.20f, 0.86f, 0.80f, 0.92f));
+                ConfigureAchievementText(fallback, 20, 32, true);
+                SetAnchors(
+                    fallback.rectTransform,
+                    new Vector2(0.160f, 0.275f),
+                    new Vector2(0.840f, 0.875f));
             }
 
-            RectTransform infoPanel = AddPanel(
-                card,
-                "업적 정보 패널",
+            Text title = AddText(
+                slot,
+                "업적 이름",
+                model.DisplayName,
+                15,
+                TextAnchor.MiddleCenter,
+                new Color(0.73f, 1f, 0.95f, 1f));
+            ConfigureAchievementText(title, 10, 15, true);
+            SetAnchors(
+                title.rectTransform,
+                new Vector2(0.105f, 0.070f),
+                new Vector2(0.895f, 0.255f));
+
+            button.onClick.AddListener(() => SelectAchievement(absoluteIndex));
+            if (selectedAchievementIndex == absoluteIndex)
+            {
+                AddAchievementSelection(slot);
+            }
+        }
+
+        private void AddAchievementSelection(RectTransform slot)
+        {
+            Image selection = AddImage(
+                slot,
+                "업적 선택 표시",
+                selectionFrameSprite != null
+                    ? Color.white
+                    : new Color(0.14f, 0.94f, 0.86f, 0.10f));
+            selection.sprite = selectionFrameSprite;
+            selection.type = GetImageType(selectionFrameSprite);
+            selection.raycastTarget = false;
+            SetAnchors(
+                selection.rectTransform,
+                new Vector2(0.010f, 0.010f),
+                new Vector2(0.990f, 0.990f));
+            selection.rectTransform.SetAsLastSibling();
+        }
+
+        private void SelectAchievement(int absoluteIndex)
+        {
+            if (achievementCardModels == null
+                || absoluteIndex < 0
+                || absoluteIndex >= achievementCardModels.Count
+                || !achievementCardModels[absoluteIndex].Completed)
+            {
+                return;
+            }
+
+            if (selectedAchievementIndex != absoluteIndex)
+            {
+                selectedAchievementIndex = absoluteIndex;
+                RefreshAchievementSelectionVisuals();
+            }
+
+            RefreshAchievementDetail();
+        }
+
+        private void RefreshAchievementSelectionVisuals()
+        {
+            if (achievementCardsRoot == null)
+            {
+                return;
+            }
+
+            int firstIndex = achievementPageIndex * AchievementSlotsPerPage;
+            for (int childIndex = 0;
+                childIndex < achievementCardsRoot.childCount;
+                childIndex += 1)
+            {
+                RectTransform slot =
+                    achievementCardsRoot.GetChild(childIndex) as RectTransform;
+                if (slot == null
+                    || !slot.name.StartsWith("업적 슬롯 ", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                Transform previousSelection = slot.Find("업적 선택 표시");
+                if (previousSelection != null)
+                {
+                    previousSelection.gameObject.SetActive(false);
+                    DestroyUiObject(previousSelection.gameObject);
+                }
+
+                int absoluteIndex = firstIndex + childIndex;
+                if (absoluteIndex == selectedAchievementIndex)
+                {
+                    AddAchievementSelection(slot);
+                }
+            }
+        }
+
+        private void RefreshAchievementDetail()
+        {
+            if (achievementDetailRoot == null)
+            {
+                return;
+            }
+
+            for (int childIndex = achievementDetailRoot.childCount - 1;
+                childIndex >= 0;
+                childIndex -= 1)
+            {
+                GameObject child = achievementDetailRoot.GetChild(childIndex).gameObject;
+                child.SetActive(false);
+                DestroyUiObject(child);
+            }
+
+            RectTransform detail = AddPanel(
+                achievementDetailRoot,
+                "업적 상세 패널",
                 Color.white,
                 statusInnerPanelFrameSprite != null
                     ? statusInnerPanelFrameSprite
                     : panelSprite);
-            infoPanel.GetComponent<Image>().raycastTarget = false;
+            detail.GetComponent<Image>().raycastTarget = false;
             SetAnchors(
-                infoPanel,
-                new Vector2(0.345f, 0.120f),
-                new Vector2(0.960f, 0.880f));
+                detail,
+                new Vector2(0.005f, 0.010f),
+                new Vector2(0.995f, 0.990f));
+
+            if (achievementCardModels == null
+                || selectedAchievementIndex < 0
+                || selectedAchievementIndex >= achievementCardModels.Count
+                || !achievementCardModels[selectedAchievementIndex].Completed)
+            {
+                Text empty = AddText(
+                    detail,
+                    "업적 상세 미발견",
+                    L("common.undiscovered"),
+                    19,
+                    TextAnchor.MiddleCenter,
+                    new Color(0.62f, 0.66f, 0.68f, 1f));
+                ConfigureAchievementText(empty, 13, 19, true);
+                SetAnchors(
+                    empty.rectTransform,
+                    new Vector2(0.080f, 0.180f),
+                    new Vector2(0.920f, 0.820f));
+                return;
+            }
+
+            AchievementCardModel model =
+                achievementCardModels[selectedAchievementIndex];
+            Sprite artwork = string.IsNullOrWhiteSpace(model.ResourcePath)
+                ? null
+                : Resources.Load<Sprite>(model.ResourcePath);
+            artwork ??= model.FallbackSprite;
+
+            Image image = AddImage(
+                detail,
+                "업적 상세 이미지",
+                artwork != null
+                    ? Color.white
+                    : new Color(0.03f, 0.07f, 0.08f, 0.90f));
+            image.sprite = artwork;
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+            SetAnchors(
+                image.rectTransform,
+                new Vector2(0.040f, 0.135f),
+                new Vector2(0.215f, 0.865f));
 
             Text title = AddText(
-                infoPanel,
-                "업적 제목",
-                model.DisplayName,
+                detail,
+                "업적 상세 제목",
+                $"업적 | {model.DisplayName}",
                 22,
                 TextAnchor.MiddleLeft,
-                model.Completed
-                    ? new Color(0.73f, 1f, 0.95f, 1f)
-                    : new Color(0.79f, 0.76f, 0.70f, 1f));
+                new Color(0.73f, 1f, 0.95f, 1f));
             ConfigureAchievementText(title, 14, 22, true);
-            SetAnchors(title.rectTransform, new Vector2(0.075f, 0.710f), new Vector2(0.925f, 0.920f));
+            SetAnchors(
+                title.rectTransform,
+                new Vector2(0.255f, 0.635f),
+                new Vector2(0.945f, 0.880f));
 
             Text description = AddText(
-                infoPanel,
-                "업적 설명",
-                model.Completed ? model.EarnedDescription : model.LockedDescription,
-                16,
+                detail,
+                "업적 상세 설명",
+                model.EarnedDescription,
+                17,
                 TextAnchor.MiddleLeft,
                 new Color(0.94f, 0.88f, 0.79f, 1f));
-            ConfigureAchievementText(description, 11, 16, false);
+            ConfigureAchievementText(description, 12, 17, false);
             description.lineSpacing = 0.94f;
-            SetAnchors(description.rectTransform, new Vector2(0.075f, 0.350f), new Vector2(0.925f, 0.680f));
+            SetAnchors(
+                description.rectTransform,
+                new Vector2(0.255f, 0.280f),
+                new Vector2(0.945f, 0.625f));
 
             Text status = AddText(
-                infoPanel,
-                "업적 상태",
+                detail,
+                "업적 상세 상태",
                 LF(
                     "achievement.status",
-                    L(model.Completed
-                        ? "achievement.status.complete"
-                        : "achievement.status.incomplete"),
+                    L("achievement.status.complete"),
                     model.Points),
-                14,
-                TextAnchor.MiddleCenter,
-                model.Completed
-                    ? new Color(0.38f, 1f, 0.88f, 1f)
-                    : new Color(0.66f, 0.62f, 0.58f, 1f));
-            ConfigureAchievementText(status, 10, 14, true);
-            SetAnchors(status.rectTransform, new Vector2(0.075f, 0.120f), new Vector2(0.600f, 0.310f));
-
-            Text progress = AddText(
-                infoPanel,
-                "업적 진행",
-                LF(
-                    "achievement.progress",
-                    model.ProgressCurrent,
-                    model.ProgressTarget),
                 15,
-                TextAnchor.MiddleCenter,
-                new Color(0.70f, 0.96f, 0.90f, 1f));
-            ConfigureAchievementText(progress, 11, 15, true);
-            SetAnchors(progress.rectTransform, new Vector2(0.620f, 0.120f), new Vector2(0.925f, 0.310f));
+                TextAnchor.MiddleLeft,
+                new Color(0.38f, 1f, 0.88f, 1f));
+            ConfigureAchievementText(status, 11, 15, true);
+            SetAnchors(
+                status.rectTransform,
+                new Vector2(0.255f, 0.100f),
+                new Vector2(0.945f, 0.275f));
         }
 
         private void ShowAchievementPage(int requestedPage)
@@ -423,7 +594,7 @@ namespace ThreeDoorsOfFate.Game
                 1,
                 Mathf.CeilToInt(
                     achievementCardModels.Count
-                    / (float)AchievementCardsPerPage));
+                    / (float)AchievementSlotsPerPage));
             achievementPageIndex = Mathf.Clamp(
                 requestedPage,
                 0,
@@ -438,20 +609,39 @@ namespace ThreeDoorsOfFate.Game
                 DestroyUiObject(child);
             }
 
-            int startIndex = achievementPageIndex * AchievementCardsPerPage;
+            int startIndex = achievementPageIndex * AchievementSlotsPerPage;
             int endIndex = Mathf.Min(
-                startIndex + AchievementCardsPerPage,
+                startIndex + AchievementSlotsPerPage,
                 achievementCardModels.Count);
+            if (selectedAchievementIndex < startIndex
+                || selectedAchievementIndex >= endIndex
+                || !achievementCardModels[selectedAchievementIndex].Completed)
+            {
+                selectedAchievementIndex = -1;
+                for (int modelIndex = startIndex;
+                    modelIndex < endIndex;
+                    modelIndex += 1)
+                {
+                    if (achievementCardModels[modelIndex].Completed)
+                    {
+                        selectedAchievementIndex = modelIndex;
+                        break;
+                    }
+                }
+            }
+
             for (int modelIndex = startIndex;
                 modelIndex < endIndex;
                 modelIndex += 1)
             {
-                AddAchievementCard(
+                AddAchievementSlot(
                     achievementCardsRoot,
                     achievementCardModels[modelIndex],
                     modelIndex,
                     modelIndex - startIndex);
             }
+
+            RefreshAchievementDetail();
 
             int completedCount = achievementCardModels.Count(model => model.Completed);
             if (achievementPageText != null)
@@ -481,98 +671,6 @@ namespace ThreeDoorsOfFate.Game
             }
         }
 
-        private (int Current, int Target) GetAchievementProgress(
-            AchievementDefinition definition,
-            bool completed)
-        {
-            if (definition == null)
-            {
-                return (completed ? 1 : 0, 1);
-            }
-
-            if (definition.StorageSuffix ==
-                AchievementProgress.AbyssCollector.StorageSuffix)
-            {
-                return (GetAbyssCollectorProgress(), 30);
-            }
-
-            if (definition.StorageSuffix.StartsWith(
-                    "build.",
-                    StringComparison.Ordinal)
-                && IsAchievementRunActive())
-            {
-                BuildRecipe recipe = GetCurrentBuildRecipe();
-                AchievementDefinition currentDefinition =
-                    AchievementProgress.GetDefinitionForBuild(recipe.Id);
-                if (currentDefinition != null
-                    && currentDefinition.StorageSuffix == definition.StorageSuffix)
-                {
-                    HashSet<string> requiredIds = new(
-                        recipe.RequiredCardIds,
-                        StringComparer.Ordinal);
-                    int ownedRequired = deck
-                        .Where(card => card != null)
-                        .Select(card => card.CardId)
-                        .Where(requiredIds.Contains)
-                        .Distinct(StringComparer.Ordinal)
-                        .Count();
-                    return (ownedRequired, requiredIds.Count);
-                }
-            }
-
-            return (completed ? 1 : 0, 1);
-        }
-
-        private int GetAbyssCollectorProgress()
-        {
-            HashSet<string> catalogIds = new(
-                GetRunItemDefinitions()
-                    .Select(item => item.Id)
-                    .Where(itemId => !string.IsNullOrWhiteSpace(itemId)),
-                StringComparer.Ordinal);
-            if (catalogIds.Count == 0)
-            {
-                return 0;
-            }
-
-            int bestCount = 0;
-            CharacterClass[] classes =
-            {
-                CharacterClass.Gambler,
-                CharacterClass.Oracle,
-                CharacterClass.Exile
-            };
-            foreach (CharacterClass characterClass in classes)
-            {
-                HashSet<string> characterItems = ReadSavedItemIds(
-                    GetDiscoveredItemKey(characterClass));
-                characterItems.UnionWith(ReadSavedItemIds(
-                    GetEquippedItemKey(characterClass)));
-                if (IsAchievementRunActive() && selectedClass == characterClass)
-                {
-                    characterItems.UnionWith(discoveredRunItemIds);
-                    characterItems.UnionWith(equippedRunItemIds);
-                }
-
-                int validCount = characterItems.Count(catalogIds.Contains);
-                bestCount = Mathf.Max(bestCount, validCount);
-            }
-
-            return Mathf.Clamp(bestCount, 0, 30);
-        }
-
-        private bool IsAchievementRunActive()
-        {
-            return phase == GamePhase.DoorSelection
-                || phase == GamePhase.Combat
-                || phase == GamePhase.Reward
-                || phase == GamePhase.Shop
-                || phase == GamePhase.Event
-                || phase == GamePhase.Rest
-                || phase == GamePhase.Treasure
-                || phase == GamePhase.Curse;
-        }
-
         private static void ConfigureAchievementText(
             Text text,
             int minimumSize,
@@ -598,12 +696,14 @@ namespace ThreeDoorsOfFate.Game
 
             achievementOverlay = null;
             achievementCardsRoot = null;
+            achievementDetailRoot = null;
             achievementPageText = null;
             achievementCompletionText = null;
             achievementPreviousButton = null;
             achievementNextButton = null;
             achievementCardModels = null;
             achievementPageIndex = 0;
+            selectedAchievementIndex = -1;
             if (contentRoot != null)
             {
                 contentRoot.gameObject.SetActive(true);
@@ -691,6 +791,137 @@ namespace ThreeDoorsOfFate.Game
             {
                 CompleteAchievementAndTrack(definition);
             }
+        }
+
+        private void TryCompleteCombatAwakeningAchievements()
+        {
+            if (gamblerCardReadingAwakened)
+            {
+                CompleteAchievementAndTrack(AchievementProgress.GamblerCardReading);
+            }
+
+            if (oraclePrecisePredictionAwakened)
+            {
+                CompleteAchievementAndTrack(AchievementProgress.OraclePrecisePrediction);
+            }
+
+            if (exileCurseEaterAwakened)
+            {
+                CompleteAchievementAndTrack(AchievementProgress.ExileCurseEater);
+            }
+        }
+
+        private void TryCompleteCombatCardAchievements(int actualCardDamage)
+        {
+            if (phase != GamePhase.Combat)
+            {
+                return;
+            }
+
+            if (AchievementProgress.IsFateCleaverDamage(actualCardDamage))
+            {
+                CompleteAchievementAndTrack(AchievementProgress.FateCleaver);
+            }
+
+            if (AchievementProgress.IsIronWallBlock(playerBlock))
+            {
+                CompleteAchievementAndTrack(AchievementProgress.IronWall);
+            }
+
+            if (AchievementProgress.IsFiveCardTurn(cardsPlayedThisTurn))
+            {
+                CompleteAchievementAndTrack(AchievementProgress.FiveCardsTurn);
+            }
+        }
+
+        private void TryCompleteDeckFiftyAchievement()
+        {
+            if (AchievementProgress.IsDeckFifty(deck.Count))
+            {
+                CompleteAchievementAndTrack(AchievementProgress.DeckFifty);
+            }
+        }
+
+        private void TryCompleteCliffsideVictoryAchievement()
+        {
+            if (AchievementProgress.IsCliffsideVictory(playerHealth, playerMaxHealth))
+            {
+                CompleteAchievementAndTrack(AchievementProgress.CliffsideVictory);
+            }
+        }
+
+        private void TryCompleteTripleContractAchievement()
+        {
+            HashSet<RunItemType> equippedTypes = equippedRunItemIds
+                .Select(GetRunItemDefinition)
+                .Where(item => item != null)
+                .Select(item => item.Type)
+                .ToHashSet();
+            if (AchievementProgress.HasTripleContract(
+                    equippedTypes.Contains(RunItemType.Relic),
+                    equippedTypes.Contains(RunItemType.Blessing),
+                    equippedTypes.Contains(RunItemType.Curse)))
+            {
+                CompleteAchievementAndTrack(AchievementProgress.TripleContract);
+            }
+        }
+
+        private void TryCompleteMasterpieceAchievement()
+        {
+            BuildRecipe recipe = GetCurrentBuildRecipe();
+            if (AchievementProgress.IsMasterpieceLevel(
+                    GetBuildUpgradeLevel(recipe.Id)))
+            {
+                CompleteAchievementAndTrack(AchievementProgress.BuildMasterpiece);
+            }
+        }
+
+        private void TryCompleteTwentiethDoorAchievement()
+        {
+            CharacterClass[] classes =
+            {
+                CharacterClass.Gambler,
+                CharacterClass.Oracle,
+                CharacterClass.Exile
+            };
+            RunDifficulty[] difficulties =
+            {
+                RunDifficulty.Easy,
+                RunDifficulty.Normal,
+                RunDifficulty.Hard
+            };
+            if (classes.Any(characterClass => difficulties.Any(difficulty =>
+                    AchievementProgress.IsTwentiethDoorRecord(
+                        GetEndlessRecord(characterClass, difficulty)))))
+            {
+                CompleteAchievementAndTrack(AchievementProgress.TwentiethDoor);
+            }
+        }
+
+        private void TryCompleteThreeSurvivorsAchievement()
+        {
+            CharacterClass[] classes =
+            {
+                CharacterClass.Gambler,
+                CharacterClass.Oracle,
+                CharacterClass.Exile
+            };
+            int survivorCount = classes.Count(IsSurvivorTitleUnlocked);
+            if (AchievementProgress.HasThreeSurvivors(survivorCount))
+            {
+                CompleteAchievementAndTrack(AchievementProgress.ThreeSurvivors);
+            }
+        }
+
+        private void TryCompletePersistentAchievements()
+        {
+            TryCompleteAbyssCollectorFromSavedCharacters();
+            TryCompleteBuildAchievement();
+            TryCompleteDeckFiftyAchievement();
+            TryCompleteTripleContractAchievement();
+            TryCompleteMasterpieceAchievement();
+            TryCompleteTwentiethDoorAchievement();
+            TryCompleteThreeSurvivorsAchievement();
         }
 
         private void CompleteAchievementAndTrack(AchievementDefinition definition)

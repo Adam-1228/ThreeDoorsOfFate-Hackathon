@@ -89,8 +89,8 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(GetProperty<float>(logBody, "MinX"), Is.GreaterThanOrEqualTo(0.10f));
             Assert.That(GetProperty<float>(logBody, "MaxX"), Is.LessThanOrEqualTo(0.90f));
             Assert.That(GetProperty<float>(logBody, "MaxY"), Is.LessThanOrEqualTo(0.86f));
-            Assert.That(GetProperty<float>(logText, "MinX"), Is.GreaterThanOrEqualTo(0.04f));
-            Assert.That(GetProperty<float>(logText, "MaxX"), Is.LessThanOrEqualTo(0.96f));
+            Assert.That(GetProperty<float>(logText, "MinX"), Is.GreaterThanOrEqualTo(0.09f));
+            Assert.That(GetProperty<float>(logText, "MaxX"), Is.LessThanOrEqualTo(0.93f));
             Assert.That(GetProperty<float>(doorHint, "MinX"), Is.GreaterThanOrEqualTo(0.16f));
             Assert.That(GetProperty<float>(doorHint, "MaxX"), Is.LessThanOrEqualTo(0.84f));
             Assert.That(GetProperty<float>(doorHint, "MinY"), Is.GreaterThanOrEqualTo(0.18f));
@@ -99,6 +99,38 @@ namespace ThreeDoorsOfFate.Tests
             StringAssert.Contains("SetAnchors(body.rectTransform, PcUiLayoutPolicy.LogTextSafe);", source);
             StringAssert.Contains("PcUiLayoutPolicy.DoorHintSafe", source);
             StringAssert.Contains("\"문 설명 안전영역\"", source);
+        }
+
+        [Test]
+        public void ClassDetailLayout_AlwaysProvidesASettingsEntry()
+        {
+            string source = File.ReadAllText(ControllerPath);
+
+            StringAssert.Contains(
+                "AddLocalizedSettingsMenuButton(\n                contentRoot,\n                \"캐릭터 상세 설정\"",
+                source);
+            StringAssert.Contains(
+                "classDetailSettingsButton.onClick.AddListener(ToggleSettingsPanel);",
+                source);
+            StringAssert.Contains(
+                "new Vector2(0.835f, 0.905f),\n                new Vector2(0.965f, 0.985f)",
+                source);
+        }
+
+        [Test]
+        public void ShopRunItem_ClipsArtworkBelowOneExistingFrameOverlay()
+        {
+            string source = File.ReadAllText(ControllerPath);
+
+            StringAssert.Contains("\"아이템 상품 그림 마스크 영역\"", source);
+            StringAssert.Contains("artViewport.gameObject.AddComponent<RectMask2D>();", source);
+            StringAssert.Contains("AddImage(artViewport, \"아이템 상품 아이콘\"", source);
+            StringAssert.Contains("\"아이템 상품 프레임 오버레이\"", source);
+            StringAssert.Contains("frameOverlay.sprite = itemFrame;", source);
+            StringAssert.Contains("frameOverlay.rectTransform.SetAsLastSibling();", source);
+            StringAssert.DoesNotContain(
+                "AddPanel(slot, \"아이템 상품 프레임\", Color.white, GetRunStatusSlotFrameSprite())",
+                source);
         }
 
         [Test]

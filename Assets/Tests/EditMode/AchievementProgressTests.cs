@@ -10,23 +10,141 @@ namespace ThreeDoorsOfFate.Tests
     public sealed class AchievementProgressTests
     {
         [Test]
-        public void NewDefinitions_UseStableIdsAndLeaveFuturePointCapacity()
+        public void NewDefinitions_FillTheTwentyAchievementPointBudget()
         {
             IReadOnlyList<AchievementDefinition> definitions =
                 AchievementProgress.NewDefinitions;
 
-            Assert.That(definitions.Count, Is.EqualTo(4));
+            Assert.That(definitions.Count, Is.EqualTo(16));
             Assert.That(definitions.Select(definition => definition.GameCenterId), Is.EquivalentTo(
                 new[]
                 {
                     "com.adam.threedoorsfate.achievement.abyss_collector",
                     "com.adam.threedoorsfate.achievement.build.gambler_high_roll",
                     "com.adam.threedoorsfate.achievement.build.oracle_rift_engine",
-                    "com.adam.threedoorsfate.achievement.build.exile_last_oath"
+                    "com.adam.threedoorsfate.achievement.build.exile_last_oath",
+                    "com.adam.threedoorsfate.achievement.combat.gambler_card_reading",
+                    "com.adam.threedoorsfate.achievement.combat.oracle_precise_prediction",
+                    "com.adam.threedoorsfate.achievement.combat.exile_curse_eater",
+                    "com.adam.threedoorsfate.achievement.combat.fate_cleaver_50",
+                    "com.adam.threedoorsfate.achievement.combat.iron_wall_40",
+                    "com.adam.threedoorsfate.achievement.combat.five_cards_turn",
+                    "com.adam.threedoorsfate.achievement.collection.deck_50",
+                    "com.adam.threedoorsfate.achievement.combat.cliffside_victory",
+                    "com.adam.threedoorsfate.achievement.collection.triple_contract",
+                    "com.adam.threedoorsfate.achievement.build.masterpiece",
+                    "com.adam.threedoorsfate.achievement.endless.twentieth_door",
+                    "com.adam.threedoorsfate.achievement.meta.three_survivors"
                 }));
-            Assert.That(definitions.All(definition => definition.Points == 100), Is.True);
-            Assert.That(definitions.Sum(definition => definition.Points) + 400, Is.EqualTo(800));
+            Assert.That(
+                definitions.Select(definition => definition.GameCenterId).Distinct().Count(),
+                Is.EqualTo(definitions.Count));
+            Assert.That(
+                definitions.Select(definition => definition.StorageSuffix).Distinct().Count(),
+                Is.EqualTo(definitions.Count));
+            Assert.That(
+                definitions.Select(definition => definition.ImageResourcePath).Distinct().Count(),
+                Is.EqualTo(definitions.Count));
+            Assert.That(definitions.Sum(definition => definition.Points), Is.EqualTo(600));
+            Assert.That(definitions.Sum(definition => definition.Points) + 400, Is.EqualTo(1000));
             Assert.That(definitions.All(definition => !string.IsNullOrWhiteSpace(definition.ImageResourcePath)), Is.True);
+        }
+
+        [Test]
+        public void Version120Definitions_AddExactlyTwoHundredPoints()
+        {
+            string[] suffixes =
+            {
+                "combat.gambler_card_reading",
+                "combat.oracle_precise_prediction",
+                "combat.exile_curse_eater",
+                "combat.fate_cleaver_50",
+                "combat.iron_wall_40",
+                "combat.five_cards_turn",
+                "collection.deck_50",
+                "combat.cliffside_victory",
+                "collection.triple_contract",
+                "build.masterpiece",
+                "endless.twentieth_door",
+                "meta.three_survivors"
+            };
+
+            AchievementDefinition[] definitions = suffixes
+                .Select(AchievementProgress.GetDefinition)
+                .ToArray();
+
+            Assert.That(definitions, Has.All.Not.Null);
+            Assert.That(definitions.Sum(definition => definition.Points), Is.EqualTo(200));
+        }
+
+        [TestCase(49, false)]
+        [TestCase(50, true)]
+        public void FateCleaver_UsesFiftyDamageBoundary(int damage, bool expected)
+        {
+            Assert.That(AchievementProgress.IsFateCleaverDamage(damage), Is.EqualTo(expected));
+        }
+
+        [TestCase(39, false)]
+        [TestCase(40, true)]
+        public void IronWall_UsesFortyBlockBoundary(int block, bool expected)
+        {
+            Assert.That(AchievementProgress.IsIronWallBlock(block), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void FiveCardTurn_RequiresFiveDistinctNonEmptyCards()
+        {
+            Assert.That(
+                AchievementProgress.IsFiveCardTurn(new[] { "a", "b", "c", "d", "d", "" }),
+                Is.False);
+            Assert.That(
+                AchievementProgress.IsFiveCardTurn(new[] { "a", "b", "c", "d", "e", "e" }),
+                Is.True);
+        }
+
+        [TestCase(49, false)]
+        [TestCase(50, true)]
+        public void DeckFifty_UsesFiftyCardBoundary(int cardCount, bool expected)
+        {
+            Assert.That(AchievementProgress.IsDeckFifty(cardCount), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void CliffsideVictory_IncludesExactlyTwentyPercentHealth()
+        {
+            Assert.That(AchievementProgress.IsCliffsideVictory(21, 100), Is.False);
+            Assert.That(AchievementProgress.IsCliffsideVictory(20, 100), Is.True);
+            Assert.That(AchievementProgress.IsCliffsideVictory(1, 5), Is.True);
+            Assert.That(AchievementProgress.IsCliffsideVictory(0, 100), Is.False);
+            Assert.That(AchievementProgress.IsCliffsideVictory(10, 0), Is.False);
+        }
+
+        [Test]
+        public void TripleContract_RequiresAllThreeRunItemTypes()
+        {
+            Assert.That(AchievementProgress.HasTripleContract(true, true, false), Is.False);
+            Assert.That(AchievementProgress.HasTripleContract(true, true, true), Is.True);
+        }
+
+        [TestCase(1, false)]
+        [TestCase(2, true)]
+        public void Masterpiece_UsesLevelTwoBoundary(int level, bool expected)
+        {
+            Assert.That(AchievementProgress.IsMasterpieceLevel(level), Is.EqualTo(expected));
+        }
+
+        [TestCase(19, false)]
+        [TestCase(20, true)]
+        public void TwentiethDoor_UsesRoomTwentyBoundary(int rooms, bool expected)
+        {
+            Assert.That(AchievementProgress.IsTwentiethDoorRecord(rooms), Is.EqualTo(expected));
+        }
+
+        [TestCase(2, false)]
+        [TestCase(3, true)]
+        public void ThreeSurvivors_UsesThreeTitleBoundary(int count, bool expected)
+        {
+            Assert.That(AchievementProgress.HasThreeSurvivors(count), Is.EqualTo(expected));
         }
 
         [Test]

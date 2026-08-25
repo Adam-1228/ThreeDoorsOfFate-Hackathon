@@ -184,7 +184,7 @@ namespace ThreeDoorsOfFate.UI
         public static readonly UiNormalizedRect LogPanel = new UiNormalizedRect(0.765f, 0.120f, 0.950f, 0.880f);
         public static readonly UiNormalizedRect LogHeading = new UiNormalizedRect(0.04f, 0.91f, 0.96f, 0.985f);
         public static readonly UiNormalizedRect LogBody = new UiNormalizedRect(0.105f, 0.075f, 0.895f, 0.855f);
-        public static readonly UiNormalizedRect LogTextSafe = new UiNormalizedRect(0.045f, 0.055f, 0.955f, 0.945f);
+        public static readonly UiNormalizedRect LogTextSafe = new UiNormalizedRect(0.090f, 0.055f, 0.930f, 0.945f);
         public static readonly UiNormalizedRect DoorHintSafe = new UiNormalizedRect(0.160f, 0.180f, 0.840f, 0.275f);
 
         private static readonly UiNormalizedRect[] SafeAreas =

@@ -1688,6 +1688,19 @@ namespace ThreeDoorsOfFate.Game
                 PcUiLayoutPolicy.ClassDetailTagline,
                 22);
 
+            Button classDetailSettingsButton = AddLocalizedSettingsMenuButton(
+                contentRoot,
+                "캐릭터 상세 설정",
+                "menu.settings",
+                15,
+                GameSfxCue.UiAccept);
+            SetAnchors(
+                classDetailSettingsButton.GetComponent<RectTransform>(),
+                new Vector2(0.835f, 0.905f),
+                new Vector2(0.965f, 0.985f));
+            classDetailSettingsButton.onClick.AddListener(ToggleSettingsPanel);
+            classDetailSettingsButton.transform.SetAsLastSibling();
+
             Sprite classArtSprite = statusSectionTallFrameSprite != null
                 ? statusSectionTallFrameSprite
                 : statusPanelFrameSprite != null
@@ -5118,9 +5131,13 @@ namespace ThreeDoorsOfFate.Game
             cardsPlayedThisCombat.Add(card.CardId);
             ApplyPostPlayCombinationEffects(card, debtBeforePlay);
             ApplyPostPlayRunItemEffects(card);
+            int actualCardDamage = Mathf.Max(
+                0,
+                enemyHealthBeforeCard - (enemy?.Health ?? enemyHealthBeforeCard));
+            TryCompleteCombatCardAchievements(actualCardDamage);
             PlayResolvedCardCombatSfx(
                 card,
-                Mathf.Max(0, enemyHealthBeforeCard - (enemy?.Health ?? enemyHealthBeforeCard)),
+                actualCardDamage,
                 Mathf.Max(0, playerBlock - playerBlockBeforeCard));
             if (phase == GamePhase.GameOver)
             {
@@ -5168,6 +5185,7 @@ namespace ThreeDoorsOfFate.Game
             oraclePrecisePredictionAwakened = true;
             int buildLevel = GetBuildUpgradeLevel(GetBuildRecipe(CharacterClass.Oracle).Id);
             oracleNextCardCostReduction = IsBuildUnlocked(GetBuildRecipe(CharacterClass.Oracle)) && buildLevel >= 1 ? 2 : 1;
+            TryCompleteCombatAwakeningAchievements();
             TriggerCombinationImpact("trait_oracle_precise_prediction");
             AddLog($"특성 발동: 정확한 예언. 다음 카드 비용 -{oracleNextCardCostReduction}.");
         }
@@ -5189,6 +5207,7 @@ namespace ThreeDoorsOfFate.Game
             int extraRolls = IsBuildUnlocked(recipe) && GetBuildUpgradeLevel(recipe.Id) >= 2 ? 1 : 0;
             gamblerCardReadingAwakened = true;
             gamblerLoadedDiceRollsRemaining = 3 + extraRolls;
+            TryCompleteCombatAwakeningAchievements();
             TriggerCombinationImpact("trait_gambler_card_reading");
             AddLog($"특성 발동: 패 읽기. 다음 행운 주사위 {gamblerLoadedDiceRollsRemaining}회가 고점으로 기웁니다.");
         }
@@ -5244,6 +5263,7 @@ namespace ThreeDoorsOfFate.Game
             exileCurseEaterAwakened = true;
             exileNextAttackDamageBonus = IsBuildUnlocked(recipe) ? 6 + level * 2 : 5;
             exileNextAttackVulnerableBonus = 1;
+            TryCompleteCombatAwakeningAchievements();
             TriggerCombinationImpact("trait_exile_curse_eater");
             AddLog($"특성 발동: 저주 삼키기. 다음 공격 피해 +{exileNextAttackDamageBonus}, 취약 +1.");
         }
@@ -5778,6 +5798,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             deck.Add(card);
+            TryCompleteDeckFiftyAchievement();
             return true;
         }
 
@@ -6801,6 +6822,7 @@ namespace ThreeDoorsOfFate.Game
 
         private void CompleteCombat()
         {
+            TryCompleteCliffsideVictoryAchievement();
             int baseRewardGold = enemy.IsBoss ? 0 : enemy.BaseGoldReward + debt * 2;
             int rewardGold = GetRunItemAdjustedCombatGoldReward(baseRewardGold, enemy.IsBoss);
             if (enemy.IsBoss)
@@ -7126,6 +7148,7 @@ namespace ThreeDoorsOfFate.Game
                 equippedRunItemIds[sameTypeIndex] = item.Id;
                 SyncBottleHealthBonusAfterEquipmentChange(hadBottleBefore);
                 SaveEquippedRunItemsForSelectedClass();
+                TryCompleteTripleContractAchievement();
                 PlayGameSfx(GameSfxCue.ItemEquip);
                 return true;
             }
@@ -7138,6 +7161,7 @@ namespace ThreeDoorsOfFate.Game
             equippedRunItemIds.Add(item.Id);
             SyncBottleHealthBonusAfterEquipmentChange(hadBottleBefore);
             SaveEquippedRunItemsForSelectedClass();
+            TryCompleteTripleContractAchievement();
             PlayGameSfx(GameSfxCue.ItemEquip);
             return true;
         }
@@ -7154,6 +7178,7 @@ namespace ThreeDoorsOfFate.Game
             equippedRunItemIds[index] = item.Id;
             SyncBottleHealthBonusAfterEquipmentChange(hadBottleBefore);
             SaveEquippedRunItemsForSelectedClass();
+            TryCompleteTripleContractAchievement();
             PlayGameSfx(GameSfxCue.ItemEquip);
         }
 
@@ -7187,6 +7212,7 @@ namespace ThreeDoorsOfFate.Game
 
             SyncBottleHealthBonusAfterEquipmentChange(hadBottleBefore);
             SaveEquippedRunItemsForSelectedClass();
+            TryCompleteTripleContractAchievement();
             PlayGameSfx(GameSfxCue.ItemEquip);
             AddLog($"{GetRunItemTypeName(item.Type)} 선택: {item.Name}.");
             RefreshTopBar();
@@ -7266,6 +7292,8 @@ namespace ThreeDoorsOfFate.Game
                     equippedRunItemIds.Add(itemId);
                 }
             }
+
+            TryCompleteTripleContractAchievement();
         }
 
         private void SaveEquippedRunItemsForSelectedClass()
@@ -7930,6 +7958,7 @@ namespace ThreeDoorsOfFate.Game
 
             PlayerPrefs.SetInt(GetSurvivorTitleKey(selectedClass), 1);
             PlayerPrefs.Save();
+            TryCompleteThreeSurvivorsAchievement();
             AddLog($"{GetClassName(selectedClass)}에게 생존 귀환 칭호가 새겨졌습니다.");
         }
 
@@ -8020,6 +8049,8 @@ namespace ThreeDoorsOfFate.Game
             {
                 PlayerPrefs.Save();
             }
+
+            TryCompleteTwentiethDoorAchievement();
         }
 
         private void ShowReward(List<CardData> rewards)
@@ -8457,9 +8488,12 @@ namespace ThreeDoorsOfFate.Game
             int price = GetRunItemAdjustedShopPrice(GetRunItemShopPrice(item.Type));
             RectTransform slot = AddShopOfferSlotRoot($"아이템 상품 {slotIndex}", slotIndex);
 
-            RectTransform panel = AddPanel(slot, "아이템 상품 프레임", Color.white, GetRunStatusSlotFrameSprite());
+            Image panelImage = AddImage(
+                slot,
+                "아이템 상품 콘텐츠",
+                new Color(0.010f, 0.014f, 0.022f, 0.94f));
+            RectTransform panel = panelImage.rectTransform;
             SetAnchors(panel, new Vector2(0.000f, 0.165f), new Vector2(1.000f, 1.000f));
-            Image panelImage = panel.GetComponent<Image>();
             panelImage.type = Image.Type.Simple;
             panelImage.raycastTarget = true;
 
@@ -8470,11 +8504,25 @@ namespace ThreeDoorsOfFate.Game
             Sprite icon = GetRunItemIcon(item);
             if (icon != null)
             {
-                Image itemIcon = AddImage(panel, "아이템 상품 아이콘", Color.white);
+                RectTransform artViewport = AddPanel(
+                    panel,
+                    "아이템 상품 그림 마스크 영역",
+                    new Color(0f, 0f, 0f, 0f));
+                artViewport.GetComponent<Image>().raycastTarget = false;
+                artViewport.gameObject.AddComponent<RectMask2D>();
+                SetAnchors(
+                    artViewport,
+                    new Vector2(0.205f, 0.500f),
+                    new Vector2(0.795f, 0.865f));
+
+                Image itemIcon = AddImage(artViewport, "아이템 상품 아이콘", Color.white);
                 itemIcon.sprite = icon;
                 itemIcon.preserveAspect = true;
                 itemIcon.raycastTarget = false;
-                SetAnchors(itemIcon.rectTransform, new Vector2(0.185f, 0.490f), new Vector2(0.815f, 0.905f));
+                SetAnchors(
+                    itemIcon.rectTransform,
+                    new Vector2(-0.115f, -0.115f),
+                    new Vector2(1.115f, 1.115f));
             }
 
             Text typeText = AddText(panel, "아이템 상품 종류", GetRunItemTypeName(item.Type), 18, TextAnchor.MiddleCenter, new Color(0.74f, 1f, 0.94f, 1f));
@@ -8495,6 +8543,17 @@ namespace ThreeDoorsOfFate.Game
             effectText.resizeTextMinSize = 9;
             effectText.resizeTextMaxSize = 13;
             SetAnchors(effectText.rectTransform, new Vector2(0.095f, 0.055f), new Vector2(0.905f, 0.270f));
+
+            Sprite itemFrame = GetRunStatusSlotFrameSprite();
+            Image frameOverlay = AddImage(
+                panel,
+                "아이템 상품 프레임 오버레이",
+                Color.white);
+            frameOverlay.sprite = itemFrame;
+            frameOverlay.type = GetImageType(itemFrame);
+            frameOverlay.raycastTarget = false;
+            Stretch(frameOverlay.rectTransform);
+            frameOverlay.rectTransform.SetAsLastSibling();
 
             UnityAction purchase = () =>
             {
@@ -8599,6 +8658,7 @@ namespace ThreeDoorsOfFate.Game
 
                 gold -= cost;
                 buildUpgradeLevels[recipe.Id] = currentLevel + 1;
+                TryCompleteMasterpieceAchievement();
                 PlayGameSfx(GameSfxCue.Upgrade);
                 AddLog($"{recipe.Name} 강화 {currentLevel + 1}단계.");
                 ShowShop();
@@ -10198,7 +10258,7 @@ namespace ThreeDoorsOfFate.Game
             {
                 string localizedEntry =
                     GameLocalization.TextFromSource(combatLog[i]);
-                entries.Add(WrapDisplayLine($"- {localizedEntry}", 18, "  "));
+                entries.Add(WrapDisplayLine($"- {localizedEntry}", 16, "  "));
             }
 
             Text body = AddText(logBodyRoot, "기록 내용", string.Join("\n", entries), 14, TextAnchor.UpperLeft, new Color(0.88f, 0.86f, 0.78f, 1f));

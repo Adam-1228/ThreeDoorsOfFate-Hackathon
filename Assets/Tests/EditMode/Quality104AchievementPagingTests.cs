@@ -111,53 +111,67 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
-        public void CollectorProgress_UsesHighestSingleCharacterUnionOutOfThirty()
+        public void LockedGallery_UsesTenSlotsPerPageAndHidesIdentity()
         {
-            SetTestRunItemCatalog(30);
-            PlayerPrefs.SetString(
-                "ThreeDoorsOfFate.DiscoveredItems.Gambler",
-                BuildItemSaveJson(Enumerable.Range(1, 10)));
-            PlayerPrefs.SetString(
-                "ThreeDoorsOfFate.EquippedItems.Gambler",
-                BuildItemSaveJson(Enumerable.Range(9, 4)));
-            PlayerPrefs.SetString(
-                "ThreeDoorsOfFate.DiscoveredItems.Oracle",
-                BuildItemSaveJson(Enumerable.Range(11, 15)));
-            PlayerPrefs.SetString(
-                "ThreeDoorsOfFate.EquippedItems.Oracle",
-                BuildItemSaveJson(Enumerable.Range(20, 8)));
-            PlayerPrefs.Save();
-
-            Assert.That(Invoke<int>("GetAbyssCollectorProgress"), Is.EqualTo(17));
             Invoke("ShowAchievements");
-            Invoke("ShowAchievementPage", 1);
+            Invoke("ShowAchievementPage", 0);
 
-            RectTransform collector = FindCardByTitle("심연의 수집가");
-            Assert.That(
-                FindRequired(collector, "업적 진행").GetComponent<Text>().text,
-                Is.EqualTo("17/30"));
+            List<RectTransform> firstPage = GetVisibleSlots();
+            Assert.That(firstPage, Has.Count.EqualTo(10));
+            Assert.That(GetField<Text>("achievementCompletionText").text, Is.EqualTo("달성 0/20"));
+            foreach (RectTransform slot in firstPage)
+            {
+                Assert.That(slot.GetComponent<Button>().interactable, Is.False, slot.name);
+                Assert.That(
+                    FindDescendants(slot).Any(candidate =>
+                        candidate.name == "업적 미발견"
+                        && candidate.GetComponent<Text>().text == "미발견"),
+                    Is.True,
+                    slot.name);
+                Assert.That(
+                    FindDescendants(slot).Any(candidate => candidate.name == "업적 이미지"),
+                    Is.False,
+                    slot.name);
+                Assert.That(
+                    FindDescendants(slot).Any(candidate => candidate.name == "업적 이름"),
+                    Is.False,
+                    slot.name);
+            }
+
+            Invoke("ShowAchievementPage", 1);
+            Assert.That(GetVisibleSlots(), Has.Count.EqualTo(10));
         }
 
         [Test]
-        public void ActiveMatchingBuildProgress_CountsDistinctRequiredCardsOnly()
+        public void CompletedSlot_SelectsOneSharedDetailPanel()
         {
-            SetEnumField("phase", "DoorSelection");
-            SetEnumField("selectedClass", "Gambler");
-            AddCard("class_gambler_attack_wager_dagger");
-            AddCard("class_gambler_attack_wager_dagger");
-            AddCard("class_gambler_defense_stake_shield");
+            AchievementProgress.Complete(
+                Prefix,
+                AchievementProgress.AbyssCollector);
 
             Invoke("ShowAchievements");
-            Invoke("ShowAchievementPage", 1);
+            Invoke("ShowAchievementPage", 0);
 
-            RectTransform gambler = FindCardByTitle("운명을 건 판돈");
+            RectTransform collector = FindSlotByTitle("심연의 수집가");
+            Button button = collector.GetComponent<Button>();
+            Assert.That(button.interactable, Is.True);
+            button.onClick.Invoke();
+            Canvas.ForceUpdateCanvases();
+
+            RectTransform detailRoot = GetField<RectTransform>("achievementDetailRoot");
+            RectTransform detail = FindRequired(detailRoot, "업적 상세 패널");
             Assert.That(
-                FindRequired(gambler, "업적 진행").GetComponent<Text>().text,
-                Is.EqualTo("2/3"));
-            RectTransform oracle = FindCardByTitle("세 문의 예언");
+                FindRequired(detail, "업적 상세 제목").GetComponent<Text>().text,
+                Does.Contain("심연의 수집가"));
             Assert.That(
-                FindRequired(oracle, "업적 진행").GetComponent<Text>().text,
-                Is.EqualTo("0/1"));
+                FindRequired(detail, "업적 상세 설명").GetComponent<Text>().text,
+                Is.EqualTo(AchievementProgress.AbyssCollector.EarnedDescription));
+            Assert.That(
+                FindRequired(detail, "업적 상세 상태").GetComponent<Text>().text,
+                Does.Contain("100점"));
+            Assert.That(
+                FindDescendants(collector).Any(candidate => candidate.name == "업적 선택 표시"),
+                Is.True);
         }
 
         [Test]
@@ -171,7 +185,7 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(GetField<Text>("achievementPageText").text, Is.EqualTo("1 / 2"));
             Assert.That(
                 GetField<Text>("achievementCompletionText").text,
-                Is.EqualTo("0/8 Completed"));
+                Is.EqualTo("0/20 Completed"));
 
             Invoke("ShowAchievementPage", 99);
             Assert.That(GetField<int>("achievementPageIndex"), Is.EqualTo(1));
@@ -180,7 +194,12 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(
                 Regex.IsMatch(GetField<Text>("achievementCompletionText").text, "[가-힣]"),
                 Is.False);
-            Assert.That(GetVisibleCards(), Has.Count.EqualTo(4));
+            Assert.That(GetVisibleSlots(), Has.Count.EqualTo(10));
+            Assert.That(
+                GetVisibleSlots().SelectMany(FindDescendants)
+                    .Where(candidate => candidate.name == "업적 미발견")
+                    .Select(candidate => candidate.GetComponent<Text>().text),
+                Has.All.EqualTo("Undiscovered"));
         }
 
         private void SetTestRunItemCatalog(int count)
@@ -200,21 +219,24 @@ namespace ThreeDoorsOfFate.Tests
             GetField<IList>("deck").Add(card);
         }
 
-        private RectTransform FindCardByTitle(string expectedTitle)
+        private RectTransform FindSlotByTitle(string expectedTitle)
         {
-            RectTransform card = GetVisibleCards().FirstOrDefault(candidate =>
-                FindRequired(candidate, "업적 제목").GetComponent<Text>().text
-                    == expectedTitle);
-            Assert.That(card, Is.Not.Null, $"Expected achievement '{expectedTitle}'.");
-            return card;
+            RectTransform slot = GetVisibleSlots().FirstOrDefault(candidate =>
+                FindDescendants(candidate)
+                    .FirstOrDefault(descendant => descendant.name == "업적 이름")
+                    ?.GetComponent<Text>().text == expectedTitle);
+            Assert.That(slot, Is.Not.Null, $"Expected achievement '{expectedTitle}'.");
+            return slot;
         }
 
-        private List<RectTransform> GetVisibleCards()
+        private List<RectTransform> GetVisibleSlots()
         {
             RectTransform cardsRoot = GetField<RectTransform>("achievementCardsRoot");
-            return FindDescendants(cardsRoot)
+            return Enumerable.Range(0, cardsRoot.childCount)
+                .Select(index => cardsRoot.GetChild(index) as RectTransform)
+                .Where(candidate => candidate != null)
                 .Where(candidate => candidate.name.StartsWith(
-                    "업적 카드 ",
+                    "업적 슬롯 ",
                     StringComparison.Ordinal))
                 .ToList();
         }
