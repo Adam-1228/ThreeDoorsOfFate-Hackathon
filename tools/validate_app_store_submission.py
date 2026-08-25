@@ -20,11 +20,11 @@ WEB_ROOT = Path("docs/submission/app-store/web/three-doors-of-fate")
 SUBMISSION_ROOT = Path("docs/submission/app-store")
 GAME_CENTER_SOURCE = Path("Assets/Scripts/Platform/AppleGameServices.cs")
 GAME_CENTER_ACHIEVEMENT_ID_PATTERN = re.compile(r"^[A-Za-z0-9._]+$")
-ACTIVE_VERSION = "1.0.4"
-ACTIVE_BUILD = "8"
-ACTIVE_KOREAN_METADATA = "metadata-1.0.4.ko-KR.json"
-ACTIVE_ENGLISH_METADATA = "metadata-1.0.4.en-US.json"
-ACTIVE_REVIEW_NOTES = "review-notes-1.0.4.en-US.md"
+ACTIVE_VERSION = "1.2.0"
+ACTIVE_BUILD = "12000"
+ACTIVE_KOREAN_METADATA = "metadata-1.2.0.ko-KR.json"
+ACTIVE_ENGLISH_METADATA = "metadata-1.2.0.en-US.json"
+ACTIVE_REVIEW_NOTES = "review-notes-1.2.0.en-US.md"
 ACTIVE_TERRITORIES = [
     "KR",
     "AT",
@@ -361,12 +361,12 @@ def validate_submission_documents(root: Path) -> list[str]:
             "인앱 구매와 구독이 없습니다",
         ),
         ACTIVE_REVIEW_NOTES: (
-            "1.0.4 (8)",
+            f"{ACTIVE_VERSION} ({ACTIVE_BUILD})",
             "No account is required",
-            "Korean and English",
-            "72 card",
-            "How to Play",
-            "Game Over",
+            "20 achievements",
+            "12 new Game Center achievements",
+            "Settings",
+            "Progress Log",
             "Game Center",
             "optional rewarded ads",
             "does not request ATT permission",

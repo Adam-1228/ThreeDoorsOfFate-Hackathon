@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "app_record": {
+    "platform": "iOS",
+    "name": "Three Doors of Fate",
+    "primary_language": "ko-KR",
+    "bundle_id": "com.adam.threedoorsfate",
+    "sku": "TDOF-IOS-2026"
+  },
+  "version": {
+    "version_string": "1.2.0",
+    "build_string": "12000",
+    "localization": "en-US",
+    "subtitle": "Dark Fantasy Card RPG",
+    "promotional_text": "Every pact with fate has a price. Choose one of three doors, build your strategy with cards and relics, and test your luck to reach the end.",
+    "description": "Standing before three doors, you make a pact with fate.\nFortune always demands a price, and today's choice follows you to the next door.\nRead the signs of danger in your cards, survive to the end, and reach an ending of your own.\n\nThree Doors of Fate is a dark fantasy, turn-based card RPG built around choosing one of three doors. Beyond each door waits a battle, reward, shop, rest, or sometimes a curse. Take the safety you need now, or bargain with danger for a greater reward—every decision changes the course of your journey.\n\nTHREE CHARACTERS, THREE FATES\nChoose the Gambler, the Oracle, or the Exile.\nThe Gambler stakes Luck and Debt to turn bad odds around.\nThe Oracle reads enemy intent and signs of the fate ahead to prepare the next move.\nThe Exile turns wounds, curses, and even broken vows into the strength to survive.\nEach character has unique abilities and character-specific cards, demanding different choices and combinations even against the same doors and enemies.\n\nREAD, COMPARE, THEN COMMIT\nCheck what the enemy plans for its next turn, then combine attacks, defenses, and special cards within your limited Action. Tap a card in your hand to open a larger preview. Compare another card, or tap the preview or empty space to cancel your selection. A card is played only when you press the separate Use button, so inspecting a card never commits you to using it. Take time to weigh enemy intent, remaining Action, and the price the next turn may demand.\n\nTHREE DOORS, A DIFFERENT JOURNEY EVERY TIME\nRead each door's description and omen, then choose one. As battles, rewards, shops, rest, and curses shape the road, decide how to manage HP, Luck, Gold, and Debt. Chase the reward in front of you, or keep enough in reserve for the next door. If you are new, How to Play on the main screen walks through door choices, combat, card inspection, relics, and saving.\n\nBUILD A STRATEGY WITH CARDS AND RELICS\nEarn cards through battles and choices, then shape the direction of your deck. Relics, Blessings, and Curses can strengthen you while adding new conditions and costs. Complete signature card combinations for each character and pursue goals such as discovering every collectible with one character. Check requirements and progress at any time on the in-game Achievements screen.\n\nTHREE DIFFICULTIES AND LASTING PROGRESS\nEasy, Normal, and Hard change the level of danger and which relics can be found. A failed run does not erase everything: discovered collectibles, unlocked difficulties, true endings, and achievements remain for future journeys. Open the doors again to find each character's different endings, and compete for Endless records on Game Center leaderboards.\n\nOPTIONAL REWARDED ADS ONLY\nChoose a rewarded ad only when you want an undiscovered relic available at your current difficulty. Each character can receive up to three successful rewards per local calendar day. Easy awards only Easy relics; Normal awards undiscovered Easy or Normal relics; Hard can award any undiscovered relic. Once every eligible relic has been found, the ad option no longer appears. Canceling an ad or failing to receive its reward does not consume a daily use or grant a relic. There are no automatic, interstitial, or banner ads, and no in-app purchases or subscriptions.\n\nCONTINUE YOUR FATE\nProgress is saved locally on your device. After a successful Game Center sign-in, your saved progress syncs with iCloud and achievements and leaderboards become available. If you cancel sign-in or play offline, local saving and the full single-player game remain available; synchronization can resume the next time you connect.\n\nThe pact has already begun.\nNo one knows which side fortune will favor.\nNow all that remains is to open one of the three doors.",
+    "keywords": "card game,roguelike,dark fantasy,strategy,turn based,RPG,deckbuilding,single player",
+    "support_url": "https://adam-1228.github.io/three-doors-of-fate/support/",
+    "marketing_url": "https://adam-1228.github.io/three-doors-of-fate/",
+    "privacy_policy_url": "https://adam-1228.github.io/three-doors-of-fate/privacy/",
+    "privacy_choices_url": "https://adam-1228.github.io/three-doors-of-fate/privacy/",
+    "copyright": "2026 ADAM",
+    "whats_new": "Expanded Achievements to 20 with a relic-style discovery gallery that keeps undiscovered entries hidden and shows details after completion. Settings are now available from character confirmation, and we improved progress-log padding and shop relic framing."
+  },
+  "classification": {
+    "primary_category": "Games",
+    "game_subcategories": [
+      "Card",
+      "Role Playing"
+    ],
+    "content_rights_confirmed_from": "docs/submission/asset-attribution.md"
+  },
+  "commercial": {
+    "price": "free",
+    "distribution_method": "public",
+    "territories": [
+      "KR",
+      "AT",
+      "BE",
+      "BG",
+      "HR",
+      "CY",
+      "CZ",
+      "DK",
+      "EE",
+      "FI",
+      "FR",
+      "DE",
+      "GR",
+      "HU",
+      "IE",
+      "IT",
+      "LV",
+      "LT",
+      "LU",
+      "MT",
+      "NL",
+      "PL",
+      "PT",
+      "RO",
+      "SK",
+      "SI",
+      "ES",
+      "SE",
+      "US"
+    ],
+    "release_method": "manual",
+    "preorder": false,
+    "in_app_purchases": [],
+    "subscriptions": []
+  },
+  "review": {
+    "sign_in_required": false,
+    "review_notes_file": "docs/submission/app-store/review-notes-1.2.0.en-US.md",
+    "contact_source": "Use and verify the authenticated App Store Connect account contact fields; do not invent values."
+  },
+  "build": {
+    "uses_non_exempt_encryption": false,
+    "game_center": true,
+    "icloud": true,
+    "rewarded_ads_only": true,
+    "production_ads_required": true
+  }
+}

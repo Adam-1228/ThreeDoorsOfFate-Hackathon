@@ -191,7 +191,7 @@ class Achievement120CatalogContractTests(unittest.TestCase):
             "const int rows = 2;",
             '"업적 슬롯 {absoluteIndex + 1}"',
             '"업적 미발견"',
-            'L("common.undiscovered")',
+            '"common.undiscovered"',
             '"업적 상세 패널"',
             '"업적 상세 제목"',
             '"업적 상세 설명"',

@@ -85,10 +85,10 @@ namespace ThreeDoorsOfFate.Game
             SetAnchors(modal, new Vector2(0.018f, 0.026f), new Vector2(0.982f, 0.974f));
             AddClickBlocker(modal.GetComponent<Image>());
 
-            Text heading = AddText(
+            Text heading = AddLocalizedText(
                 modal,
                 "업적 모달 제목",
-                "운명에 새겨진 기록",
+                "achievement.heading",
                 32,
                 TextAnchor.MiddleCenter,
                 new Color(0.76f, 1f, 0.96f, 1f));
@@ -100,10 +100,10 @@ namespace ThreeDoorsOfFate.Game
                 new Vector2(1.1f, -1.1f));
             SetAnchors(heading.rectTransform, new Vector2(0.15f, 0.905f), new Vector2(0.85f, 0.980f));
 
-            Button closeButton = AddSettingsMenuButton(
+            Button closeButton = AddLocalizedSettingsMenuButton(
                 modal,
                 "업적 닫기",
-                "닫기",
+                "common.close",
                 18,
                 GameSfxCue.UiAccept);
             SetAnchors(
@@ -327,10 +327,10 @@ namespace ThreeDoorsOfFate.Game
                     new Vector2(0.135f, 0.205f),
                     new Vector2(0.865f, 0.830f));
 
-                Text undiscovered = AddText(
+                Text undiscovered = AddLocalizedText(
                     slot,
                     "업적 미발견",
-                    L("common.undiscovered"),
+                    "common.undiscovered",
                     16,
                     TextAnchor.MiddleCenter,
                     new Color(0.60f, 0.64f, 0.66f, 1f));
@@ -384,6 +384,7 @@ namespace ThreeDoorsOfFate.Game
                 15,
                 TextAnchor.MiddleCenter,
                 new Color(0.73f, 1f, 0.95f, 1f));
+            BindLocalizedSourceText(title, model.DisplayName);
             ConfigureAchievementText(title, 10, 15, true);
             SetAnchors(
                 title.rectTransform,
@@ -503,10 +504,10 @@ namespace ThreeDoorsOfFate.Game
                 || selectedAchievementIndex >= achievementCardModels.Count
                 || !achievementCardModels[selectedAchievementIndex].Completed)
             {
-                Text empty = AddText(
+                Text empty = AddLocalizedText(
                     detail,
                     "업적 상세 미발견",
-                    L("common.undiscovered"),
+                    "common.undiscovered",
                     19,
                     TextAnchor.MiddleCenter,
                     new Color(0.62f, 0.66f, 0.68f, 1f));
@@ -542,10 +543,11 @@ namespace ThreeDoorsOfFate.Game
             Text title = AddText(
                 detail,
                 "업적 상세 제목",
-                $"업적 | {model.DisplayName}",
+                model.DisplayName,
                 22,
                 TextAnchor.MiddleLeft,
                 new Color(0.73f, 1f, 0.95f, 1f));
+            BindLocalizedSourceText(title, model.DisplayName);
             ConfigureAchievementText(title, 14, 22, true);
             SetAnchors(
                 title.rectTransform,
@@ -559,6 +561,7 @@ namespace ThreeDoorsOfFate.Game
                 17,
                 TextAnchor.MiddleLeft,
                 new Color(0.94f, 0.88f, 0.79f, 1f));
+            BindLocalizedSourceText(description, model.EarnedDescription);
             ConfigureAchievementText(description, 12, 17, false);
             description.lineSpacing = 0.94f;
             SetAnchors(
@@ -576,6 +579,11 @@ namespace ThreeDoorsOfFate.Game
                 15,
                 TextAnchor.MiddleLeft,
                 new Color(0.38f, 1f, 0.88f, 1f));
+            BindLocalizedText(
+                status,
+                "achievement.status",
+                L("achievement.status.complete"),
+                model.Points);
             ConfigureAchievementText(status, 11, 15, true);
             SetAnchors(
                 status.rectTransform,
@@ -650,11 +658,21 @@ namespace ThreeDoorsOfFate.Game
                     "achievement.page",
                     achievementPageIndex + 1,
                     pageCount);
+                BindLocalizedText(
+                    achievementPageText,
+                    "achievement.page",
+                    achievementPageIndex + 1,
+                    pageCount);
             }
 
             if (achievementCompletionText != null)
             {
                 achievementCompletionText.text = LF(
+                    "achievement.summary",
+                    completedCount,
+                    achievementCardModels.Count);
+                BindLocalizedText(
+                    achievementCompletionText,
                     "achievement.summary",
                     completedCount,
                     achievementCardModels.Count);

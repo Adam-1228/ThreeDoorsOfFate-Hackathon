@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "app_bundle_id": "com.adam.threedoorsfate",
+  "release_version": "1.2.0",
+  "build": "12000",
+  "total_achievement_count": 20,
+  "total_points": 1000,
+  "existing_achievement_count": 8,
+  "existing_achievements": [
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.hard_unlocked",
+      "points": 100
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.true_ending.gambler",
+      "points": 100
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.true_ending.oracle",
+      "points": 100
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.true_ending.exile",
+      "points": 100
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.abyss_collector",
+      "points": 100
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.build.gambler_high_roll",
+      "points": 100
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.build.oracle_rift_engine",
+      "points": 100
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.build.exile_last_oath",
+      "points": 100
+    }
+  ],
+  "new_achievements": [
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.combat.gambler_card_reading",
+      "storage_suffix": "combat.gambler_card_reading",
+      "points": 10,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_gambler_card_reading.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "패를 읽은 자",
+          "before_earned_description": "도박사로 한 전투에서 카드 뽑기와 버리기를 합쳐 15회 기록하세요.",
+          "earned_description": "흐르는 패의 결을 읽고 운명의 고점을 붙잡았습니다."
+        },
+        "en-US": {
+          "title": "Reader of the Hand",
+          "before_earned_description": "As the Gambler, draw and discard cards a combined 15 times in one combat.",
+          "earned_description": "You read the flow of the hand and seized fate at its peak."
+        }
+      }
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.combat.oracle_precise_prediction",
+      "storage_suffix": "combat.oracle_precise_prediction",
+      "points": 10,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_oracle_precise_prediction.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "정확한 예언",
+          "before_earned_description": "예언가로 공격 의도에 방어 카드로 세 번 대응하세요.",
+          "earned_description": "세 번의 공격을 미리 읽고 정확한 방벽을 세웠습니다."
+        },
+        "en-US": {
+          "title": "Precise Prediction",
+          "before_earned_description": "As the Oracle, answer an attack intent with a Defense card three times.",
+          "earned_description": "You foresaw three attacks and raised each barrier at the exact moment."
+        }
+      }
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.combat.exile_curse_eater",
+      "storage_suffix": "combat.exile_curse_eater",
+      "points": 10,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_exile_curse_eater.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "저주를 삼킨 자",
+          "before_earned_description": "추방자로 한 전투에서 빚을 2 이상 제거하세요.",
+          "earned_description": "채무의 저주를 삼키고 끊어진 사슬을 힘으로 바꿨습니다."
+        },
+        "en-US": {
+          "title": "Curse Eater",
+          "before_earned_description": "As the Exile, remove at least 2 Debt in one combat.",
+          "earned_description": "You devoured the debt curse and forged broken chains into strength."
+        }
+      }
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.combat.fate_cleaver_50",
+      "storage_suffix": "combat.fate_cleaver_50",
+      "points": 15,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_fate_cleaver_50.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "운명을 가르는 일격",
+          "before_earned_description": "카드 한 장으로 실제 체력 피해를 50 이상 입히세요.",
+          "earned_description": "하나의 일격으로 적의 운명을 갈랐습니다."
+        },
+        "en-US": {
+          "title": "Fate-Cleaving Blow",
+          "before_earned_description": "Deal at least 50 actual HP damage with a single card.",
+          "earned_description": "A single blow cleaved the enemy's fate apart."
+        }
+      }
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.combat.iron_wall_40",
+      "storage_suffix": "combat.iron_wall_40",
+      "points": 15,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_iron_wall_40.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "철벽의 맹세",
+          "before_earned_description": "전투 중 방어도를 40 이상 쌓으세요.",
+          "earned_description": "겹겹의 방벽으로 어떤 맹세도 꺾이지 않게 지켰습니다."
+        },
+        "en-US": {
+          "title": "Ironwall Oath",
+          "before_earned_description": "Reach at least 40 Block during combat.",
+          "earned_description": "Layered barriers kept the oath from breaking."
+        }
+      }
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.combat.five_cards_turn",
+      "storage_suffix": "combat.five_cards_turn",
+      "points": 15,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_five_cards_turn.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "한 호흡의 다섯 패",
+          "before_earned_description": "한 턴에 서로 다른 카드 다섯 장을 사용하세요.",
+          "earned_description": "한 호흡 안에 다섯 갈래 운명을 이어 냈습니다."
+        },
+        "en-US": {
+          "title": "Five Cards, One Breath",
+          "before_earned_description": "Play five different cards in one turn.",
+          "earned_description": "You wove five paths of fate together in a single breath."
+        }
+      }
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.collection.deck_50",
+      "storage_suffix": "collection.deck_50",
+      "points": 15,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_deck_50.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "쉰 장의 운명",
+          "before_earned_description": "덱에 카드 50장을 모으세요.",
+          "earned_description": "쉰 장의 선택이 하나의 거대한 운명으로 엮였습니다."
+        },
+        "en-US": {
+          "title": "Fifty Fates",
+          "before_earned_description": "Collect 50 cards in your deck.",
+          "earned_description": "Fifty choices were woven into one immense fate."
+        }
+      }
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.combat.cliffside_victory",
+      "storage_suffix": "combat.cliffside_victory",
+      "points": 20,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_cliffside_victory.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "벼랑 끝의 생환",
+          "before_earned_description": "최대 체력의 20% 이하로 전투에서 승리하세요.",
+          "earned_description": "마지막 불씨를 지킨 채 벼랑 끝에서 돌아왔습니다."
+        },
+        "en-US": {
+          "title": "Back from the Brink",
+          "before_earned_description": "Win a combat at 20% or less of maximum HP.",
+          "earned_description": "You returned from the brink with the final ember still alive."
+        }
+      }
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.collection.triple_contract",
+      "storage_suffix": "collection.triple_contract",
+      "points": 20,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_triple_contract.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "세 겹의 계약",
+          "before_earned_description": "유물과 축복과 저주를 동시에 장착하세요.",
+          "earned_description": "서로 다른 세 계약을 하나의 운명에 묶었습니다."
+        },
+        "en-US": {
+          "title": "Triple Contract",
+          "before_earned_description": "Equip a Relic, Blessing, and Curse at the same time.",
+          "earned_description": "You bound three different contracts to one fate."
+        }
+      }
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.build.masterpiece",
+      "storage_suffix": "build.masterpiece",
+      "points": 20,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_build_masterpiece.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "완성된 설계",
+          "before_earned_description": "현재 직업의 대표 빌드를 2단계까지 강화하세요.",
+          "earned_description": "운명의 설계를 마지막 단계까지 완성했습니다."
+        },
+        "en-US": {
+          "title": "Masterwork Design",
+          "before_earned_description": "Upgrade your current class's signature build to level 2.",
+          "earned_description": "You completed fate's design at its final tier."
+        }
+      }
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.endless.twentieth_door",
+      "storage_suffix": "endless.twentieth_door",
+      "points": 25,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_twentieth_door.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "스무 번째 문 너머",
+          "before_earned_description": "무한 모드에서 스무 번째 문에 도달하세요.",
+          "earned_description": "끝없는 길의 스무 번째 문 너머에 발자국을 남겼습니다."
+        },
+        "en-US": {
+          "title": "Beyond the Twentieth Door",
+          "before_earned_description": "Reach the twentieth door in Endless mode.",
+          "earned_description": "You left a footprint beyond the twentieth door of the endless path."
+        }
+      }
+    },
+    {
+      "reference_name": "com.adam.threedoorsfate.achievement.meta.three_survivors",
+      "storage_suffix": "meta.three_survivors",
+      "points": 25,
+      "is_hidden": true,
+      "is_replayable": false,
+      "image": "Assets/Resources/Achievements/achievement_three_survivors.png",
+      "localizations": {
+        "ko-KR": {
+          "title": "세 운명의 생존자",
+          "before_earned_description": "세 직업 모두 어려움 귀환 칭호를 획득하세요.",
+          "earned_description": "세 운명이 모두 심연의 문을 지나 살아 돌아왔습니다."
+        },
+        "en-US": {
+          "title": "Survivors of Three Fates",
+          "before_earned_description": "Earn the Hard-return title with all three classes.",
+          "earned_description": "All three fates passed the abyss gate and returned alive."
+        }
+      }
+    }
+  ]
+}

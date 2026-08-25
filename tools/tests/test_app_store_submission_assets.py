@@ -22,6 +22,9 @@ SUBMISSION_ROOT = PROJECT_ROOT / "docs" / "submission" / "app-store"
 KOREAN_104_METADATA = SUBMISSION_ROOT / "metadata-1.0.4.ko-KR.json"
 ENGLISH_104_METADATA = SUBMISSION_ROOT / "metadata-1.0.4.en-US.json"
 REVIEW_NOTES_104 = SUBMISSION_ROOT / "review-notes-1.0.4.en-US.md"
+KOREAN_ACTIVE_METADATA = SUBMISSION_ROOT / "metadata-1.2.0.ko-KR.json"
+ENGLISH_ACTIVE_METADATA = SUBMISSION_ROOT / "metadata-1.2.0.en-US.json"
+ACTIVE_REVIEW_NOTES = SUBMISSION_ROOT / "review-notes-1.2.0.en-US.md"
 PUBLIC_PAGE_ROOT = (
     PROJECT_ROOT / "docs" / "submission" / "app-store" / "web" / "three-doors-of-fate"
 )
@@ -194,7 +197,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
                 / "AppleGameServices.cs",
                 fixture_game_center_source,
             )
-            (fixture_submission / "metadata-1.0.4.en-US.json").unlink(missing_ok=True)
+            (fixture_submission / ENGLISH_ACTIVE_METADATA.name).unlink(missing_ok=True)
             result = subprocess.run(
                 [
                     sys.executable,
@@ -210,7 +213,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
             )
 
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("metadata-1.0.4.en-US.json", result.stderr)
+        self.assertIn(ENGLISH_ACTIVE_METADATA.name, result.stderr)
 
     def test_age_rating_contract_keeps_simulated_gambling_at_none(self) -> None:
         """Catches reintroducing the individual-developer gambling restriction."""
@@ -276,7 +279,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
                 PROJECT_ROOT / "docs" / "submission" / "app-store",
                 fixture_submission,
             )
-            metadata_path = fixture_submission / "metadata-1.0.4.ko-KR.json"
+            metadata_path = fixture_submission / KOREAN_ACTIVE_METADATA.name
             metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
             metadata["version"]["subtitle"] = "가" * 31
             metadata_path.write_text(
@@ -311,7 +314,7 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
                 PROJECT_ROOT / "docs" / "submission" / "app-store",
                 fixture_submission,
             )
-            metadata_path = fixture_submission / "metadata-1.0.4.ko-KR.json"
+            metadata_path = fixture_submission / KOREAN_ACTIVE_METADATA.name
             metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
             metadata["commercial"]["preorder"] = True
             metadata_path.write_text(

@@ -757,7 +757,8 @@ class LocalizationContractTests(unittest.TestCase):
         for method_name in (
             "ShowAchievements",
             "GetAchievementCardModels",
-            "AddAchievementCard",
+            "AddAchievementSlot",
+            "RefreshAchievementDetail",
         ):
             method = extract_method(achievements, method_name)
             visible_values.update(
@@ -999,21 +1000,21 @@ class LocalizationContractTests(unittest.TestCase):
             self.assertNotIn("GameLanguagePolicy.PreferenceKey", method)
             self.assertNotRegex(method, re.compile(r'Language[}".]'))
 
-    def test_webgl_patch_version_preserves_ios_release_defaults(self) -> None:
+    def test_release_version_matches_ios_1_2_0_defaults(self) -> None:
         project_settings = PROJECT_SETTINGS_PATH.read_text(encoding="utf-8")
         release_configuration = IOS_RELEASE_CONFIGURATION_PATH.read_text(
             encoding="utf-8"
         )
         self.assertRegex(
             project_settings,
-            re.compile(r"(?m)^  bundleVersion: 1\.1\.2$"),
+            re.compile(r"(?m)^  bundleVersion: 1\.2\.0$"),
         )
         self.assertRegex(
             project_settings,
-            re.compile(r"(?m)^    iPhone: 11100$"),
+            re.compile(r"(?m)^    iPhone: 12000$"),
         )
-        self.assertIn('DefaultVersion = "1.1.1"', release_configuration)
-        self.assertIn('DefaultBuildNumber = "11100"', release_configuration)
+        self.assertIn('DefaultVersion = "1.2.0"', release_configuration)
+        self.assertIn('DefaultBuildNumber = "12000"', release_configuration)
 
     def test_windows_verification_handoff_covers_external_release_boundary(self) -> None:
         self.assert_file_exists(WINDOWS_HANDOFF_PATH)
