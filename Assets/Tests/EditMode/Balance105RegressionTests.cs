@@ -143,22 +143,31 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(Invoke("GetEnemyRegenerationAmount", boss), Is.EqualTo(11));
         }
 
-        [Test]
-        public void AttackGuarantee_InsertsOneEligibleAttackWithoutDuplicates()
+        [TestCase(2)]
+        [TestCase(3)]
+        [TestCase(4)]
+        public void AttackGuarantee_InsertsOneEligibleAttackWithoutDuplicates(
+            int offerCount)
         {
             ScriptableObject defense = CreateCard("defense", "Defense");
             ScriptableObject skillA = CreateCard("skill_a", "Skill");
             ScriptableObject skillB = CreateCard("skill_b", "Skill");
+            ScriptableObject skillC = CreateCard("skill_c", "Skill");
             ScriptableObject attack = CreateCard("attack", "Attack");
-            IList offers = CreateOfferFixture(
-                new[] { defense, skillA, skillB, attack },
+            ScriptableObject[] nonAttacks =
+            {
                 defense,
                 skillA,
-                skillB);
+                skillB,
+                skillC
+            };
+            IList offers = CreateOfferFixture(
+                nonAttacks.Append(attack),
+                nonAttacks.Take(offerCount).ToArray());
 
             Invoke("EnsureAttackOffer", offers, CreateSources("CombatReward"));
 
-            Assert.That(offers, Has.Count.EqualTo(3));
+            Assert.That(offers, Has.Count.EqualTo(offerCount));
             Assert.That(
                 offers.Cast<object>().Count(card =>
                     ReadProperty<object>(card, "Category").ToString() == "Attack"),
@@ -168,7 +177,45 @@ namespace ThreeDoorsOfFate.Tests
                     .Select(card => ReadProperty<string>(card, "CardId"))
                     .Distinct()
                     .Count(),
-                Is.EqualTo(3));
+                Is.EqualTo(offerCount));
+        }
+
+        [Test]
+        public void AttackGuarantee_LeavesSingleCardOfferUnchanged()
+        {
+            ScriptableObject defense = CreateCard("defense", "Defense");
+            ScriptableObject attack = CreateCard("attack", "Attack");
+            IList offers = CreateOfferFixture(
+                new[] { defense, attack },
+                defense);
+
+            Invoke("EnsureAttackOffer", offers, CreateSources("CombatReward"));
+
+            Assert.That(offers, Has.Count.EqualTo(1));
+            Assert.That(ContainsAttack(offers), Is.False);
+        }
+
+        [Test]
+        public void AttackGuarantee_LeavesFiveCardOfferUnchanged()
+        {
+            ScriptableObject defenseA = CreateCard("defense_a", "Defense");
+            ScriptableObject defenseB = CreateCard("defense_b", "Defense");
+            ScriptableObject skillA = CreateCard("skill_a", "Skill");
+            ScriptableObject skillB = CreateCard("skill_b", "Skill");
+            ScriptableObject skillC = CreateCard("skill_c", "Skill");
+            ScriptableObject attack = CreateCard("attack", "Attack");
+            IList offers = CreateOfferFixture(
+                new[] { defenseA, defenseB, skillA, skillB, skillC, attack },
+                defenseA,
+                defenseB,
+                skillA,
+                skillB,
+                skillC);
+
+            Invoke("EnsureAttackOffer", offers, CreateSources("CombatReward"));
+
+            Assert.That(offers, Has.Count.EqualTo(5));
+            Assert.That(ContainsAttack(offers), Is.False);
         }
 
         [Test]
@@ -216,6 +263,129 @@ namespace ThreeDoorsOfFate.Tests
                 CreateSources("CombatReward", "HardReward"));
 
             Assert.That(ContainsAttack(offers), Is.False);
+        }
+
+        [TestCase(2, 20)]
+        [TestCase(3, 15)]
+        public void BossAttackDamage_UsesTheSameValueForPreviewAndResolution(
+            int currentLuck,
+            int expectedDamage)
+        {
+            SetEnumField("currentDifficulty", "Normal");
+            SetEnumField("phase", "Combat");
+            SetField("luck", currentLuck);
+            SetField("playerMaxHealth", 100);
+            SetField("playerHealth", 100);
+            SetField("playerBlock", 0);
+            object boss = CreateScaledEnemy("intent_boss", true);
+            SetProperty(boss, "IntentAttack", 15);
+            SetField("enemy", boss);
+
+            Assert.That(
+                Invoke("GetEnemyIntentAttackDamage", boss),
+                Is.EqualTo(expectedDamage));
+
+            Invoke("ResolveEnemyIntent");
+
+            Assert.That(GetField<int>("playerHealth"), Is.EqualTo(100 - expectedDamage));
+        }
+
+        [Test]
+        public void NonBossAttackDamage_DoesNotGainLowLuckBonus()
+        {
+            SetEnumField("currentDifficulty", "Normal");
+            SetField("luck", 1);
+            object standardEnemy = CreateScaledEnemy("intent_enemy", false);
+            SetProperty(standardEnemy, "IntentAttack", 15);
+
+            Assert.That(
+                Invoke("GetEnemyIntentAttackDamage", standardEnemy),
+                Is.EqualTo(15));
+        }
+
+        [Test]
+        public void BossIntentLabel_RefreshesWhenLuckChangesDuringTheTurn()
+        {
+            SetEnumField("currentDifficulty", "Normal");
+            SetEnumField("phase", "Combat");
+            SetField("luck", 2);
+            object boss = CreateScaledEnemy("dynamic_intent_boss", true);
+            SetProperty(boss, "IntentAttack", 15);
+            SetProperty(boss, "IntentBlock", 9);
+            SetField("enemy", boss);
+
+            Invoke("RefreshEnemyIntentLabelForCurrentLuck");
+
+            Assert.That(ReadProperty<string>(boss, "IntentLabel"),
+                Is.EqualTo("공격 20 / 방어 9"));
+
+            SetField("luck", 3);
+            Invoke("RefreshEnemyIntentLabelForCurrentLuck");
+
+            Assert.That(ReadProperty<string>(boss, "IntentLabel"),
+                Is.EqualTo("공격 15 / 방어 9"));
+        }
+
+        [Test]
+        public void NormalBossFullHandWithoutAttack_SwapsOneAttackOnlyOnce()
+        {
+            SetEnumField("currentDifficulty", "Normal");
+            SetEnumField("phase", "Combat");
+            SetField("enemy", CreateScaledEnemy("smoothing_boss", true));
+            IList hand = GetField<IList>("hand");
+            IList drawPile = GetField<IList>("drawPile");
+            hand.Clear();
+            drawPile.Clear();
+
+            for (int index = 0; index < 5; index += 1)
+            {
+                hand.Add(CreateCard($"defense_{index}", "Defense"));
+            }
+
+            ScriptableObject attack = CreateCard("smoothing_attack", "Attack");
+            drawPile.Add(CreateCard("draw_skill", "Skill"));
+            drawPile.Add(attack);
+            string[] allIdsBefore = hand.Cast<object>()
+                .Concat(drawPile.Cast<object>())
+                .Select(card => ReadProperty<string>(card, "CardId"))
+                .OrderBy(id => id)
+                .ToArray();
+
+            Assert.That(Invoke("TrySmoothBossNoAttackHand"), Is.EqualTo(true));
+            Assert.That(ContainsAttack(hand), Is.True);
+            Assert.That(hand, Has.Count.EqualTo(5));
+            Assert.That(drawPile, Has.Count.EqualTo(2));
+            Assert.That(
+                hand.Cast<object>()
+                    .Concat(drawPile.Cast<object>())
+                    .Select(card => ReadProperty<string>(card, "CardId"))
+                    .OrderBy(id => id),
+                Is.EqualTo(allIdsBefore));
+
+            Assert.That(Invoke("TrySmoothBossNoAttackHand"), Is.EqualTo(false));
+        }
+
+        [TestCase("Hard", true)]
+        [TestCase("Normal", false)]
+        public void HandSmoothing_DoesNotApplyOutsideEasyOrNormalBossCombat(
+            string difficulty,
+            bool isBoss)
+        {
+            SetEnumField("currentDifficulty", difficulty);
+            SetEnumField("phase", "Combat");
+            SetField("enemy", CreateScaledEnemy("excluded_smoothing", isBoss));
+            IList hand = GetField<IList>("hand");
+            IList drawPile = GetField<IList>("drawPile");
+            hand.Clear();
+            drawPile.Clear();
+            for (int index = 0; index < 5; index += 1)
+            {
+                hand.Add(CreateCard($"excluded_defense_{index}", "Defense"));
+            }
+            drawPile.Add(CreateCard("excluded_attack", "Attack"));
+
+            Assert.That(Invoke("TrySmoothBossNoAttackHand"), Is.EqualTo(false));
+            Assert.That(ContainsAttack(hand), Is.False);
         }
 
         private object CreateScaledEnemy(
@@ -316,6 +486,15 @@ namespace ThreeDoorsOfFate.Tests
                 BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.That(field, Is.Not.Null);
             field.SetValue(target, value);
+        }
+
+        private static void SetProperty(object target, string propertyName, object value)
+        {
+            PropertyInfo property = target.GetType().GetProperty(
+                propertyName,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            Assert.That(property, Is.Not.Null, $"Expected property '{propertyName}'.");
+            property.SetValue(target, value);
         }
 
         private object Invoke(string methodName, params object[] arguments)

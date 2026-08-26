@@ -147,13 +147,13 @@ namespace ThreeDoorsOfFate.Platform
             "Achievements/achievement_five_cards_turn",
             15);
 
-        private static readonly AchievementDefinition DeckFiftyDefinition = new(
+        private static readonly AchievementDefinition SameRerollThreeDefinition = new(
             "com.adam.threedoorsfate.achievement.collection.deck_50",
-            "collection.deck_50",
-            "쉰 장의 운명",
-            "덱에 카드 50장을 모으세요.",
-            "쉰 장의 선택이 하나의 거대한 운명으로 엮였습니다.",
-            "Achievements/achievement_deck_50",
+            "combat.same_reroll_three",
+            "다시 굴리면 뭐가 달라지는데?",
+            "한 전투에서 재굴림 결과로 같은 숫자를 세 번 연속 굴리세요.",
+            "운명은 숫자 하나 바꿀 성의도 없었습니다.",
+            "Achievements/achievement_same_reroll_three",
             15);
 
         private static readonly AchievementDefinition CliffsideVictoryDefinition = new(
@@ -245,7 +245,7 @@ namespace ThreeDoorsOfFate.Platform
                 FateCleaverDefinition,
                 IronWallDefinition,
                 FiveCardsTurnDefinition,
-                DeckFiftyDefinition,
+                SameRerollThreeDefinition,
                 CliffsideVictoryDefinition,
                 TripleContractDefinition,
                 BuildMasterpieceDefinition,
@@ -267,7 +267,7 @@ namespace ThreeDoorsOfFate.Platform
 
         public static AchievementDefinition FiveCardsTurn => FiveCardsTurnDefinition;
 
-        public static AchievementDefinition DeckFifty => DeckFiftyDefinition;
+        public static AchievementDefinition SameRerollThree => SameRerollThreeDefinition;
 
         public static AchievementDefinition CliffsideVictory => CliffsideVictoryDefinition;
 
@@ -305,9 +305,14 @@ namespace ThreeDoorsOfFate.Platform
             return ToIdSet(cardIds).Count >= 5;
         }
 
-        public static bool IsDeckFifty(int cardCount)
+        public static int UpdateSameRerollStreak(
+            int previousResult,
+            int currentStreak,
+            int result)
         {
-            return cardCount >= 50;
+            return currentStreak > 0 && previousResult == result
+                ? currentStreak + 1
+                : 1;
         }
 
         public static bool IsCliffsideVictory(int health, int maximumHealth)
@@ -452,11 +457,6 @@ namespace ThreeDoorsOfFate.Platform
 
             IReadOnlyList<string> savedDeck =
                 savedRun.deckCardIds ?? new List<string>();
-            if (IsDeckFifty(savedDeck.Count))
-            {
-                changed |= Complete(keyPrefix, DeckFiftyDefinition);
-            }
-
             if (HasAllRunItemTypes(savedRun.equippedItemIds))
             {
                 changed |= Complete(keyPrefix, TripleContractDefinition);

@@ -22,9 +22,9 @@ SUBMISSION_ROOT = PROJECT_ROOT / "docs" / "submission" / "app-store"
 KOREAN_104_METADATA = SUBMISSION_ROOT / "metadata-1.0.4.ko-KR.json"
 ENGLISH_104_METADATA = SUBMISSION_ROOT / "metadata-1.0.4.en-US.json"
 REVIEW_NOTES_104 = SUBMISSION_ROOT / "review-notes-1.0.4.en-US.md"
-KOREAN_ACTIVE_METADATA = SUBMISSION_ROOT / "metadata-1.2.0.ko-KR.json"
-ENGLISH_ACTIVE_METADATA = SUBMISSION_ROOT / "metadata-1.2.0.en-US.json"
-ACTIVE_REVIEW_NOTES = SUBMISSION_ROOT / "review-notes-1.2.0.en-US.md"
+KOREAN_ACTIVE_METADATA = SUBMISSION_ROOT / "metadata-1.3.0.ko-KR.json"
+ENGLISH_ACTIVE_METADATA = SUBMISSION_ROOT / "metadata-1.3.0.en-US.json"
+ACTIVE_REVIEW_NOTES = SUBMISSION_ROOT / "review-notes-1.3.0.en-US.md"
 PUBLIC_PAGE_ROOT = (
     PROJECT_ROOT / "docs" / "submission" / "app-store" / "web" / "three-doors-of-fate"
 )
@@ -303,8 +303,8 @@ class AppStoreSubmissionAssetTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("subtitle exceeds 30 characters", result.stderr)
 
-    def test_metadata_validator_rejects_preorder_instead_of_manual_korea_release(self) -> None:
-        """Catches accidentally turning the approved Korea-only manual release into pre-order."""
+    def test_metadata_validator_rejects_preorder_instead_of_automatic_release(self) -> None:
+        """Catches accidentally turning the approved automatic release into pre-order."""
         with tempfile.TemporaryDirectory() as temporary_directory:
             fixture_root = Path(temporary_directory)
             fixture_submission = (

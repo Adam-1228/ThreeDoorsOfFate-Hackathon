@@ -23,6 +23,8 @@ namespace ThreeDoorsOfFate.Game
         private int achievementPageIndex;
         private int selectedAchievementIndex = -1;
         private readonly List<string> newlyCompletedAchievementNames = new();
+        private int lastExplicitRerollLuck;
+        private int sameExplicitRerollStreak;
 
         private sealed class AchievementCardModel
         {
@@ -856,11 +858,27 @@ namespace ThreeDoorsOfFate.Game
             }
         }
 
-        private void TryCompleteDeckFiftyAchievement()
+        private void ResetExplicitRerollProgress()
         {
-            if (AchievementProgress.IsDeckFifty(deck.Count))
+            lastExplicitRerollLuck = 0;
+            sameExplicitRerollStreak = 0;
+        }
+
+        private void RecordExplicitRerollResult(int result)
+        {
+            if (phase != GamePhase.Combat || result <= 0)
             {
-                CompleteAchievementAndTrack(AchievementProgress.DeckFifty);
+                return;
+            }
+
+            sameExplicitRerollStreak = AchievementProgress.UpdateSameRerollStreak(
+                lastExplicitRerollLuck,
+                sameExplicitRerollStreak,
+                result);
+            lastExplicitRerollLuck = result;
+            if (sameExplicitRerollStreak >= 3)
+            {
+                CompleteAchievementAndTrack(AchievementProgress.SameRerollThree);
             }
         }
 
@@ -941,7 +959,6 @@ namespace ThreeDoorsOfFate.Game
                 PlayerPrefsProgressStore.ProductionPrefix);
             TryCompleteAbyssCollectorFromSavedCharacters();
             TryCompleteBuildAchievement();
-            TryCompleteDeckFiftyAchievement();
             TryCompleteTripleContractAchievement();
             TryCompleteMasterpieceAchievement();
             TryCompleteTwentiethDoorAchievement();

@@ -3968,6 +3968,8 @@ namespace ThreeDoorsOfFate.Game
             oracleHardLowHandDrawTriggeredThisCombat = false;
             oracleHardProphecyPrimed = false;
             exileHardFatalOathTriggeredThisCombat = false;
+            bossNoAttackHandSmoothingUsedThisCombat = false;
+            ResetExplicitRerollProgress();
             runItemSkillDiscountsRemaining = HasRunItem("blessing_silver_feather") ? 1 : 0;
             cardsPlayedThisTurn.Clear();
             cardsPlayedThisCombat.Clear();
@@ -3997,6 +3999,7 @@ namespace ThreeDoorsOfFate.Game
             Shuffle(drawPile);
             RollLuckForTurn();
             DrawUpToHandSize();
+            TrySmoothBossNoAttackHand();
             combatDrawDiscardCount = 0;
             ApplyBuildCombatStartBonuses();
             ApplyCombinationCombatStartBonuses();
@@ -4017,6 +4020,7 @@ namespace ThreeDoorsOfFate.Game
 
         private void RenderCombat()
         {
+            RefreshEnemyIntentLabelForCurrentLuck();
             ClearContent();
             SetAnchors(contentRoot, new Vector2(0.035f, 0.085f), new Vector2(0.745f, 0.865f));
             string combatSubtitleSource = enemy.IsBoss
@@ -5342,6 +5346,7 @@ namespace ThreeDoorsOfFate.Game
                     break;
                 case CardEffectType.RerollLuck:
                     luck = RollLuck();
+                    RecordExplicitRerollResult(luck);
                     AddLog($"행운을 다시 굴려 {luck}.");
                     break;
                 case CardEffectType.KeepLuckNextTurn:
@@ -5799,7 +5804,6 @@ namespace ThreeDoorsOfFate.Game
             }
 
             deck.Add(card);
-            TryCompleteDeckFiftyAchievement();
             return true;
         }
 
@@ -8142,10 +8146,7 @@ namespace ThreeDoorsOfFate.Game
                 EnsureHardReward(rewards);
             }
 
-            if (count == 3)
-            {
-                EnsureAttackOffer(rewards, sources);
-            }
+            EnsureAttackOffer(rewards, sources);
 
             return rewards;
         }
@@ -8164,10 +8165,7 @@ namespace ThreeDoorsOfFate.Game
                 EnsureHardReward(cards);
             }
 
-            if (count == 3)
-            {
-                EnsureAttackOffer(cards, sources);
-            }
+            EnsureAttackOffer(cards, sources);
 
             return cards;
         }
@@ -8788,18 +8786,12 @@ namespace ThreeDoorsOfFate.Game
             int rewardGold = Random.Range(24, 43);
             gold += rewardGold;
             CardData card = PickTreasureCard();
-            bool cardAdded = false;
-            if (card != null)
-            {
-                cardAdded = TryAddCardToDeck(card, "보물");
-                if (cardAdded)
-                {
-                    CheckBuildUnlocks();
-                }
-            }
             subtitleText.text = string.Empty;
-            RenderTreasureResult(rewardGold, card, cardAdded);
-            AddLog(BuildTreasureLog(rewardGold, card, cardAdded));
+            RenderTreasureOffer(rewardGold, card);
+            if (card == null || !CanAddCardToDeck())
+            {
+                AddLog(BuildTreasureLog(rewardGold, card, false));
+            }
             RefreshTopBar();
             RefreshLog();
         }
@@ -9032,6 +9024,7 @@ namespace ThreeDoorsOfFate.Game
             oracleHardLuckHeldThisTurn = false;
             RollLuckForTurn();
             DrawUpToHandSize();
+            TrySmoothBossNoAttackHand();
             ApplyRunItemTurnStartBonuses();
             if (phase == GamePhase.GameOver)
             {
@@ -9053,7 +9046,7 @@ namespace ThreeDoorsOfFate.Game
 
             if (enemy.IntentAttack > 0)
             {
-                int incoming = enemy.IsBoss && luck <= 2 ? enemy.IntentAttack + 5 : enemy.IntentAttack;
+                int incoming = GetEnemyIntentAttackDamage(enemy);
                 LoseHealth(incoming, false);
                 AddLog($"{enemy.Name}의 공격 {incoming}.");
                 if (reflectedDamage > 0)
@@ -9184,7 +9177,7 @@ namespace ThreeDoorsOfFate.Game
             enemy.IntentSpecialLabel = selected.SpecialLabel;
             enemy.IntentCardName = selected.Name;
             enemy.CandidateLabel = string.Join(", ", candidates.Select(card => card.Name));
-            enemy.IntentLabel = BuildEnemyIntentLabel(selected, enemy.IntentAttack);
+            RefreshEnemyIntentLabelForCurrentLuck();
 
             AddLog($"{enemy.Name} 카드 후보: {enemy.CandidateLabel} -> {selected.Name}.");
         }
@@ -9376,7 +9369,19 @@ namespace ThreeDoorsOfFate.Game
             };
         }
 
-        private static string BuildEnemyIntentLabel(EnemyCardDefinition card, int attack)
+        private void RefreshEnemyIntentLabelForCurrentLuck()
+        {
+            if (enemy == null)
+            {
+                return;
+            }
+
+            enemy.IntentLabel = BuildEnemyIntentLabel(
+                enemy,
+                GetEnemyIntentAttackDamage(enemy));
+        }
+
+        private static string BuildEnemyIntentLabel(EnemyState state, int attack)
         {
             List<string> parts = new();
             if (attack > 0)
@@ -9384,24 +9389,24 @@ namespace ThreeDoorsOfFate.Game
                 parts.Add($"공격 {attack}");
             }
 
-            if (card.BlockAmount > 0)
+            if (state.IntentBlock > 0)
             {
-                parts.Add($"방어 {card.BlockAmount}");
+                parts.Add($"방어 {state.IntentBlock}");
             }
 
-            if (card.DebtAmount > 0)
+            if (state.IntentDebt > 0)
             {
-                parts.Add($"빚 +{card.DebtAmount}");
+                parts.Add($"빚 +{state.IntentDebt}");
             }
 
-            if (card.HealAmount > 0)
+            if (state.IntentHeal > 0)
             {
-                parts.Add($"회복 {card.HealAmount}");
+                parts.Add($"회복 {state.IntentHeal}");
             }
 
-            if (!string.IsNullOrWhiteSpace(card.SpecialLabel))
+            if (!string.IsNullOrWhiteSpace(state.IntentSpecialLabel))
             {
-                parts.Add(card.SpecialLabel);
+                parts.Add(state.IntentSpecialLabel);
             }
 
             return parts.Count == 0 ? "대기" : string.Join(" / ", parts);
@@ -12122,4 +12127,3 @@ namespace ThreeDoorsOfFate.Game
         }
     }
 }
-

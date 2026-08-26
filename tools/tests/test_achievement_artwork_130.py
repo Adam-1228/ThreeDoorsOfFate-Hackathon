@@ -16,7 +16,7 @@ ARTWORK_NAMES = (
     "achievement_fate_cleaver_50",
     "achievement_iron_wall_40",
     "achievement_five_cards_turn",
-    "achievement_deck_50",
+    "achievement_same_reroll_three",
     "achievement_cliffside_victory",
     "achievement_triple_contract",
     "achievement_build_masterpiece",
@@ -33,7 +33,7 @@ def read_png_header(path: pathlib.Path) -> tuple[int, int, int, int]:
     return width, height, bit_depth, color_type
 
 
-class AchievementArtwork120Tests(unittest.TestCase):
+class AchievementArtwork130Tests(unittest.TestCase):
     def test_all_twelve_images_are_opaque_rgb_1024_squares(self) -> None:
         for name in ARTWORK_NAMES:
             with self.subTest(name=name):

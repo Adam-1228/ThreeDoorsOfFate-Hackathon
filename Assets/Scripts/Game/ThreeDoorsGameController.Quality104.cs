@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ThreeDoorsOfFate.Audio;
 using ThreeDoorsOfFate.Cards;
 using ThreeDoorsOfFate.Localization;
 using UnityEngine;
@@ -215,12 +216,11 @@ namespace ThreeDoorsOfFate.Game
             mainMenu.onClick.AddListener(ShowMainMenu);
         }
 
-        private void RenderTreasureResult(
+        private void RenderTreasureOffer(
             int rewardGold,
-            CardData card,
-            bool cardAdded)
+            CardData card)
         {
-            if (!cardAdded || card == null)
+            if (card == null || !CanAddCardToDeck())
             {
                 AddCenteredMessage(
                     L("treasure.result.title"),
@@ -276,7 +276,7 @@ namespace ThreeDoorsOfFate.Game
             preview.raycastTarget = false;
             SetAnchors(
                 preview.rectTransform,
-                new Vector2(0.080f, 0.115f),
+                new Vector2(0.080f, 0.165f),
                 new Vector2(0.410f, 0.805f));
             BindLocalizedCardSprite(preview, card);
 
@@ -289,7 +289,7 @@ namespace ThreeDoorsOfFate.Game
                     : panelSprite);
             SetAnchors(
                 details,
-                new Vector2(0.440f, 0.165f),
+                new Vector2(0.440f, 0.205f),
                 new Vector2(0.930f, 0.755f));
             Image detailsImage = details.GetComponent<Image>();
             if (detailsImage != null)
@@ -348,7 +348,52 @@ namespace ThreeDoorsOfFate.Game
                 new Vector2(0.095f, 0.060f),
                 new Vector2(0.905f, 0.230f));
 
-            ShowContinueButton();
+            Button takeCard = AddLocalizedSettingsMenuButton(
+                resultRoot,
+                "Treasure Take Card",
+                "treasure.action.takeCard",
+                20,
+                GameSfxCue.RewardClaim);
+            SetAnchors(
+                takeCard.GetComponent<RectTransform>(),
+                new Vector2(0.440f, 0.050f),
+                new Vector2(0.675f, 0.160f));
+            ConfigureDecisionChoiceButton(takeCard);
+            takeCard.onClick.AddListener(() =>
+            {
+                bool cardAdded = TryResolveTreasureCardChoice(card, true);
+                AddLog(BuildTreasureLog(rewardGold, card, cardAdded));
+                ShowDoors();
+            });
+
+            Button skipCard = AddLocalizedSettingsMenuButton(
+                resultRoot,
+                "Treasure Skip Card",
+                "treasure.action.skipCard",
+                20,
+                GameSfxCue.UiAccept);
+            SetAnchors(
+                skipCard.GetComponent<RectTransform>(),
+                new Vector2(0.695f, 0.050f),
+                new Vector2(0.930f, 0.160f));
+            ConfigureDecisionChoiceButton(skipCard);
+            skipCard.onClick.AddListener(() =>
+            {
+                TryResolveTreasureCardChoice(card, false);
+                AddLog(BuildTreasureLog(rewardGold, card, false));
+                ShowDoors();
+            });
+        }
+
+        private bool TryResolveTreasureCardChoice(CardData card, bool takeCard)
+        {
+            if (!takeCard || card == null || !TryAddCardToDeck(card, "보물"))
+            {
+                return false;
+            }
+
+            CheckBuildUnlocks();
+            return true;
         }
     }
 }

@@ -1000,21 +1000,21 @@ class LocalizationContractTests(unittest.TestCase):
             self.assertNotIn("GameLanguagePolicy.PreferenceKey", method)
             self.assertNotRegex(method, re.compile(r'Language[}".]'))
 
-    def test_release_version_matches_ios_1_2_0_defaults(self) -> None:
+    def test_release_version_matches_ios_1_3_0_defaults(self) -> None:
         project_settings = PROJECT_SETTINGS_PATH.read_text(encoding="utf-8")
         release_configuration = IOS_RELEASE_CONFIGURATION_PATH.read_text(
             encoding="utf-8"
         )
         self.assertRegex(
             project_settings,
-            re.compile(r"(?m)^  bundleVersion: 1\.2\.0$"),
+            re.compile(r"(?m)^  bundleVersion: 1\.3\.0$"),
         )
         self.assertRegex(
             project_settings,
-            re.compile(r"(?m)^    iPhone: 12000$"),
+            re.compile(r"(?m)^    iPhone: 13001$"),
         )
-        self.assertIn('DefaultVersion = "1.2.0"', release_configuration)
-        self.assertIn('DefaultBuildNumber = "12000"', release_configuration)
+        self.assertIn('DefaultVersion = "1.3.0"', release_configuration)
+        self.assertIn('DefaultBuildNumber = "13001"', release_configuration)
 
     def test_windows_verification_handoff_covers_external_release_boundary(self) -> None:
         self.assert_file_exists(WINDOWS_HANDOFF_PATH)

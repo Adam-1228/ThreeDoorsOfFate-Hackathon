@@ -61,7 +61,7 @@ namespace ThreeDoorsOfFate.Tests
                 "combat.fate_cleaver_50",
                 "combat.iron_wall_40",
                 "combat.five_cards_turn",
-                "collection.deck_50",
+                "combat.same_reroll_three",
                 "combat.cliffside_victory",
                 "collection.triple_contract",
                 "build.masterpiece",
@@ -102,11 +102,22 @@ namespace ThreeDoorsOfFate.Tests
                 Is.True);
         }
 
-        [TestCase(49, false)]
-        [TestCase(50, true)]
-        public void DeckFifty_UsesFiftyCardBoundary(int cardCount, bool expected)
+        [TestCase(0, 0, 4, 1)]
+        [TestCase(4, 1, 4, 2)]
+        [TestCase(4, 2, 4, 3)]
+        [TestCase(4, 2, 3, 1)]
+        public void SameRerollStreak_TracksOnlyConsecutiveMatchingResults(
+            int previousResult,
+            int currentStreak,
+            int result,
+            int expected)
         {
-            Assert.That(AchievementProgress.IsDeckFifty(cardCount), Is.EqualTo(expected));
+            Assert.That(
+                AchievementProgress.UpdateSameRerollStreak(
+                    previousResult,
+                    currentStreak,
+                    result),
+                Is.EqualTo(expected));
         }
 
         [Test]
@@ -290,8 +301,11 @@ namespace ThreeDoorsOfFate.Tests
                     AchievementProgress.BackfillPersistentPlayerPrefs(prefix),
                     Is.True);
                 Assert.That(
-                    AchievementProgress.IsCompleted(prefix, AchievementProgress.DeckFifty),
-                    Is.True);
+                    AchievementProgress.IsCompleted(
+                        prefix,
+                        AchievementProgress.SameRerollThree),
+                    Is.False,
+                    "A saved 50-card deck must not backfill the combat-only reroll achievement.");
                 Assert.That(
                     AchievementProgress.IsCompleted(prefix, AchievementProgress.TripleContract),
                     Is.True);

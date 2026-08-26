@@ -130,7 +130,7 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
-        public void SuccessfulEnglishReward_ShowsLocalizedReadOnlyCardAndOneContinue()
+        public void EnglishTreasureOffer_ShowsLocalizedCardAndTakeOrSkipChoices()
         {
             Sprite expectedEnglish = CardLocalization.GetFullCardSprite(
                 "card_absolute_barrier",
@@ -138,7 +138,7 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(expectedEnglish, Is.Not.Null);
             Assert.That(expectedEnglish, Is.Not.SameAs(fallbackSprite));
 
-            Invoke("RenderTreasureResult", 31, card, true);
+            Invoke("RenderTreasureOffer", 31, card);
             Canvas.ForceUpdateCanvases();
 
             Image preview = FindRequired("Treasure Card Preview").GetComponent<Image>();
@@ -155,16 +155,26 @@ namespace ThreeDoorsOfFate.Tests
                 FindRequired("Treasure Reward Gold").GetComponent<Text>().text,
                 Does.Contain("31"));
 
-            string[] activeButtonLabels = root
-                .GetComponentsInChildren<Button>(true)
-                .Where(button => button.gameObject.activeInHierarchy)
-                .Select(button => button.GetComponentInChildren<Text>(true)?.text)
-                .Where(label => !string.IsNullOrWhiteSpace(label))
-                .ToArray();
-            Assert.That(activeButtonLabels.Count(label => label == "Continue"), Is.EqualTo(1));
-            Assert.That(activeButtonLabels, Does.Not.Contain("Use"));
+            string[] activeButtonLabels = GetActiveButtonLabels();
+            Assert.That(activeButtonLabels, Does.Contain("Take Card"));
+            Assert.That(activeButtonLabels, Does.Contain("Skip Card"));
+            Assert.That(activeButtonLabels, Does.Not.Contain("Continue"));
 
             Assert.That(GetField<int>("gold"), Is.EqualTo(10));
+            Assert.That(GetField<IList>("deck"), Is.Empty);
+
+            Assert.That(
+                InvokeValue<bool>("TryResolveTreasureCardChoice", card, true),
+                Is.True);
+            Assert.That(GetField<IList>("deck"), Has.Count.EqualTo(1));
+        }
+
+        [Test]
+        public void SkippingTreasureCard_DoesNotMutateTheDeck()
+        {
+            Assert.That(
+                InvokeValue<bool>("TryResolveTreasureCardChoice", card, false),
+                Is.False);
             Assert.That(GetField<IList>("deck"), Is.Empty);
         }
 
@@ -183,16 +193,39 @@ namespace ThreeDoorsOfFate.Tests
 
         [TestCase(true)]
         [TestCase(false)]
-        public void MissingOrSkippedCard_ShowsNoPreview(bool supplyCard)
+        public void MissingOrDeckFullCard_ShowsGoldOnlyAndContinue(bool deckFull)
         {
-            Invoke("RenderTreasureResult", 29, supplyCard ? card : null, false);
+            if (deckFull)
+            {
+                int maximum = InvokeValue<int>("GetMaxDeckSize");
+                IList deck = GetField<IList>("deck");
+                for (int index = 0; index < maximum; index += 1)
+                {
+                    deck.Add(card);
+                }
+            }
+
+            Invoke("RenderTreasureOffer", 29, deckFull ? card : null);
             Canvas.ForceUpdateCanvases();
 
             Assert.That(FindOptional("Treasure Card Preview"), Is.Null);
             Assert.That(FindOptional("Treasure Card Name"), Is.Null);
             Assert.That(FindOptional("Treasure Card Rules"), Is.Null);
+            Assert.That(GetActiveButtonLabels(), Does.Contain("Continue"));
             Assert.That(GetField<int>("gold"), Is.EqualTo(10));
-            Assert.That(GetField<IList>("deck"), Is.Empty);
+            Assert.That(
+                GetField<IList>("deck").Count,
+                Is.EqualTo(deckFull ? InvokeValue<int>("GetMaxDeckSize") : 0));
+        }
+
+        private string[] GetActiveButtonLabels()
+        {
+            return root
+                .GetComponentsInChildren<Button>(true)
+                .Where(button => button.gameObject.activeInHierarchy)
+                .Select(button => button.GetComponentInChildren<Text>(true)?.text)
+                .Where(label => !string.IsNullOrWhiteSpace(label))
+                .ToArray();
         }
 
         private RectTransform FindRequired(string objectName)

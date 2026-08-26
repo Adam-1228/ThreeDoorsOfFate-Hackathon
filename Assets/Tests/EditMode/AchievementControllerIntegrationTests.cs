@@ -356,7 +356,7 @@ namespace ThreeDoorsOfFate.Tests
                 "Assets/Resources/Achievements/achievement_fate_cleaver_50.png",
                 "Assets/Resources/Achievements/achievement_iron_wall_40.png",
                 "Assets/Resources/Achievements/achievement_five_cards_turn.png",
-                "Assets/Resources/Achievements/achievement_deck_50.png",
+                "Assets/Resources/Achievements/achievement_same_reroll_three.png",
                 "Assets/Resources/Achievements/achievement_cliffside_victory.png",
                 "Assets/Resources/Achievements/achievement_triple_contract.png",
                 "Assets/Resources/Achievements/achievement_build_masterpiece.png",
@@ -522,15 +522,17 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
-        public void DeckAndCliffsideChecks_RespectLiveBoundaries()
+        public void ExplicitRerollsAndCliffsideChecks_RespectLiveBoundaries()
         {
-            AddDeckCards(49);
-            Invoke("TryCompleteDeckFiftyAchievement");
-            AssertCompleted("collection.deck_50", false);
-
-            AddDeckCards(1, false);
-            Invoke("TryCompleteDeckFiftyAchievement");
-            AssertCompleted("collection.deck_50", true);
+            SetEnumField("phase", "Combat");
+            InvokeWithResult("RecordExplicitRerollResult", 4);
+            InvokeWithResult("RecordExplicitRerollResult", 4);
+            AssertCompleted("combat.same_reroll_three", false);
+            InvokeWithResult("RecordExplicitRerollResult", 2);
+            InvokeWithResult("RecordExplicitRerollResult", 2);
+            AssertCompleted("combat.same_reroll_three", false);
+            InvokeWithResult("RecordExplicitRerollResult", 2);
+            AssertCompleted("combat.same_reroll_three", true);
 
             SetField("playerMaxHealth", 100);
             SetField("playerHealth", 21);

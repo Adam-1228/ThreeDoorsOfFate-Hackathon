@@ -20,11 +20,11 @@ WEB_ROOT = Path("docs/submission/app-store/web/three-doors-of-fate")
 SUBMISSION_ROOT = Path("docs/submission/app-store")
 GAME_CENTER_SOURCE = Path("Assets/Scripts/Platform/AppleGameServices.cs")
 GAME_CENTER_ACHIEVEMENT_ID_PATTERN = re.compile(r"^[A-Za-z0-9._]+$")
-ACTIVE_VERSION = "1.2.0"
-ACTIVE_BUILD = "12000"
-ACTIVE_KOREAN_METADATA = "metadata-1.2.0.ko-KR.json"
-ACTIVE_ENGLISH_METADATA = "metadata-1.2.0.en-US.json"
-ACTIVE_REVIEW_NOTES = "review-notes-1.2.0.en-US.md"
+ACTIVE_VERSION = "1.3.0"
+ACTIVE_BUILD = "13001"
+ACTIVE_KOREAN_METADATA = "metadata-1.3.0.ko-KR.json"
+ACTIVE_ENGLISH_METADATA = "metadata-1.3.0.en-US.json"
+ACTIVE_REVIEW_NOTES = "review-notes-1.3.0.en-US.md"
 ACTIVE_TERRITORIES = [
     "KR",
     "AT",
@@ -183,7 +183,7 @@ def validate_submission_documents(root: Path) -> list[str]:
         (("commercial", "price"), "free"),
         (("commercial", "distribution_method"), "public"),
         (("commercial", "territories"), ACTIVE_TERRITORIES),
-        (("commercial", "release_method"), "manual"),
+        (("commercial", "release_method"), "automatic"),
         (("commercial", "preorder"), False),
         (("commercial", "in_app_purchases"), []),
         (("commercial", "subscriptions"), []),
@@ -263,7 +263,7 @@ def validate_submission_documents(root: Path) -> list[str]:
                 "https://adam-1228.github.io/three-doors-of-fate/privacy/",
             ),
             (("commercial", "territories"), ACTIVE_TERRITORIES),
-            (("commercial", "release_method"), "manual"),
+            (("commercial", "release_method"), "automatic"),
             (("commercial", "preorder"), False),
             (("review", "sign_in_required"), False),
             (

@@ -51,9 +51,9 @@ EXPECTED = {
         "Achievements/achievement_five_cards_turn",
         15,
     ),
-    "collection.deck_50": (
+    "combat.same_reroll_three": (
         "com.adam.threedoorsfate.achievement.collection.deck_50",
-        "Achievements/achievement_deck_50",
+        "Achievements/achievement_same_reroll_three",
         15,
     ),
     "combat.cliffside_victory": (
@@ -108,7 +108,7 @@ def read_definitions() -> dict[str, tuple[str, str, int]]:
     }
 
 
-class Achievement120CatalogContractTests(unittest.TestCase):
+class Achievement130CatalogContractTests(unittest.TestCase):
     def test_all_twelve_release_definitions_exist_exactly(self) -> None:
         definitions = read_definitions()
         actual = {
@@ -149,7 +149,7 @@ class Achievement120CatalogContractTests(unittest.TestCase):
             "FateCleaver",
             "IronWall",
             "FiveCardsTurn",
-            "DeckFifty",
+            "SameRerollThree",
             "CliffsideVictory",
             "TripleContract",
             "BuildMasterpiece",
@@ -172,7 +172,7 @@ class Achievement120CatalogContractTests(unittest.TestCase):
             "TryCompleteCombatAwakeningAchievements();",
             "TryCompleteCombatCardAchievements(actualCardDamage);",
             "TryCompleteCliffsideVictoryAchievement();",
-            "TryCompleteDeckFiftyAchievement();",
+            "RecordExplicitRerollResult(luck);",
             "TryCompleteTripleContractAchievement();",
             "TryCompleteMasterpieceAchievement();",
             "TryCompleteTwentiethDoorAchievement();",
