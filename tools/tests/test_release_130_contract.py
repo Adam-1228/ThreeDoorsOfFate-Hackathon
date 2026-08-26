@@ -132,6 +132,13 @@ class Release130ContractTests(unittest.TestCase):
         changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
         self.require("## [v1.3.0] - 2026-08-26", changelog)
 
+    def test_release_notes_identify_the_submitted_build(self) -> None:
+        release_notes = (ROOT / "docs/releases/v1.3.0.md").read_text(
+            encoding="utf-8"
+        )
+        self.require("Marketing version: `1.3.0`", release_notes)
+        self.require("iOS build number: `13001`", release_notes)
+
     def test_readme_promotes_the_app_store_and_current_webgl_release(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         self.require(
