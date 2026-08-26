@@ -148,7 +148,7 @@ namespace ThreeDoorsOfFate.Platform
             15);
 
         private static readonly AchievementDefinition SameRerollThreeDefinition = new(
-            "com.adam.threedoorsfate.achievement.combat.same_reroll_three",
+            "com.adam.threedoorsfate.achievement.collection.deck_50",
             "combat.same_reroll_three",
             "다시 굴리면 뭐가 달라지는데?",
             "한 전투에서 재굴림 결과로 같은 숫자를 세 번 연속 굴리세요.",

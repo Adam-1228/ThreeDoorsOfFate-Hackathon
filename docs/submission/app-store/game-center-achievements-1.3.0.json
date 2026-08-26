@@ -2,7 +2,7 @@
   "schema_version": 1,
   "app_bundle_id": "com.adam.threedoorsfate",
   "release_version": "1.3.0",
-  "build": "13000",
+  "build": "13001",
   "total_achievement_count": 20,
   "total_points": 1000,
   "existing_achievement_count": 8,
@@ -162,7 +162,7 @@
       }
     },
     {
-      "reference_name": "com.adam.threedoorsfate.achievement.combat.same_reroll_three",
+      "reference_name": "com.adam.threedoorsfate.achievement.collection.deck_50",
       "storage_suffix": "combat.same_reroll_three",
       "points": 15,
       "is_hidden": true,
@@ -282,5 +282,5 @@
       }
     }
   ],
-  "replaces_unreleased_achievement": "com.adam.threedoorsfate.achievement.collection.deck_50"
+  "reuses_unreleased_achievement_id": "com.adam.threedoorsfate.achievement.collection.deck_50"
 }

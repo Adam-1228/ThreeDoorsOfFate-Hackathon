@@ -2,7 +2,7 @@
 
 ## Build under review
 
-- Build under review: `1.3.0 (13000)`.
+- Build under review: `1.3.0 (13001)`.
 - Bundle ID: `com.adam.threedoorsfate`.
 - No account is required. The complete single-player game remains usable if the player declines Game Center authentication or is offline.
 

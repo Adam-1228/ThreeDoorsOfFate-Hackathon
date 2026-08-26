@@ -1011,10 +1011,10 @@ class LocalizationContractTests(unittest.TestCase):
         )
         self.assertRegex(
             project_settings,
-            re.compile(r"(?m)^    iPhone: 13000$"),
+            re.compile(r"(?m)^    iPhone: 13001$"),
         )
         self.assertIn('DefaultVersion = "1.3.0"', release_configuration)
-        self.assertIn('DefaultBuildNumber = "13000"', release_configuration)
+        self.assertIn('DefaultBuildNumber = "13001"', release_configuration)
 
     def test_windows_verification_handoff_covers_external_release_boundary(self) -> None:
         self.assert_file_exists(WINDOWS_HANDOFF_PATH)

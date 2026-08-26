@@ -52,7 +52,7 @@ EXPECTED = {
         15,
     ),
     "combat.same_reroll_three": (
-        "com.adam.threedoorsfate.achievement.combat.same_reroll_three",
+        "com.adam.threedoorsfate.achievement.collection.deck_50",
         "Achievements/achievement_same_reroll_three",
         15,
     ),

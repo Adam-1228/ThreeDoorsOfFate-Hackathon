@@ -30,7 +30,7 @@ NEW_ACHIEVEMENT_IDS = {
     "com.adam.threedoorsfate.achievement.combat.fate_cleaver_50": 15,
     "com.adam.threedoorsfate.achievement.combat.iron_wall_40": 15,
     "com.adam.threedoorsfate.achievement.combat.five_cards_turn": 15,
-    "com.adam.threedoorsfate.achievement.combat.same_reroll_three": 15,
+    "com.adam.threedoorsfate.achievement.collection.deck_50": 15,
     "com.adam.threedoorsfate.achievement.combat.cliffside_victory": 20,
     "com.adam.threedoorsfate.achievement.collection.triple_contract": 20,
     "com.adam.threedoorsfate.achievement.build.masterpiece": 20,
@@ -44,7 +44,7 @@ class Release130ContractTests(unittest.TestCase):
         if marker not in source:
             self.fail(f"missing version 1.3.0 release marker: {marker}")
 
-    def test_project_and_upload_defaults_are_1_3_0_build_13000(self) -> None:
+    def test_project_and_upload_defaults_are_1_3_0_build_13001(self) -> None:
         project = (ROOT / "ProjectSettings/ProjectSettings.asset").read_text(
             encoding="utf-8"
         )
@@ -58,13 +58,13 @@ class Release130ContractTests(unittest.TestCase):
 
         for marker, source in (
             ("bundleVersion: 1.3.0", project),
-            ("iPhone: 13000", project),
+            ("iPhone: 13001", project),
             ('DefaultVersion = "1.3.0"', release),
-            ('DefaultBuildNumber = "13000"', release),
+            ('DefaultBuildNumber = "13001"', release),
             ('EXPECTED_VERSION="${TDOF_EXPECTED_VERSION:-1.3.0}"', upload),
-            ('EXPECTED_BUILD="${TDOF_EXPECTED_BUILD:-13000}"', upload),
+            ('EXPECTED_BUILD="${TDOF_EXPECTED_BUILD:-13001}"', upload),
             ('ACTIVE_VERSION = "1.3.0"', validator),
-            ('ACTIVE_BUILD = "13000"', validator),
+            ('ACTIVE_BUILD = "13001"', validator),
         ):
             with self.subTest(marker=marker):
                 self.require(marker, source)
@@ -75,7 +75,7 @@ class Release130ContractTests(unittest.TestCase):
             self.assertTrue(path.is_file(), f"missing App Store metadata: {path}")
             metadata = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(metadata["version"]["version_string"], "1.3.0")
-            self.assertEqual(metadata["version"]["build_string"], "13000")
+            self.assertEqual(metadata["version"]["build_string"], "13001")
             self.assertEqual(metadata["version"]["localization"], locale)
             self.assertEqual(metadata["version"]["whats_new"], EXPECTED_WHATS_NEW[locale])
             self.assertEqual(metadata["commercial"]["release_method"], "automatic")
@@ -86,7 +86,7 @@ class Release130ContractTests(unittest.TestCase):
         notes = notes_path.read_text(encoding="utf-8")
         self.assertLessEqual(len(notes), 4000)
         for marker in (
-            "1.3.0 (13000)",
+            "1.3.0 (13001)",
             "No account is required",
             "20 achievements",
             "12 new Game Center achievements",
@@ -101,7 +101,7 @@ class Release130ContractTests(unittest.TestCase):
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         new_items = manifest["new_achievements"]
         self.assertEqual(manifest["release_version"], "1.3.0")
-        self.assertEqual(manifest["build"], "13000")
+        self.assertEqual(manifest["build"], "13001")
         self.assertEqual(manifest["total_achievement_count"], 20)
         self.assertEqual(manifest["total_points"], 1000)
         self.assertEqual(len(new_items), 12)
@@ -112,6 +112,11 @@ class Release130ContractTests(unittest.TestCase):
         self.assertEqual(sum(item["points"] for item in new_items), 200)
         self.assertTrue(all(item["is_hidden"] for item in new_items))
         self.assertTrue(all(item["image"].endswith(".png") for item in new_items))
+        self.assertEqual(
+            manifest["reuses_unreleased_achievement_id"],
+            "com.adam.threedoorsfate.achievement.collection.deck_50",
+        )
+        self.assertNotIn("replaces_unreleased_achievement", manifest)
 
     def test_changelog_declares_version_1_3_0(self) -> None:
         changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
@@ -131,8 +136,8 @@ class Release130ContractTests(unittest.TestCase):
             SUBMISSION / "submission-handoff-1.3.0-2026-08-26.md"
         ).read_text(encoding="utf-8")
         for marker in (
-            "1.3.0 (13000)",
-            "Do not select or relabel a prior build",
+            "1.3.0 (13001)",
+            "Do not select or relabel build `13000`",
             "20 achievements and 1,000 points",
             "Waiting for Review",
         ):

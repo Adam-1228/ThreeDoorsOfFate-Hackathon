@@ -29,7 +29,7 @@ namespace ThreeDoorsOfFate.Tests
                     "com.adam.threedoorsfate.achievement.combat.fate_cleaver_50",
                     "com.adam.threedoorsfate.achievement.combat.iron_wall_40",
                     "com.adam.threedoorsfate.achievement.combat.five_cards_turn",
-                    "com.adam.threedoorsfate.achievement.combat.same_reroll_three",
+                    "com.adam.threedoorsfate.achievement.collection.deck_50",
                     "com.adam.threedoorsfate.achievement.combat.cliffside_victory",
                     "com.adam.threedoorsfate.achievement.collection.triple_contract",
                     "com.adam.threedoorsfate.achievement.build.masterpiece",
