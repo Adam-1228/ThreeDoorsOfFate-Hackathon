@@ -11,6 +11,7 @@ namespace ThreeDoorsOfFate.Game
         private const float NormalStandardEnemyAttackMultiplier = 0.90f;
         private const float NormalStandardEnemyBlockMultiplier = 0.90f;
         private const int NormalStandardEnemyRegenerationCap = 4;
+        private bool bossNoAttackHandSmoothingUsedThisCombat;
 
         private bool ShouldApplyNormalStandardEnemyRetune(bool isBoss)
         {
@@ -48,12 +49,56 @@ namespace ThreeDoorsOfFate.Game
                 : amount;
         }
 
+        private int GetEnemyIntentAttackDamage(EnemyState state)
+        {
+            if (state == null || state.IntentAttack <= 0)
+            {
+                return 0;
+            }
+
+            return state.IsBoss && luck <= 2
+                ? state.IntentAttack + 5
+                : state.IntentAttack;
+        }
+
+        private bool TrySmoothBossNoAttackHand()
+        {
+            if (bossNoAttackHandSmoothingUsedThisCombat
+                || phase != GamePhase.Combat
+                || enemy == null
+                || !enemy.IsBoss
+                || currentDifficulty == RunDifficulty.Hard
+                || hand.Count != StartingHandSize
+                || hand.Any(card => card != null
+                    && card.Category == CardCategory.Attack))
+            {
+                return false;
+            }
+
+            int attackIndex = drawPile.FindIndex(card => card != null
+                && card.Category == CardCategory.Attack);
+            int replacementIndex = hand.FindLastIndex(card => card != null
+                && card.Category != CardCategory.Attack);
+            if (attackIndex < 0 || replacementIndex < 0)
+            {
+                return false;
+            }
+
+            CardData guaranteedAttack = drawPile[attackIndex];
+            drawPile[attackIndex] = hand[replacementIndex];
+            hand[replacementIndex] = guaranteedAttack;
+            bossNoAttackHandSmoothingUsedThisCombat = true;
+            AddLog("운명 보정: 보스전 손패에 공격 카드 1장을 배치했습니다.");
+            return true;
+        }
+
         private void EnsureAttackOffer(
             List<CardData> offers,
             IEnumerable<CardSource> sources)
         {
             if (offers == null
-                || offers.Count != 3
+                || offers.Count < 2
+                || offers.Count > 4
                 || offers.Any(card => card != null
                     && card.Category == CardCategory.Attack))
             {

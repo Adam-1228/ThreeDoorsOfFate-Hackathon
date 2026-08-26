@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "app_bundle_id": "com.adam.threedoorsfate",
-  "release_version": "1.2.0",
-  "build": "12000",
+  "release_version": "1.3.0",
+  "build": "13000",
   "total_achievement_count": 20,
   "total_points": 1000,
   "existing_achievement_count": 8,
@@ -162,22 +162,22 @@
       }
     },
     {
-      "reference_name": "com.adam.threedoorsfate.achievement.collection.deck_50",
-      "storage_suffix": "collection.deck_50",
+      "reference_name": "com.adam.threedoorsfate.achievement.combat.same_reroll_three",
+      "storage_suffix": "combat.same_reroll_three",
       "points": 15,
       "is_hidden": true,
       "is_replayable": false,
-      "image": "docs/submission/app-store/archive-assets/achievement_deck_50.png",
+      "image": "Assets/Resources/Achievements/achievement_same_reroll_three.png",
       "localizations": {
         "ko-KR": {
-          "title": "쉰 장의 운명",
-          "before_earned_description": "덱에 카드 50장을 모으세요.",
-          "earned_description": "쉰 장의 선택이 하나의 거대한 운명으로 엮였습니다."
+          "title": "다시 굴리면 뭐가 달라지는데?",
+          "before_earned_description": "한 전투에서 재굴림 결과로 같은 숫자를 세 번 연속 굴리세요.",
+          "earned_description": "운명은 숫자 하나 바꿀 성의도 없었습니다."
         },
         "en-US": {
-          "title": "Fifty Fates",
-          "before_earned_description": "Collect 50 cards in your deck.",
-          "earned_description": "Fifty choices were woven into one immense fate."
+          "title": "What Did Rerolling Change?",
+          "before_earned_description": "Roll the same Luck result three times in a row during one battle.",
+          "earned_description": "Fate could not be bothered to change a single number."
         }
       }
     },
@@ -281,5 +281,6 @@
         }
       }
     }
-  ]
+  ],
+  "replaces_unreleased_achievement": "com.adam.threedoorsfate.achievement.collection.deck_50"
 }
