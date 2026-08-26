@@ -109,6 +109,7 @@ InitTestScene*.unity*
 
 # Project-local generated, private, and release-preparation material
 /.codex/
+/.worktrees/
 /.superpowers/
 /Backups/
 /Previews/
