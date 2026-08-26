@@ -247,7 +247,8 @@ validate_native_symbols() {
     )
     local symbol
     for symbol in "${symbols[@]}"; do
-        nm -gU "$binary" | grep -Fq "_$symbol" || fail "Missing native symbol: $symbol"
+        (set +o pipefail; nm -gU "$binary" | grep -Fq "_$symbol") \
+            || fail "Missing native symbol: $symbol"
     done
 }
 

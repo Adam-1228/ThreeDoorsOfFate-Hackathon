@@ -48,6 +48,20 @@ class AppleReleaseScriptPolicyTests(unittest.TestCase):
         ):
             self.assertIn(required, source)
 
+    def test_native_symbol_validation_is_safe_with_pipefail(self) -> None:
+        source = (PROJECT_ROOT / "tools" / "mac_setup_and_build.sh").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn(
+            '(set +o pipefail; nm -gU "$binary" | grep -Fq "_$symbol")',
+            source,
+        )
+        self.assertNotIn(
+            'nm -gU "$binary" | grep -Fq "_$symbol" || fail',
+            source,
+        )
+
     def test_simulator_supports_build_only_and_cocoapods_workspace(self) -> None:
         source = (PROJECT_ROOT / "tools" / "run_ios_simulator.sh").read_text(
             encoding="utf-8"
