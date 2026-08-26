@@ -163,6 +163,8 @@
     },
     {
       "reference_name": "com.adam.threedoorsfate.achievement.collection.deck_50",
+      "asc_reference_name": "Fifty Fates",
+      "asc_reference_name_status": "retained_internal_label_after_permanent_id_reuse",
       "storage_suffix": "combat.same_reroll_three",
       "points": 15,
       "is_hidden": true,

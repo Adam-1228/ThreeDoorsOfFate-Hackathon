@@ -116,6 +116,16 @@ class Release130ContractTests(unittest.TestCase):
             manifest["reuses_unreleased_achievement_id"],
             "com.adam.threedoorsfate.achievement.collection.deck_50",
         )
+        reroll_item = next(
+            item
+            for item in new_items
+            if item["storage_suffix"] == "combat.same_reroll_three"
+        )
+        self.assertEqual(reroll_item["asc_reference_name"], "Fifty Fates")
+        self.assertEqual(
+            reroll_item["asc_reference_name_status"],
+            "retained_internal_label_after_permanent_id_reuse",
+        )
         self.assertNotIn("replaces_unreleased_achievement", manifest)
 
     def test_changelog_declares_version_1_3_0(self) -> None:
