@@ -516,6 +516,8 @@ namespace ThreeDoorsOfFate.Game
             seenRunEventIds.Clear();
             seenRunEventSegment = 0;
             activeEndlessMutationIds.Clear();
+            pendingEndlessMutationChoices =
+                Array.Empty<EndlessMutationDefinition>();
             pendingRewardCardIds.Clear();
             pendingRunEventId = string.Empty;
             pendingResolvedDoorTypeId = NoPendingDoorType;

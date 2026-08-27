@@ -2580,6 +2580,8 @@ namespace ThreeDoorsOfFate.Game
                 HideRunStatusPanel,
                 18);
 
+            AddEndlessMutationStatusButton(runStatusMainPanel);
+
             AddRunStatusLabelBox(
                 runStatusMainPanel,
                 "상태 확인 헤더",
@@ -3664,7 +3666,12 @@ namespace ThreeDoorsOfFate.Game
                 itemBonus += 1;
             }
 
-            return Mathf.Clamp(Mathf.Max(doorInsightLevel, GetBaseDoorInsightLevel()) + itemBonus, 0, 3);
+            return Mathf.Clamp(
+                Mathf.Max(doorInsightLevel, GetBaseDoorInsightLevel())
+                    + itemBonus
+                    + GetEndlessDoorInsightBonus(),
+                0,
+                3);
         }
 
         private void ResetDoorInsightAfterChoice()
@@ -3841,7 +3848,8 @@ namespace ThreeDoorsOfFate.Game
 
         private int GetCurseDoorDebtGain()
         {
-            return Mathf.Max(0, 1 - curseReduction);
+            return GetEndlessAdjustedDebtGain(
+                Mathf.Max(0, 1 - curseReduction));
         }
 
         private void ResolveDoor(DoorOption option)
@@ -3994,6 +4002,9 @@ namespace ThreeDoorsOfFate.Game
                 healthScale *= 1.15f;
             }
 
+            attackScale *= GetEndlessEnemyAttackMultiplier();
+            blockScale *= GetEndlessEnemyBlockMultiplier();
+
             int scaledHealth = Mathf.Max(boss ? 48 : 16, Mathf.RoundToInt(health * healthScale));
             int scaledAttack = Mathf.Max(1, Mathf.RoundToInt(attack * attackScale));
             int scaledBlock = Mathf.Max(0, Mathf.RoundToInt(block * blockScale));
@@ -4107,7 +4118,8 @@ namespace ThreeDoorsOfFate.Game
             drawPile.AddRange(deck);
             Shuffle(drawPile);
             RollLuckForTurn();
-            DrawUpToHandSize();
+            DrawOpeningHandWithEndlessMutation();
+            ApplyEndlessCombatStartBonuses();
             TrySmoothBossNoAttackHand();
             combatDrawDiscardCount = 0;
             ApplyBuildCombatStartBonuses();
@@ -5762,7 +5774,7 @@ namespace ThreeDoorsOfFate.Game
 
         private int GetRunItemReducedDebtGain(int amount)
         {
-            int addedDebt = Mathf.Max(0, amount);
+            int addedDebt = GetEndlessAdjustedDebtGain(amount);
             if (phase == GamePhase.Combat
                 && addedDebt > 0
                 && HasRunItem("blessing_purified_chain")
@@ -5803,7 +5815,10 @@ namespace ThreeDoorsOfFate.Game
                 reward += 25;
             }
 
-            return reward;
+            return Mathf.Max(
+                0,
+                Mathf.RoundToInt(
+                    reward * GetEndlessCombatGoldMultiplier()));
         }
 
         private void ApplyRunItemVictorySideEffects(bool bossVictory)
@@ -5896,7 +5911,10 @@ namespace ThreeDoorsOfFate.Game
                 price = Mathf.CeilToInt(price * 1.15f);
             }
 
-            return price;
+            return Mathf.Max(
+                0,
+                Mathf.RoundToInt(
+                    price * GetEndlessShopPriceMultiplier()));
         }
 
         private int GetRestHealAmount()
@@ -5907,7 +5925,10 @@ namespace ThreeDoorsOfFate.Game
                 amount = Mathf.FloorToInt(amount * 0.70f);
             }
 
-            return Mathf.Max(1, amount);
+            return Mathf.Max(
+                1,
+                Mathf.FloorToInt(
+                    amount * GetEndlessRestHealingMultiplier()));
         }
 
         private void ApplyPostPlayCombinationEffects(CardData card, int debtBeforePlay)
@@ -7968,7 +7989,7 @@ namespace ThreeDoorsOfFate.Game
             AddLog($"심연의 고리대금업자 격파. 금화 +{rewardGold}. 무한 기록 {roomsCleared}문.");
             RecordEndlessProgress();
             nextEndlessBossRoom = roomsCleared + EndlessBossInterval;
-            ShowEndlessCheckpoint();
+            ShowEndlessMutationSelection();
         }
 
         private void ShowEndlessCheckpoint()
@@ -7993,8 +8014,26 @@ namespace ThreeDoorsOfFate.Game
                 0.290f,
                 0.710f);
 
-            Text detail = AddText(panel, "무한 체크포인트 설명", $"최고 기록 {GetEndlessRecord()}문 / 다음 심연 보스 {nextEndlessBossRoom}문 / 현재 빚 {debt}", 22, TextAnchor.MiddleCenter, new Color(0.88f, 0.84f, 0.76f, 1f));
-            SetAnchors(detail.rectTransform, new Vector2(0.10f, 0.610f), new Vector2(0.90f, 0.720f));
+            Text detail = AddText(
+                panel,
+                "무한 체크포인트 설명",
+                LF(
+                    "endlessMutation.checkpoint.summary",
+                    GetEndlessRecord(),
+                    nextEndlessBossRoom,
+                    debt,
+                    BuildActiveEndlessMutationNameSummary()),
+                20,
+                TextAnchor.MiddleCenter,
+                new Color(0.88f, 0.84f, 0.76f, 1f));
+            detail.resizeTextForBestFit = true;
+            detail.resizeTextMinSize = 13;
+            detail.resizeTextMaxSize = 20;
+            detail.lineSpacing = 0.94f;
+            SetAnchors(
+                detail.rectTransform,
+                new Vector2(0.10f, 0.595f),
+                new Vector2(0.90f, 0.735f));
 
             AddPostTenChoice(panel, "계속 내려간다", "기록을 이어갑니다. 적은 더 강해지고 보상도 조금씩 커집니다.", new Vector2(0.070f, 0.405f), new Vector2(0.930f, 0.575f), ShowDoors, true);
             AddPostTenChoice(panel, "기록하고 귀환한다", "현재 무한 기록을 보존하고 런을 성공으로 마무리합니다.", new Vector2(0.070f, 0.220f), new Vector2(0.930f, 0.390f), CompleteEndlessReturnEnding, true);
@@ -8394,6 +8433,12 @@ namespace ThreeDoorsOfFate.Game
 
             IReadOnlyList<BuildTag> preferredTags = GetPreferredBuildTags(recipe.Id);
             weight += card.BuildTags.Count(tag => preferredTags.Contains(tag));
+            if (card.Rarity == CardRarity.Rare)
+            {
+                weight = Mathf.CeilToInt(
+                    weight * GetEndlessRareCardWeightMultiplier());
+            }
+
             return Mathf.Max(1, weight);
         }
 
@@ -8483,7 +8528,7 @@ namespace ThreeDoorsOfFate.Game
 
             if (!string.IsNullOrWhiteSpace(currentShopRunItemId))
             {
-                int itemSlotIndex = Mathf.Clamp(currentShopCards.Count, 0, 2);
+                int itemSlotIndex = Mathf.Clamp(currentShopCards.Count, 0, 3);
                 if (currentShopRunItemPurchased)
                 {
                     AddShopSoldSlot(itemSlotIndex, "구매 완료", "이미 획득한 아이템입니다.");
@@ -8512,7 +8557,9 @@ namespace ThreeDoorsOfFate.Game
             currentShopRemovalUsed = false;
 
             RunItemDefinition shopRunItem = PickShopRunItemOffer();
-            currentShopCards.AddRange(PickShopCards(shopRunItem == null ? 3 : 2));
+            int cardOfferCount = (shopRunItem == null ? 3 : 2)
+                + GetEndlessShopOfferBonus();
+            currentShopCards.AddRange(PickShopCards(cardOfferCount));
             currentShopRunItemId = shopRunItem?.Id ?? string.Empty;
             currentShopOffersReady = true;
         }
@@ -8531,9 +8578,18 @@ namespace ThreeDoorsOfFate.Game
         {
             RectTransform slot = AddPanel(contentRoot, name, new Color(1f, 1f, 1f, 0f));
             slot.GetComponent<Image>().raycastTarget = false;
-            const float cardSlotWidth = 0.240f;
+            int offerCount = currentShopCards.Count
+                + (string.IsNullOrWhiteSpace(currentShopRunItemId) ? 0 : 1);
+            offerCount = Mathf.Clamp(offerCount, 1, 4);
+            const float offerAreaLeft = 0.255f;
+            const float offerAreaRight = 0.995f;
             const float cardSlotGap = 0.008f;
-            float slotLeft = 0.255f + slotIndex * (cardSlotWidth + cardSlotGap);
+            float cardSlotWidth = (
+                offerAreaRight
+                - offerAreaLeft
+                - cardSlotGap * (offerCount - 1)) / offerCount;
+            float slotLeft = offerAreaLeft
+                + slotIndex * (cardSlotWidth + cardSlotGap);
             SetAnchors(slot, new Vector2(slotLeft, 0.052f), new Vector2(slotLeft + cardSlotWidth, 0.885f));
             return slot;
         }
@@ -8964,7 +9020,8 @@ namespace ThreeDoorsOfFate.Game
                 {
                     if (TryAddCardToDeck(card, "이벤트"))
                     {
-                        debt += Mathf.Max(0, 1 - curseReduction);
+                        debt += GetEndlessAdjustedDebtGain(
+                            Mathf.Max(0, 1 - curseReduction));
                         AddLog($"{card.DisplayName} 획득. 빚 증가.");
                         CheckBuildUnlocks();
                     }
@@ -9642,8 +9699,12 @@ namespace ThreeDoorsOfFate.Game
             StartDiceRollAnimation();
             if (selectedClass == CharacterClass.Gambler && luck <= 2)
             {
-                debt += 1;
-                AddLog($"낮은 행운 {luck}. 빚 +1.");
+                int addedDebt = GetEndlessAdjustedDebtGain(1);
+                debt += addedDebt;
+                AddLog(LF(
+                    "log.luck.lowDebt",
+                    luck,
+                    addedDebt));
             }
             else
             {

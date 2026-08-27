@@ -356,7 +356,11 @@ namespace ThreeDoorsOfFate.Game
 
         private int GetDeckRemovalPrice()
         {
-            return 45 + cardsRemovedThisRun * 25;
+            int basePrice = 45 + cardsRemovedThisRun * 25;
+            return Mathf.Max(
+                0,
+                Mathf.FloorToInt(
+                    basePrice * GetEndlessRemovalCostMultiplier()));
         }
 
         private bool CanRemoveDeckCard(CardData card)

@@ -314,7 +314,9 @@ namespace ThreeDoorsOfFate.Game
                         gold = Mathf.Max(0, gold + effect.Amount);
                         break;
                     case EventEffectType.Debt:
-                        debt = Mathf.Max(0, debt + effect.Amount);
+                        debt = effect.Amount > 0
+                            ? debt + GetEndlessAdjustedDebtGain(effect.Amount)
+                            : Mathf.Max(0, debt + effect.Amount);
                         break;
                     case EventEffectType.AddCard:
                         CardData card = cardPool.FirstOrDefault(candidate =>
