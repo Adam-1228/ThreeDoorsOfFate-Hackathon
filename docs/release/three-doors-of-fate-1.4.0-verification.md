@@ -8,7 +8,7 @@ Prepared: 2026-08-27 (Asia/Seoul)
 - iOS build number: `14000`
 - Bundle identifier: `com.adam.threedoorsfate`
 - Working branch: `codex/v1.4.0-fate-rework`
-- Verified correction commit: `efbfbdb`
+- Verified runtime correction commit: `438bc34`
 - Submission approval in both metadata files: `approved_for_submission: false`
 - Game Center contract remains unchanged at 20 achievements / 1,000 points.
 
@@ -28,19 +28,19 @@ Result: `134` tests run, `134` passed, `0` failed.
   -batchmode -nographics \
   -projectPath "$PWD" \
   -runTests -testPlatform EditMode \
-  -testResults /tmp/tdof-v140-editmode-final2.xml \
-  -logFile /tmp/tdof-v140-editmode-final2.log
+  -testResults /tmp/tdof-v140-final-edit2.YzcAPx/results.xml \
+  -logFile /tmp/tdof-v140-final-edit2.YzcAPx/unity.log
 ```
 
-Result: `351` tests run, `351` passed, `0` failed.
+Result: `360` tests run, `360` passed, `0` failed.
 
 ```bash
 /Applications/Unity/Hub/Editor/6000.4.11f1/Unity.app/Contents/MacOS/Unity \
   -batchmode -nographics \
   -projectPath "$PWD" \
   -runTests -testPlatform PlayMode \
-  -testResults /tmp/tdof-v140-playmode-final.xml \
-  -logFile /tmp/tdof-v140-playmode-final.log
+  -testResults /tmp/tdof-v140-final-play2.9OJSNS/results.xml \
+  -logFile /tmp/tdof-v140-final-play2.9OJSNS/unity.log
 ```
 
 Result: `6` tests run, `6` passed, `0` failed.
@@ -72,9 +72,38 @@ path in addition to the existing v1 DTO and v2 round-trip tests:
 
 Focused result:
 `Checkpoint140Tests.V1SaveContinuesToDoorsAndPersistsChoicesWithoutTouchingMeta`
-passed `1/1`. The complete EditMode result above includes all seven checkpoint
+passed `1/1`. The complete EditMode result above includes all nine checkpoint
 test cases, including deck/item migration, unknown-card backup preservation,
-pending choice/RNG round-trip, and Easy/Normal/Hard save availability.
+pending choice/RNG round-trip, terminal deletion tombstones, endless-mutation
+offer/checkpoint restoration, and Easy/Normal/Hard save availability.
+
+## Release-review hardening
+
+The final Critical/Important review found no Critical issue and identified six
+Important issues across two passes. All six were reproduced before correction
+and independently re-reviewed after correction:
+
+- A zero-health defeat now deletes the active checkpoint without relying on the
+  positive-health save eligibility predicate.
+- Endless-mutation offers persist their exact three IDs and RNG cursor. The
+  post-selection endless checkpoint is also restored as that checkpoint rather
+  than as an empty card-reward screen or an earlier boss encounter.
+- iCloud conflict resolution selects the higher RNG cursor for the same run ID,
+  unions terminal run tombstones, deletes a stale applied checkpoint, and treats
+  a newer empty run slot as terminal for older legacy snapshots.
+- Version-1 checkpoints without a run ID receive a stable `legacy-*` identity;
+  malformed but non-empty checkpoints receive a stable `opaque-*` identity so
+  sync preserves them for migration or a user-visible restore error.
+- The card-inspection backdrop blocks shop exit, turn end, settings, and other
+  lower controls. Combat still permits a deliberate one-click switch between
+  active hand cards through a bounded raycast filter.
+- Game-over tests and bilingual QA capture use disposable save, backup,
+  tombstone, and run-history PlayerPrefs keys, so verification does not mutate
+  the Editor user's production checkpoint.
+
+Focused remediation results were `53/53` EditMode tests and `3/3` PlayMode
+pointer tests before the complete suites above. The final independent follow-up
+review reported no remaining Critical/Important finding.
 
 ## Visual QA
 
@@ -138,12 +167,13 @@ Other visual corrections proven by the matrix and integration tests:
 - English status identities and encounter behavior logs resolve localized class
   roles and enemy names rather than leaking Korean source strings.
 - QA state transitions immediately remove the run-status modal, refresh active
-  localized bindings, and keep QA run history in a disposable PlayerPrefs key.
+  localized bindings, and keep QA run history and checkpoint data in disposable
+  PlayerPrefs keys.
 
 ## Resource gates and verification boundary
 
 - System-wide free-memory readings before Unity operations stayed between
-  `58%` and `72%`, above the required `25%` floor.
+  `52%` and `72%`, above the required `25%` floor.
 - No competing Unity Editor, `xcodebuild`, or Simulator workload was running
   when a Unity operation started.
 - Final filesystem reading: `4.9 GiB` free on `/System/Volumes/Data`.
