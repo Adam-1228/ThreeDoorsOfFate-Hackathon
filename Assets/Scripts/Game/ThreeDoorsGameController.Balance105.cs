@@ -56,9 +56,15 @@ namespace ThreeDoorsOfFate.Game
                 return 0;
             }
 
-            return state.IsBoss && luck <= 2
+            int damage = state.IsBoss && luck <= 2
                 ? state.IntentAttack + 5
                 : state.IntentAttack;
+            if (playerVulnerableTurns > 0)
+            {
+                damage += Mathf.Max(2, Mathf.CeilToInt(state.BaseAttack * 0.15f));
+            }
+
+            return damage;
         }
 
         private bool TrySmoothBossNoAttackHand()

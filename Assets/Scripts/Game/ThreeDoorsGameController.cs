@@ -505,7 +505,12 @@ namespace ThreeDoorsOfFate.Game
             GatekeeperSeal,
             DebtAdjudication,
             AbyssUsury,
-            BottomlessAudit
+            BottomlessAudit,
+            PlayerVulnerable,
+            LuckDown,
+            DrawPenalty,
+            ActionDrain,
+            GoldLoss
         }
 
         private enum RunItemType
@@ -4073,6 +4078,7 @@ namespace ThreeDoorsOfFate.Game
             exileHardFatalOathTriggeredThisCombat = false;
             bossNoAttackHandSmoothingUsedThisCombat = false;
             ResetExplicitRerollProgress();
+            InitializeEncounterBehavior(newEnemy);
             runItemSkillDiscountsRemaining = HasRunItem("blessing_silver_feather") ? 1 : 0;
             cardsPlayedThisTurn.Clear();
             cardsPlayedThisCombat.Clear();
@@ -9130,7 +9136,7 @@ namespace ThreeDoorsOfFate.Game
             gamblerHardLowLuckDefenseUsedThisTurn = false;
             oracleHardLuckHeldThisTurn = false;
             RollLuckForTurn();
-            DrawUpToHandSize();
+            ApplyEnemyTurnStartPenaltiesAndDraw();
             TrySmoothBossNoAttackHand();
             ApplyRunItemTurnStartBonuses();
             if (phase == GamePhase.GameOver)
@@ -9144,6 +9150,8 @@ namespace ThreeDoorsOfFate.Game
 
         private void ResolveEnemyIntent()
         {
+            bool consumedVulnerability = playerVulnerableTurns > 0
+                && enemy.IntentAttack > 0;
             if (enemy.IntentHeal > 0)
             {
                 int before = enemy.Health;
@@ -9189,6 +9197,11 @@ namespace ThreeDoorsOfFate.Game
                 }
 
                 AddLog(addedDebt > 0 ? $"{enemy.Name}가 빚 +{addedDebt}를 새겼습니다." : "빚 저항으로 빚을 막았습니다.");
+            }
+
+            if (consumedVulnerability)
+            {
+                playerVulnerableTurns = Mathf.Max(0, playerVulnerableTurns - 1);
             }
 
             ResolveEnemySpecialIntent();
@@ -9247,6 +9260,15 @@ namespace ThreeDoorsOfFate.Game
                     enemy.Health = Mathf.Min(enemy.MaxHealth, enemy.Health + heal);
                     AddLog($"{enemy.Name}의 무저갱 감사가 체력 {auditDamage}을 거두고 {enemy.Health - before} 회복했습니다.");
                     break;
+                case EnemySpecialEffect.PlayerVulnerable:
+                case EnemySpecialEffect.LuckDown:
+                case EnemySpecialEffect.DrawPenalty:
+                case EnemySpecialEffect.ActionDrain:
+                case EnemySpecialEffect.GoldLoss:
+                    ResolveEnemyBehaviorSpecial(
+                        enemy.IntentSpecialEffect,
+                        amount);
+                    break;
             }
         }
 
@@ -9261,6 +9283,11 @@ namespace ThreeDoorsOfFate.Game
             enemy.IntentSpecialLabel = string.Empty;
             enemy.IntentCardName = string.Empty;
             enemy.CandidateLabel = string.Empty;
+
+            if (TryPrepareCatalogEnemyIntent())
+            {
+                return;
+            }
 
             List<EnemyCardDefinition> candidates = DrawEnemyCandidateCards(enemy);
             EnemyCardDefinition selected = candidates[0];
