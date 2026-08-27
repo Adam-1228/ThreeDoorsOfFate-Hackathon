@@ -2089,6 +2089,9 @@ namespace ThreeDoorsOfFate.Game
             combatLog.Clear();
             runItemBottleHealthBonusApplied = false;
             predictedBossRunItemRewardId = string.Empty;
+            cardsRemovedThisRun = 0;
+            currentShopRemovalUsed = false;
+            deckRemovalPage = 0;
             StarterContractDefinition starterContract =
                 GetSelectedStarterContract(characterClass, contractId);
             bool contractDeckReady = starterContract != null
@@ -8445,6 +8448,7 @@ namespace ThreeDoorsOfFate.Game
             purchasedShopCardSlots.Clear();
             currentShopRunItemId = string.Empty;
             currentShopRunItemPurchased = false;
+            currentShopRemovalUsed = false;
 
             RunItemDefinition shopRunItem = PickShopRunItemOffer();
             currentShopCards.AddRange(PickShopCards(shopRunItem == null ? 3 : 2));
@@ -8458,6 +8462,7 @@ namespace ThreeDoorsOfFate.Game
             purchasedShopCardSlots.Clear();
             currentShopRunItemId = string.Empty;
             currentShopRunItemPurchased = false;
+            currentShopRemovalUsed = false;
             currentShopOffersReady = false;
         }
 
@@ -8692,6 +8697,8 @@ namespace ThreeDoorsOfFate.Game
                 AddLog($"{recipe.Name} 강화 {currentLevel + 1}단계.");
                 ShowShop();
             });
+
+            AddShopDeckRemovalService(panel);
         }
 
         private void ShowShopCombinationGuide()
@@ -8934,7 +8941,7 @@ namespace ThreeDoorsOfFate.Game
                 BuildRestChoiceLabel(restHealAmount),
                 21,
                 GameSfxCue.ImportantConfirm);
-            SetAnchors(heal.GetComponent<RectTransform>(), new Vector2(0.16f, 0.12f), new Vector2(0.45f, 0.23f));
+            SetAnchors(heal.GetComponent<RectTransform>(), new Vector2(0.08f, 0.12f), new Vector2(0.33f, 0.23f));
             ConfigureDecisionChoiceButton(heal);
             heal.onClick.AddListener(() =>
             {
@@ -8948,7 +8955,7 @@ namespace ThreeDoorsOfFate.Game
                 "금화 30 획득",
                 21,
                 GameSfxCue.ImportantConfirm);
-            SetAnchors(purse.GetComponent<RectTransform>(), new Vector2(0.55f, 0.12f), new Vector2(0.84f, 0.23f));
+            SetAnchors(purse.GetComponent<RectTransform>(), new Vector2(0.375f, 0.12f), new Vector2(0.625f, 0.23f));
             ConfigureDecisionChoiceButton(purse);
             purse.onClick.AddListener(() =>
             {
@@ -8956,6 +8963,22 @@ namespace ThreeDoorsOfFate.Game
                 AddLog("휴식에서 금화를 선택했습니다.");
                 ShowDoors();
             });
+
+            Button removeCard = AddLocalizedSettingsMenuButton(
+                contentRoot,
+                "휴식 카드 제거",
+                "deckRemoval.rest.choice",
+                20,
+                GameSfxCue.ImportantConfirm);
+            SetAnchors(
+                removeCard.GetComponent<RectTransform>(),
+                new Vector2(0.67f, 0.12f),
+                new Vector2(0.92f, 0.23f));
+            ConfigureDecisionChoiceButton(removeCard);
+            removeCard.interactable = deck.Any(CanRemoveDeckCard);
+            removeCard.onClick.AddListener(() => ShowDeckRemovalSelection(
+                DeckRemovalSource.Rest,
+                0));
 
             AddDecisionStateSummary();
             RefreshTopBar();

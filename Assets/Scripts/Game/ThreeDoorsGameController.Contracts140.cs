@@ -4,6 +4,7 @@ using System.Linq;
 using ThreeDoorsOfFate.Audio;
 using ThreeDoorsOfFate.Cards;
 using ThreeDoorsOfFate.Game.V140;
+using ThreeDoorsOfFate.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,10 +14,22 @@ namespace ThreeDoorsOfFate.Game
     {
         private const string StarterContractResourcePath =
             "GameData/V140/starter_contracts";
+        private const int MinimumDeckSizeAfterRemoval = 12;
+        private const int MinimumAttackCardsAfterRemoval = 4;
+        private const int DeckRemovalCardsPerPage = 12;
+
+        private enum DeckRemovalSource
+        {
+            Rest,
+            Shop
+        }
 
         private StarterContractCatalog cachedStarterContractCatalog;
         private bool starterContractCatalogLoadAttempted;
         private string selectedStarterContractId = string.Empty;
+        private int cardsRemovedThisRun;
+        private bool currentShopRemovalUsed;
+        private int deckRemovalPage;
 
         private void ShowStarterContractSelection(CharacterClass characterClass)
         {
@@ -338,6 +351,330 @@ namespace ThreeDoorsOfFate.Game
 
             catalog = cachedStarterContractCatalog;
             return catalog != null;
+        }
+
+        private int GetDeckRemovalPrice()
+        {
+            return 45 + cardsRemovedThisRun * 25;
+        }
+
+        private bool CanRemoveDeckCard(CardData card)
+        {
+            if (card == null || deck.Count <= MinimumDeckSizeAfterRemoval)
+            {
+                return false;
+            }
+
+            int cardIndex = FindDeckCardIndex(card);
+            if (cardIndex < 0)
+            {
+                return false;
+            }
+
+            return card.Category != CardCategory.Attack
+                || deck.Count(candidate =>
+                    candidate != null
+                    && candidate.Category == CardCategory.Attack)
+                    > MinimumAttackCardsAfterRemoval;
+        }
+
+        private bool TryRemoveDeckCard(CardData card, string source)
+        {
+            if (!CanRemoveDeckCard(card))
+            {
+                return false;
+            }
+
+            int cardIndex = FindDeckCardIndex(card);
+            if (cardIndex < 0)
+            {
+                return false;
+            }
+
+            CardData removed = deck[cardIndex];
+            deck.RemoveAt(cardIndex);
+            cardsRemovedThisRun += 1;
+            string cardName = CardLocalization.Contains(removed.CardId)
+                ? GetLocalizedCardName(removed)
+                : removed.DisplayName;
+            AddLog(LF(
+                "log.deckRemoval.removed",
+                source ?? string.Empty,
+                cardName));
+            return true;
+        }
+
+        private int FindDeckCardIndex(CardData card)
+        {
+            int referenceIndex = deck.FindIndex(candidate =>
+                ReferenceEquals(candidate, card));
+            if (referenceIndex >= 0)
+            {
+                return referenceIndex;
+            }
+
+            return string.IsNullOrWhiteSpace(card?.CardId)
+                ? -1
+                : deck.FindIndex(candidate =>
+                    candidate != null
+                    && string.Equals(
+                        candidate.CardId,
+                        card.CardId,
+                        StringComparison.Ordinal));
+        }
+
+        private void AddShopDeckRemovalService(RectTransform parent)
+        {
+            int price = GetDeckRemovalPrice();
+            string label = currentShopRemovalUsed
+                ? L("deckRemoval.shop.used")
+                : LF("deckRemoval.shop.service", price);
+            Button removal = AddShopActionButton(
+                parent,
+                "상점 카드 제거",
+                label,
+                13);
+            SetAnchors(
+                removal.GetComponent<RectTransform>(),
+                new Vector2(0.110f, 0.455f),
+                new Vector2(0.890f, 0.555f));
+            removal.interactable = !currentShopRemovalUsed
+                && gold >= price
+                && deck.Any(CanRemoveDeckCard);
+            removal.onClick.AddListener(() => ShowDeckRemovalSelection(
+                DeckRemovalSource.Shop,
+                0));
+        }
+
+        private void ShowDeckRemovalSelection(
+            DeckRemovalSource source,
+            int page)
+        {
+            phase = source == DeckRemovalSource.Rest
+                ? GamePhase.Rest
+                : GamePhase.Shop;
+            SetBackground(source == DeckRemovalSource.Rest
+                ? restBackground
+                : shopBackground);
+            ClearContent();
+            SetDefaultContentRootPlacement();
+            SetLogVisible(true);
+
+            subtitleText.text = L("deckRemoval.subtitle");
+            BindLocalizedText(subtitleText, "deckRemoval.subtitle");
+            SetSubtitleBoxVisible(true);
+            primaryButton.gameObject.SetActive(true);
+            SetButtonLabel(
+                primaryButton,
+                L(source == DeckRemovalSource.Rest
+                    ? "deckRemoval.back.rest"
+                    : "deckRemoval.back.shop"));
+            primaryButton.onClick.RemoveAllListeners();
+            primaryButton.onClick.AddListener(source == DeckRemovalSource.Rest
+                ? ShowRest
+                : ShowShop);
+
+            List<CardData> choices = deck
+                .Where(card => card != null)
+                .GroupBy(card => card.CardId, StringComparer.Ordinal)
+                .Select(group => group.First())
+                .OrderBy(card => card.Category)
+                .ThenBy(card => card.Cost)
+                .ThenBy(
+                    card => CardLocalization.Contains(card.CardId)
+                        ? GetLocalizedCardName(card)
+                        : card.DisplayName,
+                    StringComparer.Ordinal)
+                .ToList();
+            int pageCount = Mathf.Max(
+                1,
+                Mathf.CeilToInt(choices.Count / (float)DeckRemovalCardsPerPage));
+            deckRemovalPage = Mathf.Clamp(page, 0, pageCount - 1);
+
+            RectTransform gallery = AddPanel(
+                contentRoot,
+                "카드 제거 선택 창",
+                new Color(0.006f, 0.014f, 0.018f, 0.92f),
+                statusPanelFrameSprite != null
+                    ? statusPanelFrameSprite
+                    : panelSprite);
+            SetAnchors(
+                gallery,
+                new Vector2(0.020f, 0.035f),
+                new Vector2(0.980f, 0.930f));
+            gallery.GetComponent<Image>().raycastTarget = false;
+
+            Text heading = AddLocalizedText(
+                gallery,
+                "카드 제거 제목",
+                source == DeckRemovalSource.Rest
+                    ? "deckRemoval.title.rest"
+                    : "deckRemoval.title.shop",
+                28,
+                TextAnchor.MiddleCenter,
+                new Color(0.82f, 1f, 0.94f, 1f));
+            heading.fontStyle = FontStyle.Bold;
+            SetAnchors(
+                heading.rectTransform,
+                new Vector2(0.18f, 0.895f),
+                new Vector2(0.82f, 0.980f));
+
+            int startIndex = deckRemovalPage * DeckRemovalCardsPerPage;
+            int visibleCount = Mathf.Min(
+                DeckRemovalCardsPerPage,
+                choices.Count - startIndex);
+            for (int localIndex = 0; localIndex < visibleCount; localIndex += 1)
+            {
+                int choiceIndex = startIndex + localIndex;
+                CardData card = choices[choiceIndex];
+                int column = localIndex % 4;
+                int row = localIndex / 4;
+                const float width = 0.215f;
+                const float horizontalGap = 0.020f;
+                const float height = 0.230f;
+                const float verticalGap = 0.018f;
+                float left = 0.040f + column * (width + horizontalGap);
+                float top = 0.875f - row * (height + verticalGap);
+                RectTransform slot = AddPanel(
+                    gallery,
+                    $"제거 슬롯 {choiceIndex}",
+                    new Color(1f, 1f, 1f, 0f));
+                slot.GetComponent<Image>().raycastTarget = false;
+                SetAnchors(
+                    slot,
+                    new Vector2(left, top - height),
+                    new Vector2(left + width, top));
+
+                Button cardButton = CreateCardButton(
+                    slot,
+                    card,
+                    0,
+                    1,
+                    false,
+                    false,
+                    GameSfxCue.UiAccept);
+                cardButton.gameObject.name = $"제거 카드 {choiceIndex}";
+                SetAnchors(
+                    cardButton.GetComponent<RectTransform>(),
+                    new Vector2(0.060f, 0.115f),
+                    new Vector2(0.940f, 0.985f));
+                cardButton.interactable = CanRemoveDeckCard(card);
+                CardData selectedCard = card;
+                cardButton.onClick.AddListener(() => ShowCardInspection(
+                    selectedCard,
+                    CardInspectionMode.DeckRemove,
+                    source == DeckRemovalSource.Rest
+                        ? L("deckRemoval.action.remove")
+                        : LF("deckRemoval.action.removePrice", GetDeckRemovalPrice()),
+                    () => ConfirmDeckRemoval(selectedCard, source)));
+
+                int ownedCount = deck.Count(candidate =>
+                    candidate != null
+                    && string.Equals(
+                        candidate.CardId,
+                        selectedCard.CardId,
+                        StringComparison.Ordinal));
+                Text count = AddLocalizedText(
+                    slot,
+                    $"제거 카드 수량 {choiceIndex}",
+                    "deckRemoval.count",
+                    14,
+                    TextAnchor.MiddleCenter,
+                    new Color(0.82f, 0.96f, 0.90f, 1f),
+                    ownedCount);
+                SetAnchors(
+                    count.rectTransform,
+                    new Vector2(0.080f, 0.010f),
+                    new Vector2(0.920f, 0.105f));
+            }
+
+            AddDeckRemovalPageControls(gallery, source, pageCount);
+            RefreshTopBar();
+            RefreshLog();
+        }
+
+        private void AddDeckRemovalPageControls(
+            RectTransform gallery,
+            DeckRemovalSource source,
+            int pageCount)
+        {
+            Text pageText = AddLocalizedText(
+                gallery,
+                "카드 제거 페이지",
+                "deckRemoval.page",
+                16,
+                TextAnchor.MiddleCenter,
+                new Color(0.82f, 0.96f, 0.90f, 1f),
+                deckRemovalPage + 1,
+                pageCount);
+            SetAnchors(
+                pageText.rectTransform,
+                new Vector2(0.430f, 0.010f),
+                new Vector2(0.570f, 0.070f));
+
+            if (deckRemovalPage > 0)
+            {
+                Button previous = AddLocalizedSettingsMenuButton(
+                    gallery,
+                    "카드 제거 이전 페이지",
+                    "deckRemoval.previous",
+                    15);
+                SetAnchors(
+                    previous.GetComponent<RectTransform>(),
+                    new Vector2(0.290f, 0.010f),
+                    new Vector2(0.420f, 0.075f));
+                previous.onClick.AddListener(() => ShowDeckRemovalSelection(
+                    source,
+                    deckRemovalPage - 1));
+            }
+
+            if (deckRemovalPage + 1 < pageCount)
+            {
+                Button next = AddLocalizedSettingsMenuButton(
+                    gallery,
+                    "카드 제거 다음 페이지",
+                    "deckRemoval.next",
+                    15);
+                SetAnchors(
+                    next.GetComponent<RectTransform>(),
+                    new Vector2(0.580f, 0.010f),
+                    new Vector2(0.710f, 0.075f));
+                next.onClick.AddListener(() => ShowDeckRemovalSelection(
+                    source,
+                    deckRemovalPage + 1));
+            }
+        }
+
+        private void ConfirmDeckRemoval(
+            CardData card,
+            DeckRemovalSource source)
+        {
+            if (source == DeckRemovalSource.Shop)
+            {
+                int price = GetDeckRemovalPrice();
+                if (currentShopRemovalUsed || gold < price)
+                {
+                    ShowShop();
+                    return;
+                }
+
+                if (TryRemoveDeckCard(card, L("deckRemoval.source.shop")))
+                {
+                    gold -= price;
+                    currentShopRemovalUsed = true;
+                }
+
+                ShowShop();
+                return;
+            }
+
+            if (TryRemoveDeckCard(card, L("deckRemoval.source.rest")))
+            {
+                ShowDoors();
+                return;
+            }
+
+            ShowDeckRemovalSelection(DeckRemovalSource.Rest, deckRemovalPage);
         }
     }
 }
