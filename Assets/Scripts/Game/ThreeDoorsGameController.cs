@@ -2256,6 +2256,7 @@ namespace ThreeDoorsOfFate.Game
             PlayMainMenuMusic();
             phase = GamePhase.DoorSelection;
             checkpointResumePhase = GamePhase.DoorSelection;
+            pendingEndlessCheckpoint = false;
             pendingResolvedDoorTypeId = NoPendingDoorType;
             pendingRewardCardIds.Clear();
             pendingRunEventId = string.Empty;
@@ -4241,6 +4242,7 @@ namespace ThreeDoorsOfFate.Game
             RectTransform handPanel = AddPanel(contentRoot, "손패", new Color(1f, 1f, 1f, 0f));
             SetAnchors(handPanel, new Vector2(0.145f, 0.040f), new Vector2(1.000f, 0.550f));
 
+            combatHandCardButtons.Clear();
             for (int i = 0; i < hand.Count; i += 1)
             {
                 CardData card = hand[i];
@@ -4256,6 +4258,7 @@ namespace ThreeDoorsOfFate.Game
                 cardButton.onClick.AddListener(
                     () => SelectCombatCardForPreview(index, card));
                 cardButton.interactable = CanPlay(card);
+                combatHandCardButtons.Add(cardButton);
             }
 
             CreateDrawAnimationGhosts();
@@ -7982,6 +7985,8 @@ namespace ThreeDoorsOfFate.Game
                 debt = 0;
             }
 
+            pendingEndlessCheckpoint = false;
+
             AddLog("모든 빚을 청산하려는 순간, 마지막 채권자가 문 너머에서 모습을 드러냅니다.");
             RefreshTopBar();
             StartCombat(CreateDebtClearBoss());
@@ -8024,6 +8029,14 @@ namespace ThreeDoorsOfFate.Game
         {
             PlayNonCombatMusic();
             phase = GamePhase.Reward;
+            checkpointResumePhase = GamePhase.DoorSelection;
+            pendingEndlessCheckpoint = true;
+            pendingResolvedDoorTypeId = NoPendingDoorType;
+            pendingEndlessMutationChoices =
+                Array.Empty<EndlessMutationDefinition>();
+            pendingRewardCardIds.Clear();
+            restoredRunCheckpoint = null;
+            SaveRunCheckpointAtResolvedSurface();
             SetBackground(rewardBackground != null ? rewardBackground : bossBackground);
             ClearContent();
             SetLogVisible(false);
@@ -8063,13 +8076,20 @@ namespace ThreeDoorsOfFate.Game
                 new Vector2(0.10f, 0.595f),
                 new Vector2(0.90f, 0.735f));
 
-            AddPostTenChoice(panel, "계속 내려간다", "기록을 이어갑니다. 적은 더 강해지고 보상도 조금씩 커집니다.", new Vector2(0.070f, 0.405f), new Vector2(0.930f, 0.575f), ShowDoors, true);
+            AddPostTenChoice(panel, "계속 내려간다", "기록을 이어갑니다. 적은 더 강해지고 보상도 조금씩 커집니다.", new Vector2(0.070f, 0.405f), new Vector2(0.930f, 0.575f), ContinueFromEndlessCheckpoint, true);
             AddPostTenChoice(panel, "기록하고 귀환한다", "현재 무한 기록을 보존하고 런을 성공으로 마무리합니다.", new Vector2(0.070f, 0.220f), new Vector2(0.930f, 0.390f), CompleteEndlessReturnEnding, true);
             AddPostTenChoice(panel, "빚을 청산한다", GetDebtClearCost() > 0 ? $"금화 {GetDebtClearCost()}로 마지막 채권자에게 도전합니다." : "빚 없이 마지막 채권자에게 도전합니다.", new Vector2(0.070f, 0.035f), new Vector2(0.930f, 0.205f), BeginDebtClearBossBattle, CanClearDebt());
         }
 
+        private void ContinueFromEndlessCheckpoint()
+        {
+            pendingEndlessCheckpoint = false;
+            ShowDoors();
+        }
+
         private void CompleteEndlessReturnEnding()
         {
+            pendingEndlessCheckpoint = false;
             RecordEndlessProgress();
             UnlockNextDifficultyFromCurrentRun();
             currentJourneyEndingKind = JourneyEndingKind.EndlessReturn;
@@ -9979,10 +9999,7 @@ namespace ThreeDoorsOfFate.Game
         private void ShowGameOver(bool victory, string message)
         {
             RecordGameOverRunHistory(victory, message);
-            if (CanUseRunSaveSystem())
-            {
-                ClearHardRunSave();
-            }
+            ClearHardRunSave();
 
             if (!victory && endlessModeActive)
             {
@@ -10174,10 +10191,7 @@ namespace ThreeDoorsOfFate.Game
         private void ShowJourneyEnding()
         {
             RecordJourneyRunHistory();
-            if (CanUseRunSaveSystem())
-            {
-                ClearHardRunSave();
-            }
+            ClearHardRunSave();
 
             PlayGameSfx(GameSfxCue.Ending);
             PlayMainMenuMusic();

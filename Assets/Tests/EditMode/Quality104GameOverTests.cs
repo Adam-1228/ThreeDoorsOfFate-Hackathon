@@ -34,6 +34,8 @@ namespace ThreeDoorsOfFate.Tests
         private string previousLanguage;
         private bool hadDifficultyUnlock;
         private int previousDifficultyUnlock;
+        private string hardRunSaveKey;
+        private string hardRunSaveBackupKey;
 
         [SetUp]
         public void SetUp()
@@ -57,6 +59,12 @@ namespace ThreeDoorsOfFate.Tests
 
             controllerHost = new GameObject("Quality 1.0.4 Game Over Test Host");
             controller = controllerHost.AddComponent(controllerType);
+            string checkpointPrefix =
+                $"ThreeDoorsOfFate.Tests.GameOver.{Guid.NewGuid():N}.";
+            hardRunSaveKey = checkpointPrefix + "HardRunSave";
+            hardRunSaveBackupKey = checkpointPrefix + "HardRunSave.BackupV1";
+            SetField("hardRunSaveKey", hardRunSaveKey);
+            SetField("hardRunSaveBackupKey", hardRunSaveBackupKey);
             root = TryGetField<RectTransform>("root");
             if (root == null)
             {
@@ -98,6 +106,13 @@ namespace ThreeDoorsOfFate.Tests
                 {
                     UnityEngine.Object.DestroyImmediate(created.gameObject);
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(hardRunSaveKey))
+            {
+                PlayerPrefs.DeleteKey(hardRunSaveKey);
+                PlayerPrefs.DeleteKey(hardRunSaveBackupKey);
+                PlayerPrefs.DeleteKey(hardRunSaveKey + ".DeletedRunIds");
             }
 
             RestorePreference(

@@ -26,6 +26,8 @@ namespace ThreeDoorsOfFate.Tests
         private Sprite messageSprite;
         private bool hadPreviousLanguage;
         private string previousLanguage;
+        private string hardRunSaveKey;
+        private string hardRunSaveBackupKey;
 
         [SetUp]
         public void SetUp()
@@ -45,6 +47,12 @@ namespace ThreeDoorsOfFate.Tests
 
             controllerHost = new GameObject("Quality 1.0.4 Localization Test Host");
             controller = controllerHost.AddComponent(controllerType);
+            string checkpointPrefix =
+                $"ThreeDoorsOfFate.Tests.Localization.{Guid.NewGuid():N}.";
+            hardRunSaveKey = checkpointPrefix + "HardRunSave";
+            hardRunSaveBackupKey = checkpointPrefix + "HardRunSave.BackupV1";
+            SetField("hardRunSaveKey", hardRunSaveKey);
+            SetField("hardRunSaveBackupKey", hardRunSaveBackupKey);
             root = TryGetField<RectTransform>("root");
             if (root == null)
             {
@@ -95,6 +103,13 @@ namespace ThreeDoorsOfFate.Tests
                 {
                     UnityEngine.Object.DestroyImmediate(created.gameObject);
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(hardRunSaveKey))
+            {
+                PlayerPrefs.DeleteKey(hardRunSaveKey);
+                PlayerPrefs.DeleteKey(hardRunSaveBackupKey);
+                PlayerPrefs.DeleteKey(hardRunSaveKey + ".DeletedRunIds");
             }
 
             if (hadPreviousLanguage)
@@ -198,6 +213,15 @@ namespace ThreeDoorsOfFate.Tests
                 BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.That(field, Is.Not.Null, $"Expected controller field '{fieldName}'.");
             return (T)field.GetValue(controller);
+        }
+
+        private void SetField<T>(string fieldName, T value)
+        {
+            FieldInfo field = controllerType.GetField(
+                fieldName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(field, Is.Not.Null, $"Expected controller field '{fieldName}'.");
+            field.SetValue(controller, value);
         }
 
         private T TryGetField<T>(string fieldName)

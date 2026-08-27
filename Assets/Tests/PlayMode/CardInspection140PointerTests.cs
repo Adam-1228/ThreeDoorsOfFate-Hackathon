@@ -180,6 +180,10 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(preview.sprite, Is.SameAs(cardSprite));
             Assert.That(backdrop.gameObject.activeInHierarchy, Is.True);
             Assert.That(backdrop.color.a, Is.GreaterThanOrEqualTo(0.85f));
+            Assert.That(
+                backdrop.raycastTarget,
+                Is.True,
+                "The modal backdrop must intercept clicks before underlying shop controls.");
             Assert.That(preview.transform.parent, Is.SameAs(root));
             Assert.That(
                 preview.transform.GetSiblingIndex(),
@@ -194,8 +198,14 @@ namespace ThreeDoorsOfFate.Tests
                 GetField<Button>("cardPreviewUseButton").transform.GetSiblingIndex(),
                 Is.GreaterThan(preview.transform.GetSiblingIndex()));
 
-            GetField<Button>("cardPreviewCancelButton").onClick.Invoke();
+            RectTransform underlyingShopExit = GetField<Button>("primaryButton")
+                .GetComponent<RectTransform>();
+            Assert.That(
+                RaycastAndClick(underlyingShopExit),
+                Is.SameAs(root.gameObject),
+                "A click over the shop exit must be consumed by the inspection modal.");
             Assert.That(preview.gameObject.activeSelf, Is.False);
+            Assert.That(GetField<object>("phase").ToString(), Is.EqualTo("Shop"));
             Assert.That(GetField<int>("gold"), Is.EqualTo(goldBefore));
             Assert.That(deck, Has.Count.Zero);
         }

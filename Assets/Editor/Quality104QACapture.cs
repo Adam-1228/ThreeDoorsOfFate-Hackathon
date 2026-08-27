@@ -88,13 +88,34 @@ namespace ThreeDoorsOfFate.Editor
                 controllerType,
                 controller,
                 "runHistoryKeyPrefix");
+            string previousHardRunSaveKey = GetField<string>(
+                controllerType,
+                controller,
+                "hardRunSaveKey");
+            string previousHardRunSaveBackupKey = GetField<string>(
+                controllerType,
+                controller,
+                "hardRunSaveBackupKey");
             string qaRunHistoryPrefix =
                 $"ThreeDoorsOfFate.QA.V140.{Guid.NewGuid():N}.";
+            string qaHardRunSaveKey = qaRunHistoryPrefix + "HardRunSave";
+            string qaHardRunSaveBackupKey =
+                qaRunHistoryPrefix + "HardRunSave.BackupV1";
             SetField(
                 controllerType,
                 controller,
                 "runHistoryKeyPrefix",
                 qaRunHistoryPrefix);
+            SetField(
+                controllerType,
+                controller,
+                "hardRunSaveKey",
+                qaHardRunSaveKey);
+            SetField(
+                controllerType,
+                controller,
+                "hardRunSaveBackupKey",
+                qaHardRunSaveBackupKey);
             List<string> manifest = new()
             {
                 "language,state,layout,width,height,file"
@@ -159,11 +180,24 @@ namespace ThreeDoorsOfFate.Editor
                 UnityEngine.Random.state = previousRandomState;
                 PlayerPrefs.DeleteKey(
                     RunHistoryStore.GetStorageKey(qaRunHistoryPrefix));
+                PlayerPrefs.DeleteKey(qaHardRunSaveKey);
+                PlayerPrefs.DeleteKey(qaHardRunSaveBackupKey);
+                PlayerPrefs.DeleteKey(qaHardRunSaveKey + ".DeletedRunIds");
                 SetField(
                     controllerType,
                     controller,
                     "runHistoryKeyPrefix",
                     previousRunHistoryPrefix);
+                SetField(
+                    controllerType,
+                    controller,
+                    "hardRunSaveKey",
+                    previousHardRunSaveKey);
+                SetField(
+                    controllerType,
+                    controller,
+                    "hardRunSaveBackupKey",
+                    previousHardRunSaveBackupKey);
                 if (hadLanguagePreference)
                 {
                     PlayerPrefs.SetString(

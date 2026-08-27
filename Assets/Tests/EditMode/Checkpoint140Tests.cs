@@ -102,16 +102,12 @@ namespace ThreeDoorsOfFate.Tests
             try
             {
                 ConfigureNormalRun();
+                EnsureShell();
                 SetField("hardRunSaveKey", saveKey);
                 SetField("hardRunSaveBackupKey", backupKey);
                 PlayerPrefs.SetString(saveKey, v1);
                 PlayerPrefs.SetInt(achievementKey, 1);
                 PlayerPrefs.Save();
-
-                if (ReadField("root") == null)
-                {
-                    Invoke("BuildShell");
-                }
 
                 bool loaded = (bool)Invoke("TryLoadHardRunSave");
                 Assert.That(
@@ -283,6 +279,132 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That((bool)Invoke("CanSaveRunCheckpoint"), Is.True);
         }
 
+        [Test]
+        public void GameOverAtZeroHealthDeletesCheckpointAndRecordsRunTombstone()
+        {
+            string preferencePrefix =
+                $"ThreeDoorsOfFate.Tests.Checkpoint.{Guid.NewGuid():N}.";
+            string saveKey = preferencePrefix + "HardRunSave";
+            string backupKey = preferencePrefix + "HardRunSave.BackupV1";
+            string tombstoneKey = saveKey + ".DeletedRunIds";
+            const string runId = "defeated-run-140";
+
+            try
+            {
+                ConfigureNormalRun();
+                EnsureShell();
+                SetField("hardRunSaveKey", saveKey);
+                SetField("hardRunSaveBackupKey", backupKey);
+                SetField("activeRunId", runId);
+                SetField("playerHealth", 0);
+                SetEnumField("phase", "Combat");
+                PlayerPrefs.SetString(saveKey, "{\"version\":2,\"runId\":\"defeated-run-140\",\"randomCursor\":9}");
+                PlayerPrefs.SetString(backupKey, "legacy-backup");
+                PlayerPrefs.Save();
+
+                Invoke(
+                    "ShowGameOver",
+                    false,
+                    "The cave claimed another name.");
+
+                Assert.That(PlayerPrefs.HasKey(saveKey), Is.False);
+                Assert.That(PlayerPrefs.HasKey(backupKey), Is.False);
+                Assert.That(
+                    PlayerPrefs.GetString(tombstoneKey, string.Empty),
+                    Does.Contain(runId));
+            }
+            finally
+            {
+                PlayerPrefs.DeleteKey(saveKey);
+                PlayerPrefs.DeleteKey(backupKey);
+                PlayerPrefs.DeleteKey(tombstoneKey);
+                PlayerPrefs.Save();
+            }
+        }
+
+        [Test]
+        public void EndlessMutationCheckpointRoundTripPreservesChoicesAndResumes()
+        {
+            string preferencePrefix =
+                $"ThreeDoorsOfFate.Tests.Checkpoint.{Guid.NewGuid():N}.";
+            string saveKey = preferencePrefix + "HardRunSave";
+            string backupKey = preferencePrefix + "HardRunSave.BackupV1";
+
+            try
+            {
+                ConfigureNormalRun();
+                EnsureShell();
+                SetField("hardRunSaveKey", saveKey);
+                SetField("hardRunSaveBackupKey", backupKey);
+                SetField("endlessModeActive", true);
+                Invoke("ResetRunRandom", 140140);
+
+                Invoke("ShowEndlessMutationSelection");
+
+                string offeredJson = PlayerPrefs.GetString(saveKey, string.Empty);
+                Assert.That(
+                    offeredJson,
+                    Is.Not.Empty,
+                    "The mutation offer must be checkpointed before the player chooses.");
+                CheckpointJson offered = JsonUtility.FromJson<CheckpointJson>(
+                    offeredJson);
+                Assert.That(offered, Is.Not.Null);
+                Assert.That(offered.savedPhaseName, Is.EqualTo("Reward"));
+                Assert.That(offered.pendingEndlessMutationChoiceIds, Has.Count.EqualTo(3));
+                Assert.That(offered.pendingEndlessMutationChoiceIds, Is.Unique);
+                string[] expectedChoices = offered.pendingEndlessMutationChoiceIds.ToArray();
+
+                FieldInfo pendingChoicesField = GetFieldInfo(
+                    "pendingEndlessMutationChoices");
+                pendingChoicesField.SetValue(
+                    controller,
+                    Array.CreateInstance(
+                        pendingChoicesField.FieldType.GetGenericArguments()[0],
+                        0));
+                Assert.That(
+                    (bool)Invoke(
+                        "TryRestoreRunCheckpointV2",
+                        PlayerPrefs.GetString(saveKey)),
+                    Is.True);
+                Assert.That(
+                    ((IEnumerable)ReadField("pendingEndlessMutationChoices"))
+                        .Cast<object>()
+                        .Select(choice => ReadProperty<string>(choice, "Id")),
+                    Is.EqualTo(expectedChoices));
+
+                Invoke("ResumeRestoredRunCheckpoint");
+                Assert.That(ReadField("phase").ToString(), Is.EqualTo("Reward"));
+                Assert.That(
+                    ((IEnumerable)ReadField("pendingEndlessMutationChoices"))
+                        .Cast<object>()
+                        .Select(choice => ReadProperty<string>(choice, "Id")),
+                    Is.EqualTo(expectedChoices));
+
+                Invoke("SelectEndlessMutation", expectedChoices[0]);
+                CheckpointJson selected = JsonUtility.FromJson<CheckpointJson>(
+                    PlayerPrefs.GetString(saveKey, string.Empty));
+                Assert.That(selected.savedPhaseName, Is.EqualTo("DoorSelection"));
+                Assert.That(selected.pendingEndlessMutationChoiceIds, Is.Empty);
+                Assert.That(selected.pendingEndlessCheckpoint, Is.True);
+                Assert.That(selected.activeMutationIds, Does.Contain(expectedChoices[0]));
+                Assert.That(
+                    (bool)Invoke(
+                        "TryRestoreRunCheckpointV2",
+                        PlayerPrefs.GetString(saveKey)),
+                    Is.True);
+                Invoke("ResumeRestoredRunCheckpoint");
+                Assert.That(ReadField("phase").ToString(), Is.EqualTo("Reward"));
+                Assert.That(ReadField("pendingEndlessCheckpoint"), Is.EqualTo(true));
+            }
+            finally
+            {
+                PlayerPrefs.DeleteKey(saveKey);
+                PlayerPrefs.DeleteKey(backupKey);
+                PlayerPrefs.DeleteKey(saveKey + ".DeletedRunIds");
+                PlayerPrefs.Save();
+            }
+        }
+
         private void ConfigureNormalRun()
         {
             IList cardPool = GetField<IList>("cardPool");
@@ -304,6 +426,14 @@ namespace ThreeDoorsOfFate.Tests
             SetField("roomsCleared", 4);
             SetField("selectedStarterContractId", "gambler.high_roll");
             SetField("cardsRemovedThisRun", 2);
+        }
+
+        private void EnsureShell()
+        {
+            if (ReadField("root") == null)
+            {
+                Invoke("BuildShell");
+            }
         }
 
         private void AddEnumValues(string fieldName, params string[] values)
@@ -400,11 +530,21 @@ namespace ThreeDoorsOfFate.Tests
             return (T)field.GetValue(instance);
         }
 
+        private static T ReadProperty<T>(object instance, string name)
+        {
+            PropertyInfo property = instance.GetType().GetProperty(
+                name,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            Assert.That(property, Is.Not.Null, $"Expected property '{name}'.");
+            return (T)property.GetValue(instance);
+        }
+
         [Serializable]
         private sealed class CheckpointJson
         {
             public int version;
             public int randomCursor;
+            public int savedPhase;
             public long runStartedAtUnixSeconds;
             public int runHistoryCardsPlayed;
             public int runHistoryDamageDealt;
@@ -413,7 +553,17 @@ namespace ThreeDoorsOfFate.Tests
             public int runHistoryZeroGoldShopVisits;
             public int runHistoryMaximumSameRerollStreak;
             public int runHistoryLowLuckRolls;
+            public List<string> activeMutationIds = new();
+            public List<string> pendingEndlessMutationChoiceIds = new();
+            public bool pendingEndlessCheckpoint;
             public List<int> pendingDoorTypeIds = new();
+
+            public string savedPhaseName => savedPhase switch
+            {
+                4 => "DoorSelection",
+                6 => "Reward",
+                _ => savedPhase.ToString()
+            };
         }
     }
 }

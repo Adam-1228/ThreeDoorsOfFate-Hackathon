@@ -17,6 +17,7 @@ namespace ThreeDoorsOfFate.Game
         private readonly HashSet<string> seenRunEventIds = new(StringComparer.Ordinal);
         private readonly HashSet<string> activeEndlessMutationIds = new(StringComparer.Ordinal);
         private readonly List<string> pendingRewardCardIds = new();
+        private bool pendingEndlessCheckpoint;
         private string pendingRunEventId = string.Empty;
         private int pendingResolvedDoorTypeId = NoPendingDoorType;
         private int currentEncounterSeed;
@@ -61,9 +62,14 @@ namespace ThreeDoorsOfFate.Game
                 seenEventIds = seenRunEventIds.OrderBy(value => value, StringComparer.Ordinal).ToList(),
                 seenEventSegment = seenRunEventSegment,
                 activeMutationIds = activeEndlessMutationIds.OrderBy(value => value, StringComparer.Ordinal).ToList(),
+                pendingEndlessMutationChoiceIds = pendingEndlessMutationChoices
+                    .Where(value => value != null && !string.IsNullOrWhiteSpace(value.Id))
+                    .Select(value => value.Id)
+                    .ToList(),
+                pendingEndlessCheckpoint = pendingEndlessCheckpoint,
                 pendingDoorTypeIds = pendingDoorTypes.Select(value => (int)value).ToList(),
                 pendingResolvedDoorTypeId = pendingResolvedDoorTypeId,
-                savedPhase = (int)phase,
+                savedPhase = (int)checkpointResumePhase,
                 selectedClass = (int)selectedClass,
                 currentDifficulty = (int)currentDifficulty,
                 currentJourneyEndingKind = (int)currentJourneyEndingKind,
@@ -132,7 +138,8 @@ namespace ThreeDoorsOfFate.Game
                     out RunSaveDataV2 checkpoint,
                     out List<CardData> restoredDeck,
                     out List<CardData> restoredShopCards,
-                    out List<CardData> restoredRewards))
+                    out List<CardData> restoredRewards,
+                    out List<EndlessMutationDefinition> restoredMutationChoices))
             {
                 return false;
             }
@@ -258,6 +265,8 @@ namespace ThreeDoorsOfFate.Game
             ReplaceSet(seenRunEventIds, checkpoint.seenEventIds);
             seenRunEventSegment = Mathf.Max(0, checkpoint.seenEventSegment);
             ReplaceSet(activeEndlessMutationIds, checkpoint.activeMutationIds);
+            pendingEndlessMutationChoices = restoredMutationChoices;
+            pendingEndlessCheckpoint = checkpoint.pendingEndlessCheckpoint;
             pendingDoorTypes.Clear();
             pendingDoorTypes.AddRange(checkpoint.pendingDoorTypeIds.Select(id => (DoorType)id));
             pendingResolvedDoorTypeId = checkpoint.pendingResolvedDoorTypeId;
@@ -377,6 +386,7 @@ namespace ThreeDoorsOfFate.Game
                 out _,
                 out _,
                 out _,
+                out _,
                 out _);
         }
 
@@ -385,12 +395,14 @@ namespace ThreeDoorsOfFate.Game
             out RunSaveDataV2 checkpoint,
             out List<CardData> restoredDeck,
             out List<CardData> restoredShopCards,
-            out List<CardData> restoredRewards)
+            out List<CardData> restoredRewards,
+            out List<EndlessMutationDefinition> restoredMutationChoices)
         {
             checkpoint = null;
             restoredDeck = new List<CardData>();
             restoredShopCards = new List<CardData>();
             restoredRewards = new List<CardData>();
+            restoredMutationChoices = new List<EndlessMutationDefinition>();
             try
             {
                 checkpoint = JsonUtility.FromJson<RunSaveDataV2>(json);
@@ -417,6 +429,15 @@ namespace ThreeDoorsOfFate.Game
                 return FailRunRestore("save.restore.error.unknownCard", "offer");
             }
 
+            if (!TryResolveEndlessMutationChoices(
+                    checkpoint.pendingEndlessMutationChoiceIds,
+                    restoredMutationChoices))
+            {
+                return FailRunRestore(
+                    "save.restore.error.corrupt",
+                    "endless-mutation-offer");
+            }
+
             foreach (string itemId in checkpoint.equippedItemIds)
             {
                 if (string.IsNullOrWhiteSpace(itemId) || GetRunItemDefinition(itemId) == null)
@@ -431,6 +452,36 @@ namespace ThreeDoorsOfFate.Game
                 return FailRunRestore(
                     "save.restore.error.unknownItem",
                     checkpoint.pendingShopRunItemId);
+            }
+
+            return true;
+        }
+
+        private bool TryResolveEndlessMutationChoices(
+            IReadOnlyList<string> mutationIds,
+            List<EndlessMutationDefinition> restoredChoices)
+        {
+            if (mutationIds == null || mutationIds.Count == 0)
+            {
+                return true;
+            }
+
+            if (!TryGetEndlessMutationCatalog(out EndlessMutationCatalog catalog))
+            {
+                return false;
+            }
+
+            HashSet<string> seenIds = new(StringComparer.Ordinal);
+            foreach (string mutationId in mutationIds)
+            {
+                if (string.IsNullOrWhiteSpace(mutationId)
+                    || !seenIds.Add(mutationId)
+                    || !catalog.TryGet(mutationId, out EndlessMutationDefinition mutation))
+                {
+                    return false;
+                }
+
+                restoredChoices.Add(mutation);
             }
 
             return true;
@@ -472,6 +523,15 @@ namespace ThreeDoorsOfFate.Game
                 && checkpoint.savedPhase != (int)GamePhase.ContractSelection
                 && checkpoint.savedPhase != (int)GamePhase.GameOver
                 && checkpoint.pendingDoorTypeIds.All(IsKnownDoorTypeId)
+                && checkpoint.pendingEndlessMutationChoiceIds.Count <= 3
+                && (checkpoint.pendingEndlessMutationChoiceIds.Count == 0
+                    || checkpoint.endlessModeActive
+                        && !checkpoint.pendingEndlessCheckpoint
+                        && checkpoint.savedPhase == (int)GamePhase.Reward)
+                && (!checkpoint.pendingEndlessCheckpoint
+                    || checkpoint.endlessModeActive
+                        && checkpoint.pendingEndlessMutationChoiceIds.Count == 0
+                        && checkpoint.savedPhase == (int)GamePhase.DoorSelection)
                 && (checkpoint.pendingResolvedDoorTypeId == NoPendingDoorType
                     || IsKnownDoorTypeId(checkpoint.pendingResolvedDoorTypeId))
                 && IsKnownDoorTypeId(checkpoint.currentCombatDoorTypeId);
@@ -508,6 +568,7 @@ namespace ThreeDoorsOfFate.Game
             checkpoint.buildUpgradeLevels ??= new List<RunSaveBuildUpgrade>();
             checkpoint.seenEventIds ??= new List<string>();
             checkpoint.activeMutationIds ??= new List<string>();
+            checkpoint.pendingEndlessMutationChoiceIds ??= new List<string>();
             checkpoint.pendingDoorTypeIds ??= new List<int>();
             checkpoint.pendingShopCardIds ??= new List<string>();
             checkpoint.purchasedShopCardSlotIds ??= new List<int>();
@@ -543,6 +604,7 @@ namespace ThreeDoorsOfFate.Game
             activeEndlessMutationIds.Clear();
             pendingEndlessMutationChoices =
                 Array.Empty<EndlessMutationDefinition>();
+            pendingEndlessCheckpoint = false;
             pendingRewardCardIds.Clear();
             pendingRunEventId = string.Empty;
             pendingResolvedDoorTypeId = NoPendingDoorType;
@@ -555,6 +617,12 @@ namespace ThreeDoorsOfFate.Game
 
         private void ResumeRestoredRunCheckpoint()
         {
+            if (pendingEndlessCheckpoint)
+            {
+                ShowEndlessCheckpoint();
+                return;
+            }
+
             if (pendingResolvedDoorTypeId != NoPendingDoorType)
             {
                 DoorType destination = (DoorType)pendingResolvedDoorTypeId;
@@ -576,6 +644,12 @@ namespace ThreeDoorsOfFate.Game
                     ShowShop();
                     return;
                 case GamePhase.Reward:
+                    if (pendingEndlessMutationChoices.Count > 0)
+                    {
+                        ShowEndlessMutationSelection();
+                        return;
+                    }
+
                     if (TryResolvePendingRewards(out List<CardData> rewards))
                     {
                         ShowReward(rewards);
@@ -726,6 +800,8 @@ namespace ThreeDoorsOfFate.Game
             public List<string> seenEventIds = new();
             public int seenEventSegment;
             public List<string> activeMutationIds = new();
+            public List<string> pendingEndlessMutationChoiceIds = new();
+            public bool pendingEndlessCheckpoint;
             public List<int> pendingDoorTypeIds = new();
             public int pendingResolvedDoorTypeId = NoPendingDoorType;
             public int savedPhase;

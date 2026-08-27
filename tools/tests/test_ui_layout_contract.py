@@ -197,6 +197,8 @@ class UiLayoutContractTests(unittest.TestCase):
             '"run_history_detail"',
             '"TDOF_140_QA_DIR"',
             'RunHistoryStore.GetStorageKey(qaRunHistoryPrefix)',
+            'qaRunHistoryPrefix + "HardRunSave"',
+            'qaHardRunSaveKey + ".DeletedRunIds"',
         ):
             with self.subTest(marker=marker):
                 self.assertIn(marker, source)

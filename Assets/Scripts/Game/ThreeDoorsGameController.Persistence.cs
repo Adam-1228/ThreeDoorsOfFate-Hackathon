@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ThreeDoorsOfFate.Audio;
 using ThreeDoorsOfFate.Cards;
+using ThreeDoorsOfFate.Platform;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -302,6 +303,9 @@ namespace ThreeDoorsOfFate.Game
 
         private void ClearHardRunSave()
         {
+            PlayerPrefsProgressStore.RecordDeletedRun(
+                hardRunSaveKey,
+                activeRunId);
             bool changed = false;
             if (PlayerPrefs.HasKey(hardRunSaveKey))
             {

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using ThreeDoorsOfFate.Audio;
 using ThreeDoorsOfFate.Cards;
 using UnityEngine;
@@ -6,6 +8,26 @@ using UnityEngine.UI;
 
 namespace ThreeDoorsOfFate.Game
 {
+    internal sealed class CardInspectionBackdropRaycastFilter
+        : MonoBehaviour,
+            ICanvasRaycastFilter
+    {
+        private Func<Vector2, Camera, bool> isRaycastLocationValid;
+
+        public void Configure(Func<Vector2, Camera, bool> callback)
+        {
+            isRaycastLocationValid = callback;
+        }
+
+        public bool IsRaycastLocationValid(
+            Vector2 screenPoint,
+            Camera eventCamera)
+        {
+            return isRaycastLocationValid?.Invoke(screenPoint, eventCamera)
+                ?? true;
+        }
+    }
+
     public sealed partial class ThreeDoorsGameController
     {
         private enum CardInspectionMode
@@ -21,6 +43,7 @@ namespace ThreeDoorsOfFate.Game
         private CardInspectionMode cardInspectionMode;
         private UnityAction pendingCardInspectionConfirm;
         private bool cardInspectionActive;
+        private readonly List<Button> combatHandCardButtons = new();
 
         private void ShowCardInspection(
             CardData card,
@@ -130,7 +153,10 @@ namespace ThreeDoorsOfFate.Game
                     root,
                     "카드 검사 배경",
                     new Color(0.004f, 0.010f, 0.014f, 0.88f));
-                cardInspectionBackdrop.raycastTarget = false;
+                cardInspectionBackdrop.raycastTarget = true;
+                cardInspectionBackdrop.gameObject
+                    .AddComponent<CardInspectionBackdropRaycastFilter>()
+                    .Configure(IsCardInspectionBackdropRaycastLocationValid);
                 Stretch(cardInspectionBackdrop.rectTransform);
                 cardInspectionBackdrop.gameObject.SetActive(false);
             }
@@ -183,6 +209,33 @@ namespace ThreeDoorsOfFate.Game
                 cardPreviewUseButton.onClick.AddListener(ConfirmCardInspection);
                 cardPreviewUseButton.gameObject.SetActive(false);
             }
+        }
+
+        private bool IsCardInspectionBackdropRaycastLocationValid(
+            Vector2 screenPoint,
+            Camera eventCamera)
+        {
+            if (!cardInspectionActive
+                || cardInspectionMode != CardInspectionMode.CombatUse)
+            {
+                return true;
+            }
+
+            foreach (Button cardButton in combatHandCardButtons)
+            {
+                if (cardButton != null
+                    && cardButton.interactable
+                    && cardButton.gameObject.activeInHierarchy
+                    && RectTransformUtility.RectangleContainsScreenPoint(
+                        cardButton.GetComponent<RectTransform>(),
+                        screenPoint,
+                        eventCamera))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void ShowHoverCardPreview(CardData card, RectTransform previewTarget)

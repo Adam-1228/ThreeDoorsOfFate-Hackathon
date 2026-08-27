@@ -168,6 +168,252 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
+        public void MergeJson_SameRunUsesHighestRandomCursorBeforeSnapshotRevision()
+        {
+            const string runKey = "ThreeDoorsOfFate.HardRunSave";
+            ProgressSnapshotData local = new()
+            {
+                schemaVersion = 1,
+                revision = 2,
+                updatedAtUnixSeconds = 100,
+                deviceId = "iphone",
+                activeRunId = "run-140",
+                activeRunSchemaVersion = 2,
+                activeRunRandomCursor = 90,
+                strings = new List<ProgressStringData>
+                {
+                    new()
+                    {
+                        key = runKey,
+                        value = ActiveRunJson("run-140", 90)
+                    }
+                }
+            };
+            ProgressSnapshotData cloud = new()
+            {
+                schemaVersion = 1,
+                revision = 8,
+                updatedAtUnixSeconds = 800,
+                deviceId = "ipad",
+                activeRunId = "run-140",
+                activeRunSchemaVersion = 2,
+                activeRunRandomCursor = 20,
+                strings = new List<ProgressStringData>
+                {
+                    new()
+                    {
+                        key = runKey,
+                        value = ActiveRunJson("run-140", 20)
+                    }
+                }
+            };
+
+            ProgressSnapshotData merged = Merge(local, cloud);
+
+            Assert.That(merged.activeRunId, Is.EqualTo("run-140"));
+            Assert.That(merged.activeRunRandomCursor, Is.EqualTo(90));
+            Assert.That(GetString(merged, runKey), Does.Contain("\"randomCursor\":90"));
+        }
+
+        [Test]
+        public void MergeAndApplyJson_DeletedRunTombstonePreventsStaleRunRevival()
+        {
+            string prefix = $"ThreeDoorsOfFate.Tests.{Guid.NewGuid():N}.";
+            string runKey = prefix + "HardRunSave";
+            string tombstoneKey = runKey + ".DeletedRunIds";
+            const string runId = "finished-run-140";
+            ProgressSnapshotData local = new()
+            {
+                schemaVersion = 1,
+                revision = 9,
+                updatedAtUnixSeconds = 900,
+                deviceId = "iphone",
+                deletedRunIds = new List<string> { runId }
+            };
+            ProgressSnapshotData cloud = new()
+            {
+                schemaVersion = 1,
+                revision = 4,
+                updatedAtUnixSeconds = 400,
+                deviceId = "ipad",
+                activeRunId = runId,
+                activeRunSchemaVersion = 2,
+                activeRunRandomCursor = 30,
+                strings = new List<ProgressStringData>
+                {
+                    new() { key = runKey, value = ActiveRunJson(runId, 30) }
+                }
+            };
+
+            try
+            {
+                PlayerPrefs.SetString(runKey, ActiveRunJson(runId, 30));
+                PlayerPrefs.Save();
+
+                ProgressSnapshotData merged = MergeAndApply(
+                    prefix,
+                    JsonUtility.ToJson(local),
+                    JsonUtility.ToJson(cloud),
+                    1000);
+
+                Assert.That(merged.activeRunId, Is.Empty);
+                Assert.That(merged.activeRunRandomCursor, Is.Zero);
+                Assert.That(merged.deletedRunIds, Does.Contain(runId));
+                Assert.That(merged.strings.All(entry => entry.key != runKey), Is.True);
+                Assert.That(PlayerPrefs.HasKey(runKey), Is.False);
+                Assert.That(PlayerPrefs.GetString(tombstoneKey), Does.Contain(runId));
+            }
+            finally
+            {
+                PlayerPrefs.DeleteKey(runKey);
+                PlayerPrefs.DeleteKey(tombstoneKey);
+                PlayerPrefs.DeleteKey($"{prefix}Cloud.DeviceId");
+                PlayerPrefs.DeleteKey($"{prefix}Cloud.Revision");
+                PlayerPrefs.DeleteKey($"{prefix}Cloud.UpdatedAt");
+                PlayerPrefs.DeleteKey($"{prefix}Cloud.ContentHash");
+                PlayerPrefs.Save();
+            }
+        }
+
+        [Test]
+        public void MergeJson_NewerEmptyRunSlotDoesNotReviveOlderLegacyRun()
+        {
+            const string runKey = "ThreeDoorsOfFate.HardRunSave";
+            ProgressSnapshotData local = new()
+            {
+                schemaVersion = 1,
+                revision = 9,
+                updatedAtUnixSeconds = 900,
+                deviceId = "iphone"
+            };
+            ProgressSnapshotData cloud = new()
+            {
+                schemaVersion = 1,
+                revision = 3,
+                updatedAtUnixSeconds = 300,
+                deviceId = "ipad",
+                activeRunId = "legacy-stale-run",
+                activeRunSchemaVersion = 2,
+                activeRunRandomCursor = 15,
+                strings = new List<ProgressStringData>
+                {
+                    new()
+                    {
+                        key = runKey,
+                        value = ActiveRunJson("legacy-stale-run", 15)
+                    }
+                }
+            };
+
+            ProgressSnapshotData merged = Merge(local, cloud);
+
+            Assert.That(merged.activeRunId, Is.Empty);
+            Assert.That(merged.strings.All(entry => entry.key != runKey), Is.True);
+        }
+
+        [Test]
+        public void MergeJson_PreservesNewerVersionOneCheckpointWithoutRunId()
+        {
+            const string runKey = "ThreeDoorsOfFate.HardRunSave";
+            const string legacyJson =
+                "{\"version\":1,\"selectedClass\":1,\"roomsCleared\":4}";
+            ProgressSnapshotData local = new()
+            {
+                schemaVersion = 1,
+                revision = 7,
+                updatedAtUnixSeconds = 700,
+                deviceId = "iphone",
+                strings = new List<ProgressStringData>
+                {
+                    new() { key = runKey, value = legacyJson }
+                }
+            };
+            ProgressSnapshotData cloud = new()
+            {
+                schemaVersion = 1,
+                revision = 3,
+                updatedAtUnixSeconds = 300,
+                deviceId = "ipad"
+            };
+
+            ProgressSnapshotData merged = Merge(local, cloud);
+
+            Assert.That(GetString(merged, runKey), Is.EqualTo(legacyJson));
+            Assert.That(merged.activeRunId, Does.StartWith("legacy-"));
+            Assert.That(merged.activeRunSchemaVersion, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void MergeJson_PreservesNewerMalformedCheckpointForRestoreDiagnostics()
+        {
+            const string runKey = "ThreeDoorsOfFate.HardRunSave";
+            const string malformedJson = "{not-a-checkpoint";
+            ProgressSnapshotData local = new()
+            {
+                schemaVersion = 1,
+                revision = 7,
+                updatedAtUnixSeconds = 700,
+                deviceId = "iphone",
+                strings = new List<ProgressStringData>
+                {
+                    new() { key = runKey, value = malformedJson }
+                }
+            };
+            ProgressSnapshotData cloud = new()
+            {
+                schemaVersion = 1,
+                revision = 3,
+                updatedAtUnixSeconds = 300,
+                deviceId = "ipad"
+            };
+
+            ProgressSnapshotData merged = Merge(local, cloud);
+
+            Assert.That(GetString(merged, runKey), Is.EqualTo(malformedJson));
+            Assert.That(merged.activeRunId, Does.StartWith("opaque-"));
+            Assert.That(merged.activeRunSchemaVersion, Is.Zero);
+        }
+
+        [Test]
+        public void CaptureJson_AssignsStableIdentityToVersionOneCheckpoint()
+        {
+            string prefix = $"ThreeDoorsOfFate.Tests.{Guid.NewGuid():N}.";
+            string runKey = prefix + "HardRunSave";
+            const string legacyJson =
+                "{\"version\":1,\"selectedClass\":1,\"roomsCleared\":4}";
+
+            try
+            {
+                PlayerPrefs.SetString(runKey, legacyJson);
+                PlayerPrefs.Save();
+
+                ProgressSnapshotData first = JsonUtility.FromJson<ProgressSnapshotData>(
+                    PlayerPrefsProgressStore.CaptureJson(
+                        prefix,
+                        "iphone",
+                        1,
+                        100));
+                ProgressSnapshotData second = JsonUtility.FromJson<ProgressSnapshotData>(
+                    PlayerPrefsProgressStore.CaptureJson(
+                        prefix,
+                        "iphone",
+                        1,
+                        100));
+
+                Assert.That(first.activeRunId, Does.StartWith("legacy-"));
+                Assert.That(second.activeRunId, Is.EqualTo(first.activeRunId));
+                Assert.That(first.activeRunSchemaVersion, Is.EqualTo(1));
+                Assert.That(first.activeRunRandomCursor, Is.Zero);
+            }
+            finally
+            {
+                PlayerPrefs.DeleteKey(runKey);
+                PlayerPrefs.DeleteKey(runKey + ".DeletedRunIds");
+                PlayerPrefs.Save();
+            }
+        }
+
+        [Test]
         public void CaptureJson_CollectsKnownProgressAndActiveRunKeys()
         {
             string prefix = $"ThreeDoorsOfFate.Tests.{Guid.NewGuid():N}.";
@@ -332,6 +578,23 @@ namespace ThreeDoorsOfFate.Tests
             };
 
             Assert.That(ContentHash(first), Is.EqualTo(ContentHash(second)));
+        }
+
+        [Test]
+        public void ContentHash_ChangesWhenRunDeletionTombstoneIsAdded()
+        {
+            ProgressSnapshotData active = new()
+            {
+                schemaVersion = 1,
+                deletedRunIds = new List<string>()
+            };
+            ProgressSnapshotData deleted = new()
+            {
+                schemaVersion = 1,
+                deletedRunIds = new List<string> { "finished-run-140" }
+            };
+
+            Assert.That(ContentHash(deleted), Is.Not.EqualTo(ContentHash(active)));
         }
 
         [Test]
@@ -895,6 +1158,12 @@ namespace ThreeDoorsOfFate.Tests
             return JsonUtility.ToJson(new ItemListData { itemIds = itemIds.ToList() });
         }
 
+        private static string ActiveRunJson(string runId, int randomCursor)
+        {
+            return $"{{\"version\":2,\"runId\":\"{runId}\","
+                + $"\"randomCursor\":{randomCursor}}}";
+        }
+
         private static string ContentHash(ProgressSnapshotData snapshot)
         {
             Type fingerprintType = Type.GetType(ProgressFingerprintTypeName);
@@ -993,6 +1262,7 @@ namespace ThreeDoorsOfFate.Tests
             public string activeRunId;
             public int activeRunSchemaVersion;
             public int activeRunRandomCursor;
+            public List<string> deletedRunIds = new();
             public List<ProgressIntData> integers = new();
             public List<ProgressStringData> strings = new();
         }

@@ -167,15 +167,14 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(RaycastAndClick(firstButton), Is.SameAs(firstButton.gameObject));
             yield return null;
 
-            Vector3 emptyWorldPoint = root.TransformPoint(new Vector3(
-                Mathf.Lerp(root.rect.xMin, root.rect.xMax, 0.98f),
-                Mathf.Lerp(root.rect.yMin, root.rect.yMax, 0.50f),
-                0f));
-            Vector2 emptyScreenPoint = RectTransformUtility.WorldToScreenPoint(
-                null,
-                emptyWorldPoint);
-            Assert.That(RaycastAndClick(emptyScreenPoint), Is.SameAs(root.gameObject));
+            RectTransform underlyingTurnButton = GetField<Button>("primaryButton")
+                .GetComponent<RectTransform>();
+            Assert.That(
+                RaycastAndClick(underlyingTurnButton),
+                Is.SameAs(root.gameObject),
+                "The inspection backdrop must block Turn End while still allowing card switching.");
             Assert.That(GetField<int>("selectedCombatCardIndex"), Is.EqualTo(-1));
+            Assert.That(GetField<object>("phase").ToString(), Is.EqualTo("Combat"));
             Assert.That(hand.Count, Is.EqualTo(2));
 
             secondButton = FindRequired("카드 1");

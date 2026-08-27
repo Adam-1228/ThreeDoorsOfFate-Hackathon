@@ -26,15 +26,19 @@ namespace ThreeDoorsOfFate.Game
                 return;
             }
 
-            if (runRandom == null)
+            if (pendingEndlessMutationChoices.Count == 0 && runRandom == null)
             {
                 ResetRunRandom(runSeed == 0 ? 1 : runSeed);
             }
 
-            pendingEndlessMutationChoices = catalog.GetChoices(
-                activeEndlessMutationIds,
-                runRandom,
-                3);
+            if (pendingEndlessMutationChoices.Count == 0)
+            {
+                pendingEndlessMutationChoices = catalog.GetChoices(
+                    activeEndlessMutationIds,
+                    runRandom,
+                    3);
+            }
+
             if (pendingEndlessMutationChoices.Count == 0)
             {
                 AddLog(L("endlessMutation.log.allActive"));
@@ -44,6 +48,12 @@ namespace ThreeDoorsOfFate.Game
 
             PlayNonCombatMusic();
             phase = GamePhase.Reward;
+            checkpointResumePhase = GamePhase.Reward;
+            pendingEndlessCheckpoint = false;
+            pendingResolvedDoorTypeId = NoPendingDoorType;
+            pendingRewardCardIds.Clear();
+            restoredRunCheckpoint = null;
+            SaveRunCheckpointAtResolvedSurface();
             SetBackground(
                 rewardBackground != null ? rewardBackground : bossBackground);
             ClearContent();
@@ -138,8 +148,8 @@ namespace ThreeDoorsOfFate.Game
             pendingEndlessMutationChoices =
                 Array.Empty<EndlessMutationDefinition>();
             checkpointResumePhase = GamePhase.DoorSelection;
+            pendingEndlessCheckpoint = true;
             pendingResolvedDoorTypeId = NoPendingDoorType;
-            SaveRunCheckpointAtResolvedSurface();
             ShowEndlessCheckpoint();
         }
 

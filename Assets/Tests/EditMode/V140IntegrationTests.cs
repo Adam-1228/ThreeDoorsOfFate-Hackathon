@@ -29,6 +29,8 @@ namespace ThreeDoorsOfFate.Tests
             "ThreeDoorsOfFate.HardRunSave";
         private const string HardRunSaveBackupKey =
             "ThreeDoorsOfFate.HardRunSave.BackupV1";
+        private const string HardRunSaveTombstoneKey =
+            "ThreeDoorsOfFate.HardRunSave.DeletedRunIds";
 
         private Type controllerType;
         private Type cardType;
@@ -44,6 +46,8 @@ namespace ThreeDoorsOfFate.Tests
         private string previousHardSave;
         private bool hadHardSaveBackup;
         private string previousHardSaveBackup;
+        private bool hadHardSaveTombstone;
+        private string previousHardSaveTombstone;
 
         [SetUp]
         public void SetUp()
@@ -57,6 +61,10 @@ namespace ThreeDoorsOfFate.Tests
             hadHardSaveBackup = PlayerPrefs.HasKey(HardRunSaveBackupKey);
             previousHardSaveBackup = PlayerPrefs.GetString(
                 HardRunSaveBackupKey,
+                string.Empty);
+            hadHardSaveTombstone = PlayerPrefs.HasKey(HardRunSaveTombstoneKey);
+            previousHardSaveTombstone = PlayerPrefs.GetString(
+                HardRunSaveTombstoneKey,
                 string.Empty);
             PlayerPrefs.SetString(LanguagePreferenceKey, "en");
             PlayerPrefs.Save();
@@ -115,6 +123,10 @@ namespace ThreeDoorsOfFate.Tests
                 HardRunSaveBackupKey,
                 hadHardSaveBackup,
                 previousHardSaveBackup);
+            RestoreStringPreference(
+                HardRunSaveTombstoneKey,
+                hadHardSaveTombstone,
+                previousHardSaveTombstone);
             RestoreStringPreference(
                 LanguagePreferenceKey,
                 hadLanguage,
