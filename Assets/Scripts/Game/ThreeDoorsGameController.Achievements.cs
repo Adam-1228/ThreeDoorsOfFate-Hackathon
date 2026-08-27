@@ -875,6 +875,7 @@ namespace ThreeDoorsOfFate.Game
                 lastExplicitRerollLuck,
                 sameExplicitRerollStreak,
                 result);
+            RecordRunRerollStreak(sameExplicitRerollStreak);
             lastExplicitRerollLuck = result;
             if (sameExplicitRerollStreak >= 3)
             {

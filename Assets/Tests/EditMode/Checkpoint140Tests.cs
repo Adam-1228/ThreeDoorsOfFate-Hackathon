@@ -94,12 +94,28 @@ namespace ThreeDoorsOfFate.Tests
                 "Rest");
             AddStringValues("seenRunEventIds", "event.blood_broker");
             AddStringValues("activeEndlessMutationIds", "mutation.ashen_tithe");
+            SetField("runStartedAtUnixSeconds", 1400000L);
+            SetField("runHistoryCardsPlayed", 17);
+            SetField("runHistoryDamageDealt", 180);
+            SetField("runHistoryDamageTaken", 52);
+            SetField("runHistoryBossesDefeated", 2);
+            SetField("runHistoryZeroGoldShopVisits", 1);
+            SetField("runHistoryMaximumSameRerollStreak", 3);
+            SetField("runHistoryLowLuckRolls", 6);
 
             string json = (string)Invoke("CaptureRunCheckpointV2");
             CheckpointJson captured = JsonUtility.FromJson<CheckpointJson>(json);
             Assert.That(captured.version, Is.EqualTo(2));
             Assert.That(captured.randomCursor, Is.EqualTo(2));
             Assert.That(captured.pendingDoorTypeIds, Is.EqualTo(new[] { 0, 2, 5 }));
+            Assert.That(captured.runStartedAtUnixSeconds, Is.EqualTo(1400000L));
+            Assert.That(captured.runHistoryCardsPlayed, Is.EqualTo(17));
+            Assert.That(captured.runHistoryDamageDealt, Is.EqualTo(180));
+            Assert.That(captured.runHistoryDamageTaken, Is.EqualTo(52));
+            Assert.That(captured.runHistoryBossesDefeated, Is.EqualTo(2));
+            Assert.That(captured.runHistoryZeroGoldShopVisits, Is.EqualTo(1));
+            Assert.That(captured.runHistoryMaximumSameRerollStreak, Is.EqualTo(3));
+            Assert.That(captured.runHistoryLowLuckRolls, Is.EqualTo(6));
             int expectedNext = (int)Invoke("RunRange", 0, 1000);
 
             Invoke("ResetRunRandom", 9);
@@ -107,6 +123,14 @@ namespace ThreeDoorsOfFate.Tests
             GetField<IList>("pendingDoorTypes").Clear();
             SetField("cardsRemovedThisRun", 0);
             SetField("selectedStarterContractId", string.Empty);
+            SetField("runStartedAtUnixSeconds", 0L);
+            SetField("runHistoryCardsPlayed", 0);
+            SetField("runHistoryDamageDealt", 0);
+            SetField("runHistoryDamageTaken", 0);
+            SetField("runHistoryBossesDefeated", 0);
+            SetField("runHistoryZeroGoldShopVisits", 0);
+            SetField("runHistoryMaximumSameRerollStreak", 0);
+            SetField("runHistoryLowLuckRolls", 0);
 
             Assert.That(
                 (bool)Invoke("TryRestoreRunCheckpointV2", json),
@@ -123,6 +147,14 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(SetNames("activeEndlessMutationIds"), Does.Contain("mutation.ashen_tithe"));
             Assert.That(ReadField("selectedStarterContractId"), Is.EqualTo("gambler.high_roll"));
             Assert.That(ReadField("cardsRemovedThisRun"), Is.EqualTo(2));
+            Assert.That(ReadField("runStartedAtUnixSeconds"), Is.EqualTo(1400000L));
+            Assert.That(ReadField("runHistoryCardsPlayed"), Is.EqualTo(17));
+            Assert.That(ReadField("runHistoryDamageDealt"), Is.EqualTo(180));
+            Assert.That(ReadField("runHistoryDamageTaken"), Is.EqualTo(52));
+            Assert.That(ReadField("runHistoryBossesDefeated"), Is.EqualTo(2));
+            Assert.That(ReadField("runHistoryZeroGoldShopVisits"), Is.EqualTo(1));
+            Assert.That(ReadField("runHistoryMaximumSameRerollStreak"), Is.EqualTo(3));
+            Assert.That(ReadField("runHistoryLowLuckRolls"), Is.EqualTo(6));
             Assert.That((int)Invoke("RunRange", 0, 1000), Is.EqualTo(expectedNext));
         }
 
@@ -295,6 +327,14 @@ namespace ThreeDoorsOfFate.Tests
         {
             public int version;
             public int randomCursor;
+            public long runStartedAtUnixSeconds;
+            public int runHistoryCardsPlayed;
+            public int runHistoryDamageDealt;
+            public int runHistoryDamageTaken;
+            public int runHistoryBossesDefeated;
+            public int runHistoryZeroGoldShopVisits;
+            public int runHistoryMaximumSameRerollStreak;
+            public int runHistoryLowLuckRolls;
             public List<int> pendingDoorTypeIds = new();
         }
     }

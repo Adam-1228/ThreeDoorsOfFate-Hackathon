@@ -143,6 +143,14 @@ namespace ThreeDoorsOfFate.Game
                 lines.Add(LF("gameOver.summary.achievements", names));
             }
 
+            string epithets = BuildCurrentRunHistoryEpithetText();
+            if (!string.IsNullOrWhiteSpace(epithets))
+            {
+                lines.Add(LF(
+                    "gameOver.summary.epithets",
+                    epithets));
+            }
+
             return string.Join("\n", lines);
         }
 

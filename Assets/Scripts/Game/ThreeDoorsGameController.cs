@@ -802,7 +802,7 @@ namespace ThreeDoorsOfFate.Game
             AddMainMenuEndlessRecordBox();
 
             bool supportsDesktopWindowControls = SupportsDesktopWindowControls(Application.platform);
-            int buttonCount = supportsDesktopWindowControls ? 5 : 4;
+            int buttonCount = supportsDesktopWindowControls ? 6 : 5;
 
             Button startButton = AddLocalizedMainMenuButton(contentRoot, "게임시작", "menu.start", 30);
             SetMainMenuButtonPlacement(startButton, 0, buttonCount);
@@ -812,8 +812,16 @@ namespace ThreeDoorsOfFate.Game
             SetMainMenuButtonPlacement(guideButton, 1, buttonCount);
             guideButton.onClick.AddListener(ShowHowToPlay);
 
+            Button historyButton = AddLocalizedMainMenuButton(
+                contentRoot,
+                "운명 기록",
+                "menu.runHistory",
+                28);
+            SetMainMenuButtonPlacement(historyButton, 2, buttonCount);
+            historyButton.onClick.AddListener(ShowRunHistory);
+
             Button achievementButton = AddLocalizedMainMenuButton(contentRoot, "업적", "menu.achievements", 30);
-            SetMainMenuButtonPlacement(achievementButton, 2, buttonCount);
+            SetMainMenuButtonPlacement(achievementButton, 3, buttonCount);
             achievementButton.onClick.AddListener(ShowAchievements);
 
             Button optionsButton = AddMainMenuIconButton(
@@ -822,23 +830,35 @@ namespace ThreeDoorsOfFate.Game
                 "menu.settings",
                 settingsIconSprite,
                 27);
-            SetMainMenuButtonPlacement(optionsButton, 3, buttonCount);
+            SetMainMenuButtonPlacement(optionsButton, 4, buttonCount);
             optionsButton.onClick.AddListener(ShowSettingsPanel);
 
             if (supportsDesktopWindowControls)
             {
                 Button quitButton = AddLocalizedMainMenuButton(contentRoot, "게임종료", "menu.quit", 30);
-                SetMainMenuButtonPlacement(quitButton, 4, buttonCount);
+                SetMainMenuButtonPlacement(quitButton, 5, buttonCount);
                 quitButton.onClick.AddListener(QuitGame);
             }
         }
 
         private static Rect GetMainMenuButtonRect(int index, int count)
         {
-            int safeCount = Mathf.Clamp(count, 1, 5);
+            int safeCount = Mathf.Clamp(count, 1, 6);
             int safeIndex = Mathf.Clamp(index, 0, safeCount - 1);
-            float width = safeCount == 5 ? 0.16f : safeCount == 4 ? 0.19f : 0.20f;
-            float gap = safeCount == 5 ? 0.025f : safeCount == 4 ? 0.04f : 0.03f;
+            float width = safeCount == 6
+                ? 0.135f
+                : safeCount == 5
+                    ? 0.16f
+                    : safeCount == 4
+                        ? 0.19f
+                        : 0.20f;
+            float gap = safeCount == 6
+                ? 0.018f
+                : safeCount == 5
+                    ? 0.025f
+                    : safeCount == 4
+                        ? 0.04f
+                        : 0.03f;
             float totalWidth = safeCount * width + (safeCount - 1) * gap;
             float minX = 0.5f - totalWidth * 0.5f + safeIndex * (width + gap);
             return new Rect(minX, 0.055f, width, 0.085f);
@@ -2065,6 +2085,7 @@ namespace ThreeDoorsOfFate.Game
             selectedClass = characterClass;
             ResetRunRandom(unchecked(Environment.TickCount ^ Guid.NewGuid().GetHashCode()));
             ResetCheckpointStateForNewRun();
+            ResetRunHistoryTracking();
             newlyCompletedAchievementNames.Clear();
             playerMaxHealth = characterClass switch
             {
@@ -5143,6 +5164,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             PlayGameSfx(GameSfxCue.CardPlay);
+            RecordRunCardPlayed();
             int costBeforeTrait = GetCardCostBeforeTrait(card);
             int traitCostReduction = GetTraitCostReduction(costBeforeTrait);
             int costAfterTrait = Mathf.Max(0, costBeforeTrait - traitCostReduction);
@@ -6233,6 +6255,7 @@ namespace ThreeDoorsOfFate.Game
 
         private void DealDamage(int amount)
         {
+            int enemyHealthBefore = enemy.Health;
             int buildBonus = GetBuildDamageBonus();
             int combinationBonus = GetCombinationDamageBonus(activeCard) + GetRunItemDamageBonus(activeCard);
             int boostedAmount = amount + buildBonus + combinationBonus;
@@ -6241,6 +6264,8 @@ namespace ThreeDoorsOfFate.Game
             enemy.Block -= blocked;
             int damage = Mathf.Max(0, rawDamage - blocked);
             enemy.Health = Mathf.Max(0, enemy.Health - damage);
+            RecordRunDamageDealt(
+                Mathf.Max(0, enemyHealthBefore - enemy.Health));
             if (damage > 0)
             {
                 bool criticalHit = enemy.Vulnerable > 0 || buildBonus > 0 || combinationBonus > 0;
@@ -6925,6 +6950,7 @@ namespace ThreeDoorsOfFate.Game
             int rewardGold = GetRunItemAdjustedCombatGoldReward(baseRewardGold, enemy.IsBoss);
             if (enemy.IsBoss)
             {
+                RecordRunBossDefeated();
                 PlayBossVictorySfx();
                 if (IsDebtClearBoss(enemy))
                 {
@@ -8550,6 +8576,7 @@ namespace ThreeDoorsOfFate.Game
                 return;
             }
 
+            RecordRunShopVisit();
             currentShopCards.Clear();
             purchasedShopCardSlots.Clear();
             currentShopRunItemId = string.Empty;
@@ -9696,6 +9723,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             luck = RollLuck();
+            RecordRunLowLuckRoll(luck);
             StartDiceRollAnimation();
             if (selectedClass == CharacterClass.Gambler && luck <= 2)
             {
@@ -9738,6 +9766,7 @@ namespace ThreeDoorsOfFate.Game
 
         private void LoseHealth(int amount, bool direct)
         {
+            int healthBefore = playerHealth;
             int damage = amount;
             int blocked = 0;
             if (!direct)
@@ -9796,6 +9825,8 @@ namespace ThreeDoorsOfFate.Game
 
                 TriggerCombinationImpact("hard_trait_exile_endless_atonement");
                 AddLog("어려움 특성: 치명적인 피해를 버티고 체력 1로 남았습니다.");
+                RecordRunDamageTaken(
+                    Mathf.Max(0, healthBefore - playerHealth));
                 return;
             }
 
@@ -9804,10 +9835,14 @@ namespace ThreeDoorsOfFate.Game
                 playerHealth = 1;
                 preventDeathThisTurn = false;
                 AddLog("불굴로 죽음을 버텼습니다.");
+                RecordRunDamageTaken(
+                    Mathf.Max(0, healthBefore - playerHealth));
                 return;
             }
 
             playerHealth = Mathf.Max(0, playerHealth - damage);
+            RecordRunDamageTaken(
+                Mathf.Max(0, healthBefore - playerHealth));
             if (direct)
             {
                 AddLog($"체력 {damage} 잃음.");
@@ -9941,6 +9976,7 @@ namespace ThreeDoorsOfFate.Game
 
         private void ShowGameOver(bool victory, string message)
         {
+            RecordGameOverRunHistory(victory, message);
             if (CanUseRunSaveSystem())
             {
                 ClearHardRunSave();
@@ -10135,6 +10171,7 @@ namespace ThreeDoorsOfFate.Game
 
         private void ShowJourneyEnding()
         {
+            RecordJourneyRunHistory();
             if (CanUseRunSaveSystem())
             {
                 ClearHardRunSave();

@@ -48,6 +48,16 @@ namespace ThreeDoorsOfFate.Game
                 randomCursor = random.Cursor,
                 selectedStarterContractId = selectedStarterContractId ?? string.Empty,
                 cardsRemovedThisRun = Mathf.Max(0, cardsRemovedThisRun),
+                runStartedAtUnixSeconds = Math.Max(0L, runStartedAtUnixSeconds),
+                runHistoryCardsPlayed = Mathf.Max(0, runHistoryCardsPlayed),
+                runHistoryDamageDealt = Mathf.Max(0, runHistoryDamageDealt),
+                runHistoryDamageTaken = Mathf.Max(0, runHistoryDamageTaken),
+                runHistoryBossesDefeated = Mathf.Max(0, runHistoryBossesDefeated),
+                runHistoryZeroGoldShopVisits = Mathf.Max(0, runHistoryZeroGoldShopVisits),
+                runHistoryMaximumSameRerollStreak = Mathf.Max(
+                    0,
+                    runHistoryMaximumSameRerollStreak),
+                runHistoryLowLuckRolls = Mathf.Max(0, runHistoryLowLuckRolls),
                 seenEventIds = seenRunEventIds.OrderBy(value => value, StringComparer.Ordinal).ToList(),
                 seenEventSegment = seenRunEventSegment,
                 activeMutationIds = activeEndlessMutationIds.OrderBy(value => value, StringComparer.Ordinal).ToList(),
@@ -230,6 +240,21 @@ namespace ThreeDoorsOfFate.Game
             });
             selectedStarterContractId = checkpoint.selectedStarterContractId ?? string.Empty;
             cardsRemovedThisRun = Mathf.Max(0, checkpoint.cardsRemovedThisRun);
+            runStartedAtUnixSeconds = checkpoint.runStartedAtUnixSeconds > 0
+                ? checkpoint.runStartedAtUnixSeconds
+                : DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            runHistoryRecordedThisRun = false;
+            runHistoryCardsPlayed = Mathf.Max(0, checkpoint.runHistoryCardsPlayed);
+            runHistoryDamageDealt = Mathf.Max(0, checkpoint.runHistoryDamageDealt);
+            runHistoryDamageTaken = Mathf.Max(0, checkpoint.runHistoryDamageTaken);
+            runHistoryBossesDefeated = Mathf.Max(0, checkpoint.runHistoryBossesDefeated);
+            runHistoryZeroGoldShopVisits = Mathf.Max(
+                0,
+                checkpoint.runHistoryZeroGoldShopVisits);
+            runHistoryMaximumSameRerollStreak = Mathf.Max(
+                0,
+                checkpoint.runHistoryMaximumSameRerollStreak);
+            runHistoryLowLuckRolls = Mathf.Max(0, checkpoint.runHistoryLowLuckRolls);
             ReplaceSet(seenRunEventIds, checkpoint.seenEventIds);
             seenRunEventSegment = Mathf.Max(0, checkpoint.seenEventSegment);
             ReplaceSet(activeEndlessMutationIds, checkpoint.activeMutationIds);
@@ -690,6 +715,14 @@ namespace ThreeDoorsOfFate.Game
             public int randomCursor;
             public string selectedStarterContractId = string.Empty;
             public int cardsRemovedThisRun;
+            public long runStartedAtUnixSeconds;
+            public int runHistoryCardsPlayed;
+            public int runHistoryDamageDealt;
+            public int runHistoryDamageTaken;
+            public int runHistoryBossesDefeated;
+            public int runHistoryZeroGoldShopVisits;
+            public int runHistoryMaximumSameRerollStreak;
+            public int runHistoryLowLuckRolls;
             public List<string> seenEventIds = new();
             public int seenEventSegment;
             public List<string> activeMutationIds = new();

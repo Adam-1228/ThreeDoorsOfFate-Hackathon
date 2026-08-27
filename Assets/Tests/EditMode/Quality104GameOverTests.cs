@@ -6,6 +6,7 @@ using System.Reflection;
 using NUnit.Framework;
 using ThreeDoorsOfFate.Localization;
 using ThreeDoorsOfFate.Platform;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -65,6 +66,7 @@ namespace ThreeDoorsOfFate.Tests
 
             canvasRoot = TryGetField<RectTransform>("canvasRoot");
             SetField("hiddenGameOverChance", 0f);
+            PopulateOracleStarterPool();
             SeedKnownRunState();
         }
 
@@ -274,6 +276,35 @@ namespace ThreeDoorsOfFate.Tests
             object enemy = CreateEnemy();
             enemy.GetType().GetProperty("Health")?.SetValue(enemy, 9);
             SetField("enemy", enemy);
+        }
+
+        private void PopulateOracleStarterPool()
+        {
+            IList pool = GetField<IList>("cardPool");
+            pool.Clear();
+            foreach (string cardId in new[]
+            {
+                "card_worn_dagger",
+                "card_fate_strike",
+                "card_throwing_dagger",
+                "class_oracle_attack_constellation_cut",
+                "card_worn_shield",
+                "card_protection_charm",
+                "card_evade",
+                "class_oracle_defense_foreseen_barrier",
+                "card_read_the_rift",
+                "card_fix_fate",
+                "card_reroll",
+                "class_oracle_skill_three_door_omen",
+                "card_counter_ready"
+            })
+            {
+                UnityEngine.Object card = AssetDatabase.LoadAssetAtPath(
+                    $"Assets/Data/Cards/MVP/{cardId}.asset",
+                    cardType);
+                Assert.That(card, Is.Not.Null, cardId);
+                pool.Add(card);
+            }
         }
 
         private void AddTestCard(IList deck, string cardId)
