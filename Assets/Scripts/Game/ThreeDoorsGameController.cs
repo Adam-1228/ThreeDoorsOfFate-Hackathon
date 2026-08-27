@@ -93,6 +93,8 @@ namespace ThreeDoorsOfFate.Game
             "ThreeDoorsOfFate.HardRunSave.BackupV1";
         private const int LegacyRunSaveVersion = 1;
         private const int HardRunSaveVersion = 2;
+        private string hardRunSaveKey = HardRunSaveKey;
+        private string hardRunSaveBackupKey = HardRunSaveBackupKey;
         private const string EquippedItemKeyPrefix = "ThreeDoorsOfFate.EquippedItems.";
         private const string DiscoveredItemKeyPrefix = "ThreeDoorsOfFate.DiscoveredItems.";
         private const string RunItemUnlockKeyPrefix = "ThreeDoorsOfFate.RunItemUnlock.";
@@ -11280,7 +11282,7 @@ namespace ThreeDoorsOfFate.Game
             BuildRecipe recipe = GetCurrentBuildRecipe();
             return string.Join("\n", new[]
             {
-                $"{profile.Name} | {profile.Role}",
+                $"{GetClassName(selectedClass)} | {GetClassRole(selectedClass)}",
                 profile.Tagline,
                 IsHardModeFeatureActive() ? $"어려움 이상 특성 활성: {GetHardClassTraitName(selectedClass)}" : $"어려움 이상 특성 잠김: {GetHardClassTraitName(selectedClass)}",
                 $"직업 조합: {recipe.Name}"
@@ -11292,7 +11294,7 @@ namespace ThreeDoorsOfFate.Game
             ClassProfile profile = GetClassProfile(selectedClass);
             return string.Join("\n\n", new[]
             {
-                $"{profile.Name} | {profile.Role}",
+                $"{GetClassName(selectedClass)} | {GetClassRole(selectedClass)}",
                 profile.Tagline,
                 profile.Lore,
                 $"기능\n{profile.Features}",
@@ -11340,7 +11342,7 @@ namespace ThreeDoorsOfFate.Game
             {
                 "직업 특성 발동 가능",
                 "카드 시너지 조합 발동",
-                $"{profile.Name}: {profile.Role}"
+                $"{GetClassName(selectedClass)}: {GetClassRole(selectedClass)}"
             });
         }
 
@@ -11504,6 +11506,17 @@ namespace ThreeDoorsOfFate.Game
                 CharacterClass.Oracle => L("class.oracle.name"),
                 CharacterClass.Exile => L("class.exile.name"),
                 _ => L("class.wanderer.name")
+            };
+        }
+
+        private static string GetClassRole(CharacterClass characterClass)
+        {
+            return characterClass switch
+            {
+                CharacterClass.Gambler => L("class.gambler.role"),
+                CharacterClass.Oracle => L("class.oracle.role"),
+                CharacterClass.Exile => L("class.exile.role"),
+                _ => string.Empty
             };
         }
 

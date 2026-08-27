@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using ThreeDoorsOfFate.Platform;
 using UnityEditor;
 using UnityEngine;
 
@@ -78,6 +79,83 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(ReadMember<string>(migrated, "runId"), Is.Not.Empty);
             Assert.That(ReadMember<int>(migrated, "runSeed"), Is.Not.Zero);
             Assert.That(ReadMember<int>(migrated, "randomCursor"), Is.Zero);
+        }
+
+        [Test]
+        public void V1SaveContinuesToDoorsAndPersistsChoicesWithoutTouchingMeta()
+        {
+            string preferencePrefix =
+                $"ThreeDoorsOfFate.Tests.Checkpoint.{Guid.NewGuid():N}.";
+            string saveKey = preferencePrefix + "HardRunSave";
+            string backupKey = preferencePrefix + "HardRunSave.BackupV1";
+            string achievementKey =
+                AchievementProgress.GetCompletionKeys(preferencePrefix).First();
+            const string v1 =
+                "{\"version\":1,\"selectedClass\":1,\"currentDifficulty\":2,"
+                + "\"currentJourneyEndingKind\":0,\"playerMaxHealth\":70,"
+                + "\"playerHealth\":51,\"action\":3,\"luck\":4,"
+                + "\"roomsCleared\":2,\"combatEncountersCompleted\":1,"
+                + "\"deckCardIds\":[\"card_fate_strike\",\"card_fate_strike\"],"
+                + "\"equippedItemIds\":[],\"combatLog\":[],"
+                + "\"buildUpgradeLevels\":[]}";
+
+            try
+            {
+                ConfigureNormalRun();
+                SetField("hardRunSaveKey", saveKey);
+                SetField("hardRunSaveBackupKey", backupKey);
+                PlayerPrefs.SetString(saveKey, v1);
+                PlayerPrefs.SetInt(achievementKey, 1);
+                PlayerPrefs.Save();
+
+                if (ReadField("root") == null)
+                {
+                    Invoke("BuildShell");
+                }
+
+                bool loaded = (bool)Invoke("TryLoadHardRunSave");
+                Assert.That(
+                    loaded,
+                    Is.True,
+                    $"{ReadField("lastRunRestoreErrorKey")}:"
+                    + ReadField("lastRunRestoreErrorDetail"));
+                Assert.That(
+                    GetField<IList>("deck").Cast<object>().Select(GetCardId),
+                    Is.EqualTo(new[] { "card_fate_strike", "card_fate_strike" }));
+
+                Invoke("ShowDoors");
+                string persistedJson = PlayerPrefs.GetString(saveKey, string.Empty);
+                CheckpointJson persisted =
+                    JsonUtility.FromJson<CheckpointJson>(persistedJson);
+                Assert.That(persisted, Is.Not.Null);
+                Assert.That(persisted.version, Is.EqualTo(2));
+                Assert.That(persisted.pendingDoorTypeIds, Has.Count.EqualTo(3));
+                Assert.That(persisted.randomCursor, Is.GreaterThan(0));
+                int expectedNext = (int)Invoke("RunRange", 0, 1000);
+
+                GetField<IList>("pendingDoorTypes").Clear();
+                Invoke("ResetRunRandom", 1);
+                Assert.That(
+                    (bool)Invoke("TryRestoreRunCheckpointV2", persistedJson),
+                    Is.True);
+                Assert.That(
+                    GetField<IList>("pendingDoorTypes")
+                        .Cast<object>()
+                        .Select(value => Convert.ToInt32(value)),
+                    Is.EqualTo(persisted.pendingDoorTypeIds));
+                Assert.That(
+                    (int)Invoke("RunRange", 0, 1000),
+                    Is.EqualTo(expectedNext));
+                Assert.That(PlayerPrefs.GetInt(achievementKey), Is.EqualTo(1));
+                Assert.That(PlayerPrefs.HasKey(backupKey), Is.False);
+            }
+            finally
+            {
+                PlayerPrefs.DeleteKey(saveKey);
+                PlayerPrefs.DeleteKey(backupKey);
+                PlayerPrefs.DeleteKey(achievementKey);
+                PlayerPrefs.Save();
+            }
         }
 
         [Test]

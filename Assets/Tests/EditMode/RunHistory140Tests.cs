@@ -265,6 +265,13 @@ namespace ThreeDoorsOfFate.Tests
                     controller,
                     "runModifierCatalog",
                     modifierCatalog);
+                Sprite innerPanelFrame = AssetDatabase.LoadAssetAtPath<Sprite>(
+                    "Assets/Art/UI/GeneratedFrames/ui_status_inner_panel_frame_ai.png");
+                Assert.That(innerPanelFrame, Is.Not.Null);
+                SetControllerField(
+                    controller,
+                    "statusInnerPanelFrameSprite",
+                    innerPanelFrame);
                 if (ReadControllerField(controller, "root") == null)
                 {
                     InvokeController(controller, "BuildShell");
@@ -277,18 +284,29 @@ namespace ThreeDoorsOfFate.Tests
                 RectTransform outer = FindDescendant(
                     root,
                     "운명 기록 외곽 프레임");
+                RectTransform listSafeRoot = FindDescendant(
+                    root,
+                    "운명 기록 목록 안전영역");
                 RectTransform row = FindDescendant(root, "운명 기록 항목 0");
                 Assert.That(outer, Is.Not.Null);
+                Assert.That(listSafeRoot, Is.Not.Null);
                 Assert.That(row, Is.Not.Null);
-                AssertInside(row, outer);
+                AssertDecorativeFrameSafeRoot(listSafeRoot, outer);
+                AssertInside(row, listSafeRoot);
 
                 InvokeController(controller, "ShowRunHistoryDetail", 0);
                 RectTransform detailOuter = FindDescendant(
                     root,
                     "운명 기록 상세 외곽 프레임");
+                RectTransform detailSafeRoot = FindDescendant(
+                    root,
+                    "운명 기록 상세 안전영역");
                 RectTransform summary = FindDescendant(
                     root,
                     "운명 기록 상세 요약");
+                RectTransform summaryText = FindDescendant(
+                    root,
+                    "운명 기록 상세 요약 텍스트");
                 RectTransform loadout = FindDescendant(
                     root,
                     "운명 기록 상세 덱과 아이템");
@@ -296,11 +314,22 @@ namespace ThreeDoorsOfFate.Tests
                     root,
                     "운명 기록 상세 덱과 아이템 텍스트");
                 Assert.That(detailOuter, Is.Not.Null);
+                Assert.That(detailSafeRoot, Is.Not.Null);
                 Assert.That(summary, Is.Not.Null);
+                Assert.That(summaryText, Is.Not.Null);
                 Assert.That(loadout, Is.Not.Null);
                 Assert.That(loadoutText, Is.Not.Null);
-                AssertInside(summary, detailOuter);
-                AssertInside(loadout, detailOuter);
+                AssertDecorativeFrameSafeRoot(detailSafeRoot, detailOuter);
+                AssertInside(summary, detailSafeRoot);
+                AssertInside(loadout, detailSafeRoot);
+                AssertFramedTextSafe(summaryText, summary);
+                AssertFramedTextSafe(loadoutText, loadout);
+                Assert.That(
+                    FindDescendant(summary, "생성 투명 프레임"),
+                    Is.Not.Null);
+                Assert.That(
+                    FindDescendant(loadout, "생성 투명 프레임"),
+                    Is.Not.Null);
                 Assert.That(
                     summary.anchorMax.x,
                     Is.LessThanOrEqualTo(loadout.anchorMin.x));
@@ -455,6 +484,28 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(child.anchorMax.x, Is.LessThanOrEqualTo(1f));
             Assert.That(child.anchorMax.y, Is.LessThanOrEqualTo(1f));
             Assert.That(child.parent, Is.SameAs(parent));
+        }
+
+        private static void AssertDecorativeFrameSafeRoot(
+            RectTransform child,
+            RectTransform parent)
+        {
+            AssertInside(child, parent);
+            Assert.That(child.anchorMin.x, Is.GreaterThanOrEqualTo(0.08f));
+            Assert.That(child.anchorMin.y, Is.GreaterThanOrEqualTo(0.14f));
+            Assert.That(child.anchorMax.x, Is.LessThanOrEqualTo(0.92f));
+            Assert.That(child.anchorMax.y, Is.LessThanOrEqualTo(0.80f));
+        }
+
+        private static void AssertFramedTextSafe(
+            RectTransform text,
+            RectTransform frame)
+        {
+            AssertInside(text, frame);
+            Assert.That(text.anchorMin.x, Is.GreaterThanOrEqualTo(0.10f));
+            Assert.That(text.anchorMin.y, Is.GreaterThanOrEqualTo(0.10f));
+            Assert.That(text.anchorMax.x, Is.LessThanOrEqualTo(0.90f));
+            Assert.That(text.anchorMax.y, Is.LessThanOrEqualTo(0.90f));
         }
 
         private static object ReadMember(object instance, string memberName)

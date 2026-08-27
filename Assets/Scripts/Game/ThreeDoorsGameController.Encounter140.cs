@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ThreeDoorsOfFate.Game.V140;
+using ThreeDoorsOfFate.Localization;
 using UnityEngine;
 
 namespace ThreeDoorsOfFate.Game
@@ -41,7 +42,7 @@ namespace ThreeDoorsOfFate.Game
             {
                 AddLog(LF(
                     "enemy.affix.applied",
-                    state.Name,
+                    GameLocalization.TextFromSource(state.Name),
                     GetEliteAffixName(activeEliteAffix.Value)));
             }
         }
@@ -59,12 +60,14 @@ namespace ThreeDoorsOfFate.Game
                 ? EncounterDirector.GetBossPhaseIndex(enemy.Health, enemy.MaxHealth)
                 : 0;
             bool phaseChanged = enemy.IsBoss && phaseIndex != currentBossBehaviorPhase;
+            string localizedEnemyName =
+                GameLocalization.TextFromSource(enemy.Name);
             if (phaseChanged)
             {
                 currentBossBehaviorPhase = phaseIndex;
                 AddLog(LF(
                     "enemy.phase.changed",
-                    enemy.Name,
+                    localizedEnemyName,
                     phaseIndex + 1));
             }
 
@@ -116,7 +119,7 @@ namespace ThreeDoorsOfFate.Game
             RefreshEnemyIntentLabelForCurrentLuck();
             AddLog(LF(
                 "enemy.intent.selected",
-                enemy.Name,
+                localizedEnemyName,
                 enemy.CandidateLabel,
                 actionName));
             return true;

@@ -173,6 +173,7 @@ namespace ThreeDoorsOfFate.Tests
                 RectTransform panel = FindRequired($"운명 계약 {index}");
                 Assert.That(panel.parent, Is.SameAs(GetField<RectTransform>("contentRoot")));
                 AssertInsideUnitAnchors(panel);
+                AssertStarterContractTextSafe(panel);
             }
         }
 
@@ -182,6 +183,21 @@ namespace ThreeDoorsOfFate.Tests
             object gambler = ParseEnum(CharacterClassTypeName, "Gambler");
             Invoke("StartRun", gambler, "gambler.high_roll");
             Assert.That(GetRawField("phase").ToString(), Is.EqualTo("DoorSelection"));
+            foreach (string methodName in new[]
+            {
+                "BuildCharacterTraitSummaryText",
+                "BuildCharacterTraitText",
+                "BuildCombatAwakeningSummaryText"
+            })
+            {
+                string[] lines = Invoke(methodName)
+                    .ToString()
+                    .Split('\n');
+                string identityLine = methodName == "BuildCombatAwakeningSummaryText"
+                    ? lines[lines.Length - 1]
+                    : lines[0];
+                AssertNoHangul(identityLine, methodName);
+            }
             RectTransform[] doors = ActiveDescendants(root)
                 .Where(rect => IsNumberedDoorRoot(rect.name))
                 .ToArray();
@@ -224,6 +240,10 @@ namespace ThreeDoorsOfFate.Tests
             Invoke("StartCombat", enemy);
             Assert.That(GetRawField("phase").ToString(), Is.EqualTo("Combat"));
             Assert.That(FindRequired("적 정보"), Is.Not.Null);
+            string selectedIntentLog = GetField<IList>("combatLog")
+                .Cast<string>()
+                .Last(entry => entry.Contains("action pool"));
+            AssertNoHangul(selectedIntentLog, "catalog enemy intent log");
             Type inspectionModeType = controllerType.GetNestedType(
                 "CardInspectionMode",
                 BindingFlags.NonPublic);
@@ -268,10 +288,14 @@ namespace ThreeDoorsOfFate.Tests
 
             Invoke("ShowRunHistory");
             RectTransform historyOuter = FindRequired("운명 기록 외곽 프레임");
+            RectTransform historySafeRoot = FindRequired(
+                "운명 기록 목록 안전영역");
             RectTransform historyRow = FindRequired("운명 기록 항목 0");
             AssertInsideUnitAnchors(historyOuter);
+            AssertInsideUnitAnchors(historySafeRoot);
             AssertInsideUnitAnchors(historyRow);
-            Assert.That(historyRow.parent, Is.SameAs(historyOuter));
+            Assert.That(historySafeRoot.parent, Is.SameAs(historyOuter));
+            Assert.That(historyRow.parent, Is.SameAs(historySafeRoot));
         }
 
         private object CreateTypedCardList()
@@ -360,6 +384,34 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(rect.anchorMax.y, Is.InRange(0f, 1f), rect.name);
             Assert.That(rect.anchorMin.x, Is.LessThanOrEqualTo(rect.anchorMax.x));
             Assert.That(rect.anchorMin.y, Is.LessThanOrEqualTo(rect.anchorMax.y));
+        }
+
+        private static void AssertStarterContractTextSafe(RectTransform panel)
+        {
+            RectTransform name = panel.Find("계약 이름") as RectTransform;
+            RectTransform role = panel.Find("계약 역할") as RectTransform;
+            RectTransform description = panel.Find("계약 설명") as RectTransform;
+            RectTransform changes = panel.Find("계약 변경점") as RectTransform;
+            foreach (RectTransform text in new[] { name, role, description, changes })
+            {
+                Assert.That(text, Is.Not.Null, panel.name);
+                Assert.That(text.anchorMin.x, Is.GreaterThanOrEqualTo(0.17f), text.name);
+                Assert.That(text.anchorMax.x, Is.LessThanOrEqualTo(0.83f), text.name);
+            }
+
+            Assert.That(name.anchorMin.y, Is.GreaterThanOrEqualTo(0.70f));
+            Assert.That(name.anchorMax.y, Is.LessThanOrEqualTo(0.82f));
+            Assert.That(role.anchorMax.y, Is.LessThanOrEqualTo(name.anchorMin.y));
+            Assert.That(description.anchorMax.y, Is.LessThanOrEqualTo(role.anchorMin.y));
+            Assert.That(changes.anchorMax.y, Is.LessThanOrEqualTo(description.anchorMin.y));
+        }
+
+        private static void AssertNoHangul(string value, string label)
+        {
+            Assert.That(
+                value.Any(character => character >= '\uAC00' && character <= '\uD7A3'),
+                Is.False,
+                $"{label}: {value}");
         }
 
         private static bool IsNumberedDoorRoot(string objectName)

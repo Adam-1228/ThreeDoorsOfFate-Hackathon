@@ -7,6 +7,7 @@ using ThreeDoorsOfFate.Localization;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.TestTools;
 using UnityEngine.UI;
 
 namespace ThreeDoorsOfFate.Tests
@@ -101,14 +102,19 @@ namespace ThreeDoorsOfFate.Tests
         [Test]
         public void RunStart_EnglishTitleUsesLocalizationCatalog()
         {
-            MethodInfo method = controllerType.GetMethod(
-                "StartRun",
-                BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo method = controllerType
+                .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+                .Single(candidate =>
+                    candidate.Name == "StartRun" &&
+                    candidate.GetParameters().Length == 1);
             Assert.That(method, Is.Not.Null);
             object gambler = Enum.Parse(
                 method.GetParameters()[0].ParameterType,
                 "Gambler");
 
+            LogAssert.Expect(
+                LogType.Error,
+                "Starter contract deck fallback for Gambler: Starter deck references missing card card_worn_dagger.");
             method.Invoke(controller, new[] { gambler });
 
             Assert.That(

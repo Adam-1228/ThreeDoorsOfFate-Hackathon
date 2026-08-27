@@ -137,7 +137,10 @@ namespace ThreeDoorsOfFate.Game
             name.resizeTextForBestFit = true;
             name.resizeTextMinSize = 18;
             name.resizeTextMaxSize = 27;
-            SetAnchors(name.rectTransform, new Vector2(0.10f, 0.805f), new Vector2(0.90f, 0.930f));
+            SetAnchors(
+                name.rectTransform,
+                new Vector2(0.18f, 0.705f),
+                new Vector2(0.82f, 0.800f));
 
             Text role = AddLocalizedText(
                 panel,
@@ -147,7 +150,10 @@ namespace ThreeDoorsOfFate.Game
                 TextAnchor.MiddleCenter,
                 new Color(0.62f, 1f, 0.94f, 1f));
             role.fontStyle = FontStyle.Bold;
-            SetAnchors(role.rectTransform, new Vector2(0.10f, 0.720f), new Vector2(0.90f, 0.805f));
+            SetAnchors(
+                role.rectTransform,
+                new Vector2(0.18f, 0.625f),
+                new Vector2(0.82f, 0.695f));
 
             Text description = AddLocalizedText(
                 panel,
@@ -162,8 +168,8 @@ namespace ThreeDoorsOfFate.Game
             description.lineSpacing = 1.02f;
             SetAnchors(
                 description.rectTransform,
-                new Vector2(0.095f, 0.535f),
-                new Vector2(0.905f, 0.705f));
+                new Vector2(0.18f, 0.475f),
+                new Vector2(0.82f, 0.615f));
 
             Text changes = AddText(
                 panel,
@@ -178,8 +184,8 @@ namespace ThreeDoorsOfFate.Game
             changes.lineSpacing = 0.94f;
             SetAnchors(
                 changes.rectTransform,
-                new Vector2(0.105f, 0.235f),
-                new Vector2(0.895f, 0.515f));
+                new Vector2(0.18f, 0.225f),
+                new Vector2(0.82f, 0.455f));
 
             Button select = AddClassDetailActionButton(
                 panel,

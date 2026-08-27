@@ -154,7 +154,7 @@ namespace ThreeDoorsOfFate.Game
                 return false;
             }
 
-            PlayerPrefs.SetString(HardRunSaveKey, json);
+            PlayerPrefs.SetString(hardRunSaveKey, json);
             PlayerPrefs.Save();
             return true;
         }
@@ -187,7 +187,7 @@ namespace ThreeDoorsOfFate.Game
 
         private bool TryLoadHardRunSave()
         {
-            string originalJson = PlayerPrefs.GetString(HardRunSaveKey, string.Empty);
+            string originalJson = PlayerPrefs.GetString(hardRunSaveKey, string.Empty);
             if (string.IsNullOrWhiteSpace(originalJson))
             {
                 return FailRunRestore("save.restore.error.none", "empty");
@@ -221,7 +221,7 @@ namespace ThreeDoorsOfFate.Game
                     $"version-{version.version}");
             }
 
-            PlayerPrefs.SetString(HardRunSaveBackupKey, originalJson);
+            PlayerPrefs.SetString(hardRunSaveBackupKey, originalJson);
             PlayerPrefs.Save();
             string migratedJson = JsonUtility.ToJson(migrated);
             if (!TryRestoreRunCheckpointV2(migratedJson))
@@ -229,15 +229,15 @@ namespace ThreeDoorsOfFate.Game
                 return false;
             }
 
-            PlayerPrefs.SetString(HardRunSaveKey, migratedJson);
-            PlayerPrefs.DeleteKey(HardRunSaveBackupKey);
+            PlayerPrefs.SetString(hardRunSaveKey, migratedJson);
+            PlayerPrefs.DeleteKey(hardRunSaveBackupKey);
             PlayerPrefs.Save();
             return true;
         }
 
         private bool HasRestorableRunSave()
         {
-            string json = PlayerPrefs.GetString(HardRunSaveKey, string.Empty);
+            string json = PlayerPrefs.GetString(hardRunSaveKey, string.Empty);
             if (string.IsNullOrWhiteSpace(json))
             {
                 return false;
@@ -300,18 +300,18 @@ namespace ThreeDoorsOfFate.Game
             TryCompletePersistentAchievements();
         }
 
-        private static void ClearHardRunSave()
+        private void ClearHardRunSave()
         {
             bool changed = false;
-            if (PlayerPrefs.HasKey(HardRunSaveKey))
+            if (PlayerPrefs.HasKey(hardRunSaveKey))
             {
-                PlayerPrefs.DeleteKey(HardRunSaveKey);
+                PlayerPrefs.DeleteKey(hardRunSaveKey);
                 changed = true;
             }
 
-            if (PlayerPrefs.HasKey(HardRunSaveBackupKey))
+            if (PlayerPrefs.HasKey(hardRunSaveBackupKey))
             {
-                PlayerPrefs.DeleteKey(HardRunSaveBackupKey);
+                PlayerPrefs.DeleteKey(hardRunSaveBackupKey);
                 changed = true;
             }
 

@@ -5,6 +5,7 @@ using ThreeDoorsOfFate.Cards;
 using ThreeDoorsOfFate.Game.V140;
 using ThreeDoorsOfFate.Localization;
 using ThreeDoorsOfFate.Platform;
+using ThreeDoorsOfFate.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -279,6 +280,14 @@ namespace ThreeDoorsOfFate.Game
                 new Vector2(0.045f, 0.105f),
                 new Vector2(0.955f, 0.865f));
 
+            RectTransform listSafeRoot = AddPanel(
+                outer,
+                "운명 기록 목록 안전영역",
+                new Color(1f, 1f, 1f, 0f));
+            listSafeRoot.GetComponent<Image>().raycastTarget = false;
+            listSafeRoot.gameObject.AddComponent<RectMask2D>();
+            SetAnchors(listSafeRoot, PcUiLayoutPolicy.StatusDetailBody);
+
             AddRunStatusLabelBox(
                 contentRoot,
                 "운명 기록 제목 박스",
@@ -298,7 +307,7 @@ namespace ThreeDoorsOfFate.Game
             if (displayedRunHistoryEntries.Count == 0)
             {
                 Text empty = AddText(
-                    outer,
+                    listSafeRoot,
                     "운명 기록 없음",
                     L("runHistory.empty"),
                     24,
@@ -322,7 +331,7 @@ namespace ThreeDoorsOfFate.Game
                 float maxY = 0.945f - row * 0.180f;
                 float minY = maxY - 0.145f;
                 AddRunHistoryListButton(
-                    outer,
+                    listSafeRoot,
                     index,
                     displayedRunHistoryEntries[index],
                     new Vector2(minX, minY),
@@ -421,6 +430,14 @@ namespace ThreeDoorsOfFate.Game
                 new Vector2(0.045f, 0.105f),
                 new Vector2(0.955f, 0.865f));
 
+            RectTransform detailSafeRoot = AddPanel(
+                outer,
+                "운명 기록 상세 안전영역",
+                new Color(1f, 1f, 1f, 0f));
+            detailSafeRoot.GetComponent<Image>().raycastTarget = false;
+            detailSafeRoot.gameObject.AddComponent<RectMask2D>();
+            SetAnchors(detailSafeRoot, PcUiLayoutPolicy.StatusDetailBody);
+
             AddRunStatusLabelBox(
                 contentRoot,
                 "운명 기록 상세 제목 박스",
@@ -437,16 +454,13 @@ namespace ThreeDoorsOfFate.Game
                 ShowRunHistory,
                 18);
 
-            RectTransform summaryPanel = AddPanel(
-                outer,
+            RectTransform summaryPanel = AddRunStatusContentBox(
+                detailSafeRoot,
                 "운명 기록 상세 요약",
-                Color.white,
-                GetRunStatusDetailBoxFrameSprite());
+                new Vector2(0.000f, 0.000f),
+                new Vector2(0.480f, 1.000f),
+                statusInnerPanelFrameSprite);
             summaryPanel.GetComponent<Image>().raycastTarget = false;
-            SetAnchors(
-                summaryPanel,
-                new Vector2(0.050f, 0.075f),
-                new Vector2(0.485f, 0.925f));
             Text summary = AddText(
                 summaryPanel,
                 "운명 기록 상세 요약 텍스트",
@@ -456,16 +470,13 @@ namespace ThreeDoorsOfFate.Game
                 new Color(0.88f, 0.95f, 0.88f, 1f));
             ConfigureRunHistoryDetailText(summary);
 
-            RectTransform loadoutPanel = AddPanel(
-                outer,
+            RectTransform loadoutPanel = AddRunStatusContentBox(
+                detailSafeRoot,
                 "운명 기록 상세 덱과 아이템",
-                Color.white,
-                GetRunStatusDetailBoxFrameSprite());
+                new Vector2(0.520f, 0.000f),
+                new Vector2(1.000f, 1.000f),
+                statusInnerPanelFrameSprite);
             loadoutPanel.GetComponent<Image>().raycastTarget = false;
-            SetAnchors(
-                loadoutPanel,
-                new Vector2(0.515f, 0.075f),
-                new Vector2(0.950f, 0.925f));
             Text loadout = AddText(
                 loadoutPanel,
                 "운명 기록 상세 덱과 아이템 텍스트",
@@ -487,8 +498,7 @@ namespace ThreeDoorsOfFate.Game
             text.raycastTarget = false;
             SetAnchors(
                 text.rectTransform,
-                new Vector2(0.075f, 0.070f),
-                new Vector2(0.925f, 0.930f));
+                PcUiLayoutPolicy.StatusFramedTextSafe);
         }
 
         private string BuildRunHistoryDetailSummary(RunHistoryEntry entry)

@@ -92,6 +92,22 @@ def parse_anchor_y_pair(method_body: str, rect_name: str) -> tuple[float, float]
     return tuple(float(value) for value in match.groups())
 
 
+def parse_content_box_bounds(
+    method_body: str, rect_name: str
+) -> tuple[float, float, float, float]:
+    pattern = re.compile(
+        rf"RectTransform\s+{re.escape(rect_name)}\s*=\s*"
+        r"AddRunStatusContentBox\(.*?"
+        r"new Vector2\(([0-9.]+)f,\s*([0-9.]+)f\)\s*,\s*"
+        r"new Vector2\(([0-9.]+)f,\s*([0-9.]+)f\)",
+        re.DOTALL,
+    )
+    match = pattern.search(method_body)
+    if match is None:
+        raise AssertionError(f"content-box bounds not found for: {rect_name}")
+    return tuple(float(value) for value in match.groups())
+
+
 def parse_class_choice_anchor_pair(
     method_body: str, character_class: str
 ) -> tuple[float, float, float, float]:
@@ -165,6 +181,39 @@ class UiLayoutContractTests(unittest.TestCase):
                 self.assertIn("new object[] { button, index, 5 }", body)
                 self.assertIn('FindDescendant(contentRoot, "게임종료")', body)
 
+    def test_v140_release_qa_captures_required_surfaces_at_three_aspect_ratios(self) -> None:
+        source = QUALITY_QA_PATH.read_text(encoding="utf-8")
+        start_known_run = extract_method(source, "StartKnownRun")
+        capture_state = extract_method(source, "CaptureState")
+
+        for marker in (
+            'new("16x9", 1920, 1080',
+            '"iphone14_pro_max_landscape"',
+            'new("4x3", 2048, 1536',
+            '"starter_contracts"',
+            '"run_status"',
+            '"shop"',
+            '"run_history"',
+            '"run_history_detail"',
+            '"TDOF_140_QA_DIR"',
+            'RunHistoryStore.GetStorageKey(qaRunHistoryPrefix)',
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, source)
+
+        self.assertIn("HideRunStatusPanelImmediately(", start_known_run)
+        self.assertIn("RefreshLocalizedBindings(canvas);", capture_state)
+
+    def test_v140_history_qa_has_narrow_recheck_entrypoint(self) -> None:
+        source = QUALITY_QA_PATH.read_text(encoding="utf-8")
+        history_capture = extract_method(source, "CaptureHistoryLanguage")
+
+        self.assertIn("CaptureHistoryMatrix", source)
+        for marker in ('"game_over"', '"run_history"', '"run_history_detail"'):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, history_capture)
+        self.assertIn("CaptureState(", history_capture)
+
     def test_shop_cards_require_inspection_before_purchase(self) -> None:
         source = CONTROLLER_PATH.read_text(encoding="utf-8")
         shop = extract_method(source, "ShowShop")
@@ -181,8 +230,8 @@ class UiLayoutContractTests(unittest.TestCase):
 
         outer = parse_anchor_pair(history, "outer")
         detail_outer = parse_anchor_pair(detail, "outer")
-        summary = parse_anchor_pair(detail, "summaryPanel")
-        loadout = parse_anchor_pair(detail, "loadoutPanel")
+        summary = parse_content_box_bounds(detail, "summaryPanel")
+        loadout = parse_content_box_bounds(detail, "loadoutPanel")
         for rect in (outer, detail_outer, summary, loadout):
             with self.subTest(rect=rect):
                 self.assertLess(rect[0], rect[2])
@@ -191,6 +240,11 @@ class UiLayoutContractTests(unittest.TestCase):
                     self.assertGreaterEqual(value, 0.0)
                     self.assertLessEqual(value, 1.0)
         self.assertLessEqual(summary[2], loadout[0])
+        self.assertIn('"운명 기록 목록 안전영역"', history)
+        self.assertIn("PcUiLayoutPolicy.StatusDetailBody", history)
+        self.assertIn('"운명 기록 상세 안전영역"', detail)
+        self.assertIn("PcUiLayoutPolicy.StatusDetailBody", detail)
+        self.assertGreaterEqual(detail.count("statusInnerPanelFrameSprite"), 2)
 
     def test_main_menu_settings_icon_and_label_use_separate_readable_columns(self) -> None:
         source = LOCALIZATION_CONTROLLER_PATH.read_text(encoding="utf-8")
