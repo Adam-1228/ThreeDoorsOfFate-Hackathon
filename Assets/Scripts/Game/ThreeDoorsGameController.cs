@@ -4872,8 +4872,14 @@ namespace ThreeDoorsOfFate.Game
         {
             EventTrigger trigger = target.AddComponent<EventTrigger>();
             RectTransform previewTarget = target.GetComponent<RectTransform>();
-            AddEventTrigger(trigger, EventTriggerType.PointerEnter, _ => ShowCardPreview(card, previewTarget));
-            AddEventTrigger(trigger, EventTriggerType.PointerExit, _ => HideCardPreview());
+            AddEventTrigger(
+                trigger,
+                EventTriggerType.PointerEnter,
+                _ => ShowHoverCardPreview(card, previewTarget));
+            AddEventTrigger(
+                trigger,
+                EventTriggerType.PointerExit,
+                _ => HideHoverCardPreview(previewTarget));
         }
 
         private static void AddEventTrigger(EventTrigger trigger, EventTriggerType eventType, UnityAction<BaseEventData> callback)
@@ -4889,25 +4895,14 @@ namespace ThreeDoorsOfFate.Game
         private void ShowCardPreview(CardData card, RectTransform previewTarget)
         {
             Sprite sprite = GetLocalizedCardFullSprite(card);
-            if (sprite == null || phase == GamePhase.GameOver)
+            if (sprite == null
+                || phase == GamePhase.GameOver
+                || (cardInspectionActive && previewTarget != null))
             {
                 return;
             }
 
-            if (cardPreviewImage == null)
-            {
-                cardPreviewImage = AddImage(root, "카드 확대 프리뷰", Color.white);
-                cardPreviewImage.preserveAspect = true;
-                SetAnchors(cardPreviewImage.rectTransform, new Vector2(0.390f, 0.300f), new Vector2(0.610f, 0.850f));
-
-                Button previewDismissButton = AddSfxButton(
-                    cardPreviewImage.gameObject,
-                    GameSfxCue.None);
-                previewDismissButton.transition = Selectable.Transition.None;
-                previewDismissButton.targetGraphic = cardPreviewImage;
-                previewDismissButton.colors = CreateStaticButtonColors();
-                previewDismissButton.onClick.AddListener(HideCardPreview);
-            }
+            EnsureCardInspectionOverlay();
 
             cardPreviewImage.sprite = sprite;
             cardPreviewImage.color = Color.white;
@@ -4939,41 +4934,16 @@ namespace ThreeDoorsOfFate.Game
 
             EnsureCombatCardPreviewControls();
             selectedCombatCardIndex = handIndex;
-            ShowCardPreview(card, null);
-            cardPreviewCancelButton.interactable = true;
-            cardPreviewUseButton.gameObject.SetActive(true);
-            cardPreviewUseButton.transform.SetAsLastSibling();
+            ShowCardInspection(
+                card,
+                CardInspectionMode.CombatUse,
+                "사용",
+                UseSelectedCombatCard);
         }
 
         private void EnsureCombatCardPreviewControls()
         {
-            if (cardPreviewCancelButton == null)
-            {
-                cardPreviewCancelButton = AddSfxButton(root.gameObject, GameSfxCue.None);
-                cardPreviewCancelButton.transition = Selectable.Transition.None;
-                cardPreviewCancelButton.targetGraphic = null;
-                Navigation navigation = cardPreviewCancelButton.navigation;
-                navigation.mode = Navigation.Mode.None;
-                cardPreviewCancelButton.navigation = navigation;
-                cardPreviewCancelButton.onClick.AddListener(HideCardPreview);
-                cardPreviewCancelButton.interactable = false;
-            }
-
-            if (cardPreviewUseButton == null)
-            {
-                cardPreviewUseButton = AddSettingsMenuButton(
-                    root,
-                    "카드 사용",
-                    "사용",
-                    24,
-                    GameSfxCue.None);
-                SetAnchors(
-                    cardPreviewUseButton.GetComponent<RectTransform>(),
-                    new Vector2(0.425f, 0.200f),
-                    new Vector2(0.575f, 0.265f));
-                cardPreviewUseButton.onClick.AddListener(UseSelectedCombatCard);
-                cardPreviewUseButton.gameObject.SetActive(false);
-            }
+            EnsureCardInspectionOverlay();
         }
 
         private void UseSelectedCombatCard()
@@ -5031,23 +5001,7 @@ namespace ThreeDoorsOfFate.Game
 
         private void HideCardPreview()
         {
-            if (cardPreviewImage != null)
-            {
-                cardPreviewImage.gameObject.SetActive(false);
-            }
-
-            if (cardPreviewUseButton != null)
-            {
-                cardPreviewUseButton.gameObject.SetActive(false);
-            }
-
-            if (cardPreviewCancelButton != null)
-            {
-                cardPreviewCancelButton.interactable = false;
-            }
-
-            selectedCombatCardIndex = -1;
-            cardPreviewTarget = null;
+            HideCardInspection();
         }
 
         private bool CanPlay(CardData card)
@@ -8167,7 +8121,7 @@ namespace ThreeDoorsOfFate.Game
 
                 Button button = CreateCardButton(slot, card, 0, 1, false, false);
                 Stretch(button.GetComponent<RectTransform>());
-                button.onClick.AddListener(() =>
+                UnityAction takeCard = () =>
                 {
                     if (TryAddCardToDeck(card, "카드 보상"))
                     {
@@ -8177,7 +8131,12 @@ namespace ThreeDoorsOfFate.Game
                     }
 
                     ShowDoors();
-                });
+                };
+                button.onClick.AddListener(() => ShowCardInspection(
+                    card,
+                    CardInspectionMode.RewardTake,
+                    "획득",
+                    takeCard));
             }
 
             RefreshTopBar();
@@ -8443,14 +8402,19 @@ namespace ThreeDoorsOfFate.Game
                 Button cardButton = CreateCardButton(slot, card, 0, 1);
                 SetAnchors(cardButton.GetComponent<RectTransform>(), new Vector2(0.000f, 0.165f), new Vector2(1.000f, 1.000f));
                 cardButton.onClick.RemoveAllListeners();
-                cardButton.onClick.AddListener(purchase);
+                UnityAction inspectPurchase = () => ShowCardInspection(
+                    card,
+                    CardInspectionMode.ShopBuy,
+                    $"구매 {price}금",
+                    purchase);
+                cardButton.onClick.AddListener(inspectPurchase);
 
                 Button buy = AddShopActionButton(slot, "구매", $"구매 {price}금", 16);
                 SetAnchors(buy.GetComponent<RectTransform>(), new Vector2(0.050f, 0.018f), new Vector2(0.950f, 0.165f));
                 bool canBuyCard = gold >= price && CanAddCardToDeck();
                 cardButton.interactable = CanAddCardToDeck();
                 buy.interactable = canBuyCard;
-                buy.onClick.AddListener(purchase);
+                buy.onClick.AddListener(inspectPurchase);
             }
 
             if (!string.IsNullOrWhiteSpace(currentShopRunItemId))
@@ -8928,14 +8892,22 @@ namespace ThreeDoorsOfFate.Game
                     return;
                 }
 
-                if (TryAddCardToDeck(card, "이벤트"))
+                UnityAction takeEventCard = () =>
                 {
-                    debt += Mathf.Max(0, 1 - curseReduction);
-                    AddLog($"{card.DisplayName} 획득. 빚 증가.");
-                    CheckBuildUnlocks();
-                }
+                    if (TryAddCardToDeck(card, "이벤트"))
+                    {
+                        debt += Mathf.Max(0, 1 - curseReduction);
+                        AddLog($"{card.DisplayName} 획득. 빚 증가.");
+                        CheckBuildUnlocks();
+                    }
 
-                ShowDoors();
+                    ShowDoors();
+                };
+                ShowCardInspection(
+                    card,
+                    CardInspectionMode.RewardTake,
+                    "획득",
+                    takeEventCard);
             });
 
             AddDecisionStateSummary();
