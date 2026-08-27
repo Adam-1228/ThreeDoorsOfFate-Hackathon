@@ -910,9 +910,14 @@ class LocalizationContractTests(unittest.TestCase):
             source_blob_parts.append(source)
             source_values.update(extract_csharp_string_values(source))
 
-        for path in sorted((PROJECT_ROOT / "Assets/Data").rglob("*.json")):
-            data = json.loads(path.read_text(encoding="utf-8"))
-            source_values.update(iter_json_strings(data))
+        runtime_data_roots = (
+            PROJECT_ROOT / "Assets/Data",
+            PROJECT_ROOT / "Assets/Resources/GameData",
+        )
+        for data_root in runtime_data_roots:
+            for path in sorted(data_root.rglob("*.json")):
+                data = json.loads(path.read_text(encoding="utf-8"))
+                source_values.update(iter_json_strings(data))
 
         source_blob = "\n".join(source_blob_parts)
         reserved_keys = set(payload.get("reservedKeys", []))
@@ -920,6 +925,7 @@ class LocalizationContractTests(unittest.TestCase):
             entry["key"]
             for entry in payload["entries"]
             if entry["key"] not in source_blob
+            and entry["key"] not in source_values
             and entry["ko"] not in source_values
             and entry["ko"] not in source_blob
             and entry["key"] not in reserved_keys

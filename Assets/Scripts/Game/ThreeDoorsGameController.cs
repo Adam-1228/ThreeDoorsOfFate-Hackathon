@@ -463,6 +463,7 @@ namespace ThreeDoorsOfFate.Game
             MainMenu,
             ClassSelection,
             ClassDetails,
+            ContractSelection,
             DoorSelection,
             Combat,
             Reward,
@@ -1639,7 +1640,8 @@ namespace ThreeDoorsOfFate.Game
                 classConfirmButtonSprite,
                 GameSfxCue.ImportantConfirm);
             SetAnchors(confirmButton.GetComponent<RectTransform>(), new Vector2(0.705f, 0.120f), new Vector2(0.985f, 0.880f));
-            confirmButton.onClick.AddListener(() => StartRun(characterClass));
+            confirmButton.onClick.AddListener(
+                () => ShowStarterContractSelection(characterClass));
 
             primaryButton.gameObject.SetActive(false);
         }
@@ -2043,6 +2045,13 @@ namespace ThreeDoorsOfFate.Game
 
         private void StartRun(CharacterClass characterClass)
         {
+            StartRun(characterClass, GetDefaultStarterContractId(characterClass));
+        }
+
+        private void StartRun(
+            CharacterClass characterClass,
+            string contractId)
+        {
             EnsureSelectedDifficultyIsUnlocked();
             PlayGameSfx(GameSfxCue.RunStart);
             selectedClass = characterClass;
@@ -2080,12 +2089,24 @@ namespace ThreeDoorsOfFate.Game
             combatLog.Clear();
             runItemBottleHealthBonusApplied = false;
             predictedBossRunItemRewardId = string.Empty;
+            StarterContractDefinition starterContract =
+                GetSelectedStarterContract(characterClass, contractId);
+            bool contractDeckReady = starterContract != null
+                && TryInitializeStarterContractDeck(characterClass, starterContract.Id);
+            if (contractDeckReady)
+            {
+                ApplyStarterContractResources(starterContract);
+            }
+            else
+            {
+                selectedStarterContractId = string.Empty;
+                InitializeStartingDeck(characterClass);
+            }
+
             LoadDiscoveredRunItemsForSelectedClass();
             LoadEquippedRunItemsForSelectedClass();
             EnsureEquippedRunItemsAreDiscovered();
             ApplyRunItemRunStartBonuses();
-
-            InitializeStartingDeck(characterClass);
 
             topBar.gameObject.SetActive(true);
             SetLogVisible(true);
@@ -2095,6 +2116,12 @@ namespace ThreeDoorsOfFate.Game
             BindLocalizedText(titleText, "app.title");
             AddLog($"{GetClassName(selectedClass)}의 {GetDifficultyName(currentDifficulty)} 런을 시작했습니다.");
             AddLog(GetDifficultyDescription(currentDifficulty));
+            if (starterContract != null && contractDeckReady)
+            {
+                AddLog(LF(
+                    "log.contract.selected",
+                    L(starterContract.NameKey)));
+            }
             AddLog(equippedRunItemIds.Count > 0
                 ? $"장착 아이템 {equippedRunItemIds.Count}/{GetRunItemSlotLimit()}: {GetEquippedRunItemNames()}"
                 : $"장착 아이템 없음. 현재 난이도에서는 최대 {GetRunItemSlotLimit()}개까지 장착할 수 있습니다.");
