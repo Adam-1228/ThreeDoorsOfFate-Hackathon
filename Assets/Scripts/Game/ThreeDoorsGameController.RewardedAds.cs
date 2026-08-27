@@ -7,7 +7,6 @@ using ThreeDoorsOfFate.Cards;
 using ThreeDoorsOfFate.Platform;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 namespace ThreeDoorsOfFate.Game
 {
@@ -257,7 +256,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             string reservedItemId =
-                candidates[Random.Range(0, candidates.Count)].Id;
+                candidates[RunRange(0, candidates.Count)].Id;
             rewardedRelicCommittedItem = null;
             rewardedRelicRequestActive = true;
             RefreshRewardedRelicAction();
@@ -296,7 +295,7 @@ namespace ThreeDoorsOfFate.Game
 
             RunItemDefinition item = candidates.FirstOrDefault(
                     candidate => candidate.Id == reservedItemId)
-                ?? candidates[Random.Range(0, candidates.Count)];
+                ?? candidates[RunRange(0, candidates.Count)];
             if (!DiscoverRunItemForSelectedClass(item))
             {
                 return false;

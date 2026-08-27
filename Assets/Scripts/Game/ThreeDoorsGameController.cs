@@ -5,6 +5,7 @@ using System.Linq;
 using ThreeDoorsOfFate.Ads;
 using ThreeDoorsOfFate.Audio;
 using ThreeDoorsOfFate.Cards;
+using ThreeDoorsOfFate.Game.V140;
 using ThreeDoorsOfFate.Localization;
 using ThreeDoorsOfFate.Platform;
 using ThreeDoorsOfFate.UI;
@@ -386,6 +387,8 @@ namespace ThreeDoorsOfFate.Game
 
         private CharacterClass selectedClass = CharacterClass.Gambler;
         private RunDifficulty currentDifficulty = RunDifficulty.Easy;
+        private int runSeed;
+        private SeededRunRandom runRandom;
         private JourneyEndingKind currentJourneyEndingKind = JourneyEndingKind.Return;
         private bool endlessModeActive;
         private int nextEndlessBossRoom;
@@ -2012,11 +2015,38 @@ namespace ThreeDoorsOfFate.Game
             };
         }
 
+        private void ResetRunRandom(int seed)
+        {
+            runSeed = seed;
+            runRandom = new SeededRunRandom(seed);
+        }
+
+        private int RunRange(int minimumInclusive, int maximumExclusive)
+        {
+            if (runRandom == null)
+            {
+                ResetRunRandom(runSeed == 0 ? 1 : runSeed);
+            }
+
+            return runRandom.Range(minimumInclusive, maximumExclusive);
+        }
+
+        private float RunValue()
+        {
+            if (runRandom == null)
+            {
+                ResetRunRandom(runSeed == 0 ? 1 : runSeed);
+            }
+
+            return runRandom.Value();
+        }
+
         private void StartRun(CharacterClass characterClass)
         {
             EnsureSelectedDifficultyIsUnlocked();
             PlayGameSfx(GameSfxCue.RunStart);
             selectedClass = characterClass;
+            ResetRunRandom(unchecked(Environment.TickCount ^ Guid.NewGuid().GetHashCode()));
             newlyCompletedAchievementNames.Clear();
             playerMaxHealth = characterClass switch
             {
@@ -2155,7 +2185,7 @@ namespace ThreeDoorsOfFate.Game
         {
             for (int i = 0; i < count && candidates.Count > 0; i += 1)
             {
-                deck.Add(candidates[Random.Range(0, candidates.Count)]);
+                deck.Add(candidates[RunRange(0, candidates.Count)]);
             }
         }
 
@@ -3445,12 +3475,12 @@ namespace ThreeDoorsOfFate.Game
                     .Where(candidate => IsNonCombatChoice(candidate.Type))
                     .ToArray();
                 DoorType safeType = PickWeightedDoorType(safePool);
-                selectedTypes[Random.Range(0, selectedTypes.Count)] = safeType;
+                selectedTypes[RunRange(0, selectedTypes.Count)] = safeType;
             }
 
             for (int index = selectedTypes.Count - 1; index > 0; index -= 1)
             {
-                int swapIndex = Random.Range(0, index + 1);
+                int swapIndex = RunRange(0, index + 1);
                 (selectedTypes[index], selectedTypes[swapIndex]) =
                     (selectedTypes[swapIndex], selectedTypes[index]);
             }
@@ -3493,10 +3523,10 @@ namespace ThreeDoorsOfFate.Game
             return Mathf.Clamp01(Mathf.Max(0, debt) * DebtDoorPressurePerDebt);
         }
 
-        private static DoorType PickWeightedDoorType(IReadOnlyList<WeightedDoorType> pool)
+        private DoorType PickWeightedDoorType(IReadOnlyList<WeightedDoorType> pool)
         {
             float totalWeight = pool.Sum(candidate => Mathf.Max(0.001f, candidate.Weight));
-            float roll = Random.value * totalWeight;
+            float roll = RunValue() * totalWeight;
             foreach (WeightedDoorType candidate in pool)
             {
                 roll -= Mathf.Max(0.001f, candidate.Weight);
@@ -3821,7 +3851,7 @@ namespace ThreeDoorsOfFate.Game
                 ? BaseEnemyTemplates.Concat(HardModeEnemyTemplates).ToArray()
                 : BaseEnemyTemplates;
             int index = IsHardModeFeatureActive()
-                ? Random.Range(0, templates.Length)
+                ? RunRange(0, templates.Length)
                 : Mathf.Clamp(roomsCleared - 1, 0, templates.Length - 1);
             EnemyTemplate template = templates[index];
             int health = template.Health + (elite ? 16 : 0);
@@ -5810,7 +5840,7 @@ namespace ThreeDoorsOfFate.Game
         private int GetRunItemRewardChoiceCount(int baseCount, bool eliteReward)
         {
             int count = Mathf.Max(1, baseCount);
-            if (HasRunItem("blessing_star_compass") && Random.value <= 0.20f)
+            if (HasRunItem("blessing_star_compass") && RunValue() <= 0.20f)
             {
                 count += 1;
                 AddLog("아이템 효과: 보상 선택지 +1.");
@@ -6878,7 +6908,7 @@ namespace ThreeDoorsOfFate.Game
             ApplyRunItemVictorySideEffects(false);
             AddLog($"전투 승리. 금화 +{rewardGold}. 보스 전 전투 {combatEncountersCompleted}/{MinimumPreBossCombats}.");
             int rewardChoiceCount = 3;
-            if (IsCombinationComplete("third_answer") && Random.value <= 0.20f)
+            if (IsCombinationComplete("third_answer") && RunValue() <= 0.20f)
             {
                 rewardChoiceCount = 4;
                 TriggerCombinationImpact("third_answer");
@@ -6938,7 +6968,7 @@ namespace ThreeDoorsOfFate.Game
                 DoorType.Curse => CurseDoorRunItemDiscoveryChance,
                 _ => 0f
             };
-            if (chance <= 0f || Random.value > chance)
+            if (chance <= 0f || RunValue() > chance)
             {
                 return false;
             }
@@ -7005,7 +7035,7 @@ namespace ThreeDoorsOfFate.Game
                 .Where(item => !IsRunItemDiscoveredForSelectedClass(item))
                 .ToList();
             List<RunItemDefinition> pool = undiscovered.Count > 0 ? undiscovered : candidates;
-            return pool[Random.Range(0, pool.Count)];
+            return pool[RunRange(0, pool.Count)];
         }
 
         private static RunItemType GetBossRewardItemType(RunDifficulty difficulty)
@@ -8160,7 +8190,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             List<CardData> cards = PickWeightedCards(count, sources);
-            if (IsHardModeFeatureActive() && Random.value <= 0.45f)
+            if (IsHardModeFeatureActive() && RunValue() <= 0.45f)
             {
                 EnsureHardReward(cards);
             }
@@ -8218,7 +8248,7 @@ namespace ThreeDoorsOfFate.Game
 
             List<CardData> picks = new();
             BuildRecipe recipe = GetCurrentBuildRecipe();
-            foreach (string cardId in recipe.RequiredCardIds.OrderBy(_ => Random.value))
+            foreach (string cardId in recipe.RequiredCardIds.OrderBy(_ => RunValue()))
             {
                 if (picks.Count >= count || HasDeckCard(cardId))
                 {
@@ -8226,7 +8256,7 @@ namespace ThreeDoorsOfFate.Game
                 }
 
                 CardData buildCard = candidates.FirstOrDefault(card => card.CardId == cardId);
-                if (buildCard != null && Random.value <= 0.74f)
+                if (buildCard != null && RunValue() <= 0.74f)
                 {
                     picks.Add(buildCard);
                 }
@@ -8280,7 +8310,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             int totalWeight = weighted.Sum(entry => entry.Weight);
-            int roll = Random.Range(0, totalWeight);
+            int roll = RunRange(0, totalWeight);
             foreach ((CardData card, int weight) in weighted)
             {
                 if (roll < weight)
@@ -8478,7 +8508,7 @@ namespace ThreeDoorsOfFate.Game
 
         private RunItemDefinition PickShopRunItemOffer()
         {
-            if (Random.value > ShopRunItemOfferChance)
+            if (RunValue() > ShopRunItemOfferChance)
             {
                 return null;
             }
@@ -8783,7 +8813,7 @@ namespace ThreeDoorsOfFate.Game
             SetBackground(treasureBackground != null ? treasureBackground : rewardBackground);
             ClearContent();
             SetDefaultContentRootPlacement();
-            int rewardGold = Random.Range(24, 43);
+            int rewardGold = RunRange(24, 43);
             gold += rewardGold;
             CardData card = PickTreasureCard();
             subtitleText.text = string.Empty;
@@ -9189,7 +9219,7 @@ namespace ThreeDoorsOfFate.Game
             List<EnemyCardDefinition> candidates = new(drawCount);
             for (int i = 0; i < drawCount; i += 1)
             {
-                candidates.Add(pool[Random.Range(0, pool.Count)]);
+                candidates.Add(pool[RunRange(0, pool.Count)]);
             }
 
             return candidates;
@@ -9303,7 +9333,7 @@ namespace ThreeDoorsOfFate.Game
 
         private float ScoreEnemyCard(EnemyCardDefinition card)
         {
-            float score = Random.Range(0f, 2.5f);
+            float score = RunValue() * 2.5f;
             if (card.Attacks)
             {
                 int attack = Mathf.Max(0, enemy.BaseAttack + card.AttackBonus);
@@ -9524,10 +9554,10 @@ namespace ThreeDoorsOfFate.Game
                 gamblerLoadedDiceRollsRemaining -= 1;
                 TriggerCombinationImpact("trait_gambler_card_reading");
                 AddLog($"패 읽기: 강화 주사위 사용. 남은 횟수 {gamblerLoadedDiceRollsRemaining}.");
-                return Random.value < 0.90f ? Random.Range(4, 7) : Random.Range(1, 4);
+                return RunValue() < 0.90f ? RunRange(4, 7) : RunRange(1, 4);
             }
 
-            return Random.Range(1, 7);
+            return RunRange(1, 7);
         }
 
         private void Heal(int amount)
@@ -9715,7 +9745,7 @@ namespace ThreeDoorsOfFate.Game
                     break;
                 }
 
-                int index = Random.Range(0, eligibleCount);
+                int index = RunRange(0, eligibleCount);
                 if (protectedIndex >= 0 && index >= protectedIndex)
                 {
                     index += 1;
@@ -11728,11 +11758,11 @@ namespace ThreeDoorsOfFate.Game
             return colors;
         }
 
-        private static void Shuffle<T>(IList<T> list)
+        private void Shuffle<T>(IList<T> list)
         {
             for (int i = list.Count - 1; i > 0; i -= 1)
             {
-                int j = Random.Range(0, i + 1);
+                int j = RunRange(0, i + 1);
                 (list[i], list[j]) = (list[j], list[i]);
             }
         }
