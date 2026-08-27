@@ -395,7 +395,14 @@ namespace ThreeDoorsOfFate.Editor
                 controller,
                 "contentRoot")
                 ?? throw new InvalidOperationException("Main-menu content root is missing.");
-            string[] buttonNames = { "게임시작", "플레이 방법", "업적", "설정" };
+            string[] buttonNames =
+            {
+                "게임시작",
+                "플레이 방법",
+                "운명 기록",
+                "업적",
+                "설정"
+            };
             MethodInfo placementMethod = controllerType.GetMethod(
                 "SetMainMenuButtonPlacement",
                 BindingFlags.Static | BindingFlags.NonPublic)
@@ -412,7 +419,7 @@ namespace ThreeDoorsOfFate.Editor
                 Button button = buttonRoot.GetComponent<Button>()
                     ?? throw new InvalidOperationException(
                         $"Main-menu object is not a button: {buttonNames[index]}");
-                placementMethod.Invoke(null, new object[] { button, index, 4 });
+                placementMethod.Invoke(null, new object[] { button, index, 5 });
             }
 
             RectTransform quitButton = FindDescendant(contentRoot, "게임종료");
