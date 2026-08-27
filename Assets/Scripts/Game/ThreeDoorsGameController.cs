@@ -3746,7 +3746,7 @@ namespace ThreeDoorsOfFate.Game
                     <= 0 => "속삭임이 균열을 타고 흐릅니다.",
                     1 => "선택형 계약 이벤트입니다.",
                     2 => "예언: 사건. 보상과 대가 중 하나를 선택합니다.",
-                    _ => "예언 선명: 체력 6을 잃고 금화 55를 받거나, 카드 1장을 받고 빚 +1을 선택합니다."
+                    _ => "예언 선명: 직업, 빚, 이전 선택에 따라 다른 운명 사건이 기다립니다."
                 },
                 DoorType.Rest => insightLevel switch
                 {
@@ -8890,7 +8890,7 @@ namespace ThreeDoorsOfFate.Game
             return GameLocalization.TextFromSource(source);
         }
 
-        private void ShowEvent()
+        private void ShowLegacyEvent()
         {
             PlayNonCombatMusic();
             phase = GamePhase.Event;

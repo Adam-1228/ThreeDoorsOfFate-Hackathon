@@ -21,7 +21,8 @@ namespace ThreeDoorsOfFate.Game
         private enum DeckRemovalSource
         {
             Rest,
-            Shop
+            Shop,
+            Event
         }
 
         private StarterContractCatalog cachedStarterContractCatalog;
@@ -450,12 +451,18 @@ namespace ThreeDoorsOfFate.Game
             DeckRemovalSource source,
             int page)
         {
-            phase = source == DeckRemovalSource.Rest
-                ? GamePhase.Rest
-                : GamePhase.Shop;
-            SetBackground(source == DeckRemovalSource.Rest
-                ? restBackground
-                : shopBackground);
+            phase = source switch
+            {
+                DeckRemovalSource.Rest => GamePhase.Rest,
+                DeckRemovalSource.Event => GamePhase.Event,
+                _ => GamePhase.Shop
+            };
+            SetBackground(source switch
+            {
+                DeckRemovalSource.Rest => restBackground,
+                DeckRemovalSource.Event => eventBackground,
+                _ => shopBackground
+            });
             ClearContent();
             SetDefaultContentRootPlacement();
             SetLogVisible(true);
@@ -466,13 +473,25 @@ namespace ThreeDoorsOfFate.Game
             primaryButton.gameObject.SetActive(true);
             SetButtonLabel(
                 primaryButton,
-                L(source == DeckRemovalSource.Rest
-                    ? "deckRemoval.back.rest"
-                    : "deckRemoval.back.shop"));
+                L(source switch
+                {
+                    DeckRemovalSource.Rest => "deckRemoval.back.rest",
+                    DeckRemovalSource.Event => "deckRemoval.back.event",
+                    _ => "deckRemoval.back.shop"
+                }));
             primaryButton.onClick.RemoveAllListeners();
-            primaryButton.onClick.AddListener(source == DeckRemovalSource.Rest
-                ? ShowRest
-                : ShowShop);
+            if (source == DeckRemovalSource.Rest)
+            {
+                primaryButton.onClick.AddListener(ShowRest);
+            }
+            else if (source == DeckRemovalSource.Event)
+            {
+                primaryButton.onClick.AddListener(ShowEvent);
+            }
+            else
+            {
+                primaryButton.onClick.AddListener(ShowShop);
+            }
 
             List<CardData> choices = deck
                 .Where(card => card != null)
@@ -507,9 +526,12 @@ namespace ThreeDoorsOfFate.Game
             Text heading = AddLocalizedText(
                 gallery,
                 "카드 제거 제목",
-                source == DeckRemovalSource.Rest
-                    ? "deckRemoval.title.rest"
-                    : "deckRemoval.title.shop",
+                source switch
+                {
+                    DeckRemovalSource.Rest => "deckRemoval.title.rest",
+                    DeckRemovalSource.Event => "deckRemoval.title.event",
+                    _ => "deckRemoval.title.shop"
+                },
                 28,
                 TextAnchor.MiddleCenter,
                 new Color(0.82f, 1f, 0.94f, 1f));
@@ -563,9 +585,9 @@ namespace ThreeDoorsOfFate.Game
                 cardButton.onClick.AddListener(() => ShowCardInspection(
                     selectedCard,
                     CardInspectionMode.DeckRemove,
-                    source == DeckRemovalSource.Rest
-                        ? L("deckRemoval.action.remove")
-                        : LF("deckRemoval.action.removePrice", GetDeckRemovalPrice()),
+                    source == DeckRemovalSource.Shop
+                        ? LF("deckRemoval.action.removePrice", GetDeckRemovalPrice())
+                        : L("deckRemoval.action.remove"),
                     () => ConfirmDeckRemoval(selectedCard, source)));
 
                 int ownedCount = deck.Count(candidate =>
@@ -665,6 +687,18 @@ namespace ThreeDoorsOfFate.Game
                 }
 
                 ShowShop();
+                return;
+            }
+
+            if (source == DeckRemovalSource.Event)
+            {
+                if (TryRemoveDeckCard(card, L("deckRemoval.source.event")))
+                {
+                    ShowDoors();
+                    return;
+                }
+
+                ShowDeckRemovalSelection(DeckRemovalSource.Event, deckRemovalPage);
                 return;
             }
 

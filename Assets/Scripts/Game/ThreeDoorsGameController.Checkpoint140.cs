@@ -49,6 +49,7 @@ namespace ThreeDoorsOfFate.Game
                 selectedStarterContractId = selectedStarterContractId ?? string.Empty,
                 cardsRemovedThisRun = Mathf.Max(0, cardsRemovedThisRun),
                 seenEventIds = seenRunEventIds.OrderBy(value => value, StringComparer.Ordinal).ToList(),
+                seenEventSegment = seenRunEventSegment,
                 activeMutationIds = activeEndlessMutationIds.OrderBy(value => value, StringComparer.Ordinal).ToList(),
                 pendingDoorTypeIds = pendingDoorTypes.Select(value => (int)value).ToList(),
                 pendingResolvedDoorTypeId = pendingResolvedDoorTypeId,
@@ -230,6 +231,7 @@ namespace ThreeDoorsOfFate.Game
             selectedStarterContractId = checkpoint.selectedStarterContractId ?? string.Empty;
             cardsRemovedThisRun = Mathf.Max(0, checkpoint.cardsRemovedThisRun);
             ReplaceSet(seenRunEventIds, checkpoint.seenEventIds);
+            seenRunEventSegment = Mathf.Max(0, checkpoint.seenEventSegment);
             ReplaceSet(activeEndlessMutationIds, checkpoint.activeMutationIds);
             pendingDoorTypes.Clear();
             pendingDoorTypes.AddRange(checkpoint.pendingDoorTypeIds.Select(id => (DoorType)id));
@@ -512,6 +514,7 @@ namespace ThreeDoorsOfFate.Game
             activeRunId = Guid.NewGuid().ToString("N");
             pendingDoorTypes.Clear();
             seenRunEventIds.Clear();
+            seenRunEventSegment = 0;
             activeEndlessMutationIds.Clear();
             pendingRewardCardIds.Clear();
             pendingRunEventId = string.Empty;
@@ -686,6 +689,7 @@ namespace ThreeDoorsOfFate.Game
             public string selectedStarterContractId = string.Empty;
             public int cardsRemovedThisRun;
             public List<string> seenEventIds = new();
+            public int seenEventSegment;
             public List<string> activeMutationIds = new();
             public List<int> pendingDoorTypeIds = new();
             public int pendingResolvedDoorTypeId = NoPendingDoorType;
