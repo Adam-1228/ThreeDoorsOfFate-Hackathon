@@ -14,6 +14,9 @@ namespace ThreeDoorsOfFate.Platform
         public long revision;
         public long updatedAtUnixSeconds;
         public string deviceId = string.Empty;
+        public string activeRunId = string.Empty;
+        public int activeRunSchemaVersion;
+        public int activeRunRandomCursor;
         public List<ProgressIntValue> integers = new();
         public List<ProgressStringValue> strings = new();
     }
@@ -47,6 +50,11 @@ namespace ThreeDoorsOfFate.Platform
             AddMaximumValues(mergedIntegers, local.integers);
             AddMaximumValues(mergedIntegers, cloud.integers);
             Dictionary<string, string> mergedStrings = MergeStrings(older, newer);
+            ReadActiveRunMetadata(
+                mergedStrings,
+                out string activeRunId,
+                out int activeRunSchemaVersion,
+                out int activeRunRandomCursor);
 
             PlayerProgressSnapshot merged = new()
             {
@@ -54,6 +62,9 @@ namespace ThreeDoorsOfFate.Platform
                 revision = Math.Max(local.revision, cloud.revision) + 1,
                 updatedAtUnixSeconds = Math.Max(local.updatedAtUnixSeconds, cloud.updatedAtUnixSeconds),
                 deviceId = newer.deviceId ?? string.Empty,
+                activeRunId = activeRunId,
+                activeRunSchemaVersion = activeRunSchemaVersion,
+                activeRunRandomCursor = activeRunRandomCursor,
                 integers = mergedIntegers
                     .OrderBy(pair => pair.Key, StringComparer.Ordinal)
                     .Select(pair => new ProgressIntValue { key = pair.Key, value = pair.Value })
@@ -200,10 +211,57 @@ namespace ThreeDoorsOfFate.Platform
             return string.Compare(left.deviceId, right.deviceId, StringComparison.Ordinal);
         }
 
+        private static void ReadActiveRunMetadata(
+            IReadOnlyDictionary<string, string> strings,
+            out string runId,
+            out int schemaVersion,
+            out int randomCursor)
+        {
+            runId = string.Empty;
+            schemaVersion = 0;
+            randomCursor = 0;
+            foreach (KeyValuePair<string, string> entry in strings)
+            {
+                if (!entry.Key.EndsWith("HardRunSave", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                string json = entry.Value;
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    ActiveRunMetadata data = JsonUtility.FromJson<ActiveRunMetadata>(json);
+                    if (data != null && data.version > 0)
+                    {
+                        runId = data.runId ?? string.Empty;
+                        schemaVersion = data.version;
+                        randomCursor = Math.Max(0, data.randomCursor);
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    // A malformed active run must not block monotonic meta-progress merge.
+                }
+            }
+        }
+
         [Serializable]
         private sealed class ItemListData
         {
             public List<string> itemIds = new();
+        }
+
+        [Serializable]
+        private sealed class ActiveRunMetadata
+        {
+            public int version;
+            public string runId = string.Empty;
+            public int randomCursor;
         }
     }
 }

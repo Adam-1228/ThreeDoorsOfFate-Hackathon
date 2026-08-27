@@ -181,7 +181,10 @@ namespace ThreeDoorsOfFate.Tests
                 PlayerPrefs.SetInt(difficultyKey, 2);
                 PlayerPrefs.SetInt(endingKey, 1);
                 PlayerPrefs.SetString(discoveredKey, ItemListJson("amber"));
-                PlayerPrefs.SetString(runKey, "{\"version\":1,\"roomsCleared\":5}");
+                PlayerPrefs.SetString(
+                    runKey,
+                    "{\"version\":2,\"runId\":\"run-140\","
+                    + "\"randomCursor\":17,\"roomsCleared\":5}");
 
                 Type storeType = Type.GetType(ProgressStoreTypeName);
                 Assert.That(storeType, Is.Not.Null, "PlayerPrefsProgressStore must exist.");
@@ -199,6 +202,9 @@ namespace ThreeDoorsOfFate.Tests
                 Assert.That(GetInt(snapshot, endingKey), Is.EqualTo(1));
                 Assert.That(GetString(snapshot, discoveredKey), Is.EqualTo(ItemListJson("amber")));
                 Assert.That(GetString(snapshot, runKey), Does.Contain("\"roomsCleared\":5"));
+                Assert.That(snapshot.activeRunId, Is.EqualTo("run-140"));
+                Assert.That(snapshot.activeRunSchemaVersion, Is.EqualTo(2));
+                Assert.That(snapshot.activeRunRandomCursor, Is.EqualTo(17));
                 Assert.That(snapshot.revision, Is.EqualTo(7));
                 Assert.That(snapshot.updatedAtUnixSeconds, Is.EqualTo(1234));
             }
@@ -984,6 +990,9 @@ namespace ThreeDoorsOfFate.Tests
             public long revision;
             public long updatedAtUnixSeconds;
             public string deviceId;
+            public string activeRunId;
+            public int activeRunSchemaVersion;
+            public int activeRunRandomCursor;
             public List<ProgressIntData> integers = new();
             public List<ProgressStringData> strings = new();
         }

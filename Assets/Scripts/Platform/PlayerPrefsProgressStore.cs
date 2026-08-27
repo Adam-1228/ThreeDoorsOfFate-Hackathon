@@ -58,6 +58,7 @@ namespace ThreeDoorsOfFate.Platform
             snapshot.strings = snapshot.strings
                 .OrderBy(entry => entry.key, StringComparer.Ordinal)
                 .ToList();
+            PopulateActiveRunMetadata(snapshot, $"{keyPrefix}HardRunSave");
             return JsonUtility.ToJson(snapshot);
         }
 
@@ -140,6 +141,44 @@ namespace ThreeDoorsOfFate.Platform
             {
                 throw new ArgumentException("A PlayerPrefs key prefix is required.", nameof(keyPrefix));
             }
+        }
+
+        private static void PopulateActiveRunMetadata(
+            PlayerProgressSnapshot snapshot,
+            string checkpointKey)
+        {
+            string checkpointJson = snapshot.strings
+                .LastOrDefault(entry => entry != null && entry.key == checkpointKey)
+                ?.value;
+            if (string.IsNullOrWhiteSpace(checkpointJson))
+            {
+                return;
+            }
+
+            try
+            {
+                ActiveRunMetadata data = JsonUtility.FromJson<ActiveRunMetadata>(checkpointJson);
+                if (data == null || data.version <= 0)
+                {
+                    return;
+                }
+
+                snapshot.activeRunId = data.runId ?? string.Empty;
+                snapshot.activeRunSchemaVersion = data.version;
+                snapshot.activeRunRandomCursor = Math.Max(0, data.randomCursor);
+            }
+            catch (ArgumentException)
+            {
+                // Meta progression still syncs even when the run-local checkpoint is malformed.
+            }
+        }
+
+        [Serializable]
+        private sealed class ActiveRunMetadata
+        {
+            public int version;
+            public string runId = string.Empty;
+            public int randomCursor;
         }
     }
 }

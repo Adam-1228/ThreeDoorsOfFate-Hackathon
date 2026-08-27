@@ -89,7 +89,10 @@ namespace ThreeDoorsOfFate.Game
         private const string EndlessRecordSeenKey = "ThreeDoorsOfFate.EndlessRecord.Seen";
         private const string SurvivorTitleUnlockPrefix = "ThreeDoorsOfFate.SurvivorTitle.";
         private const string HardRunSaveKey = "ThreeDoorsOfFate.HardRunSave";
-        private const int HardRunSaveVersion = 1;
+        private const string HardRunSaveBackupKey =
+            "ThreeDoorsOfFate.HardRunSave.BackupV1";
+        private const int LegacyRunSaveVersion = 1;
+        private const int HardRunSaveVersion = 2;
         private const string EquippedItemKeyPrefix = "ThreeDoorsOfFate.EquippedItems.";
         private const string DiscoveredItemKeyPrefix = "ThreeDoorsOfFate.DiscoveredItems.";
         private const string RunItemUnlockKeyPrefix = "ThreeDoorsOfFate.RunItemUnlock.";
@@ -2056,6 +2059,7 @@ namespace ThreeDoorsOfFate.Game
             PlayGameSfx(GameSfxCue.RunStart);
             selectedClass = characterClass;
             ResetRunRandom(unchecked(Environment.TickCount ^ Guid.NewGuid().GetHashCode()));
+            ResetCheckpointStateForNewRun();
             newlyCompletedAchievementNames.Clear();
             playerMaxHealth = characterClass switch
             {
@@ -2223,6 +2227,12 @@ namespace ThreeDoorsOfFate.Game
         {
             PlayMainMenuMusic();
             phase = GamePhase.DoorSelection;
+            checkpointResumePhase = GamePhase.DoorSelection;
+            pendingResolvedDoorTypeId = NoPendingDoorType;
+            pendingRewardCardIds.Clear();
+            pendingRunEventId = string.Empty;
+            restoredRunCheckpoint = null;
+            currentEncounterSeed = 0;
             SetBackground(classSelectBackground);
             ClearContent();
             primaryButton.gameObject.SetActive(true);
@@ -2255,9 +2265,18 @@ namespace ThreeDoorsOfFate.Game
             BindLocalizedText(subtitleText, subtitleKey);
             SetSubtitleBoxVisible(true);
 
-            List<DoorOption> options = bossDoorReady
-                ? new List<DoorOption> { CreateBossDoorOption() }
-                : GenerateDoorOptions();
+            List<DoorOption> options;
+            if (pendingDoorTypes.Count > 0)
+            {
+                options = pendingDoorTypes.Select(CreateDoorOption).ToList();
+            }
+            else
+            {
+                options = bossDoorReady
+                    ? new List<DoorOption> { CreateBossDoorOption() }
+                    : GenerateDoorOptions();
+                pendingDoorTypes.AddRange(options.Select(option => option.Type));
+            }
 
             if (bossDoorReady)
             {
@@ -3824,6 +3843,8 @@ namespace ThreeDoorsOfFate.Game
         {
             PlayGameSfx(GameSfxCue.DoorOpen);
             ResetDoorInsightAfterChoice();
+            pendingDoorTypes.Clear();
+            pendingResolvedDoorTypeId = (int)option.Type;
             if (option.Type != DoorType.Boss)
             {
                 roomsCleared += 1;
@@ -3836,6 +3857,8 @@ namespace ThreeDoorsOfFate.Game
                     consecutiveNonCombatDoors += 1;
                 }
             }
+
+            SaveRunCheckpointAtResolvedSurface();
 
             switch (option.Type)
             {
@@ -3998,6 +4021,26 @@ namespace ThreeDoorsOfFate.Game
             StopCombatVictorySequence();
             phase = GamePhase.Combat;
             enemy = newEnemy;
+            bool resumingCapturedEncounter = restoredRunCheckpoint != null
+                && checkpointResumePhase == GamePhase.Combat
+                && string.Equals(
+                    restoredRunCheckpoint.encounterEnemyId,
+                    newEnemy.Id,
+                    StringComparison.Ordinal);
+            if (!resumingCapturedEncounter || currentEncounterSeed == 0)
+            {
+                int randomCursor = runRandom?.Capture().Cursor ?? 0;
+                currentEncounterSeed = unchecked(runSeed ^ (randomCursor + 1) * 397);
+                if (currentEncounterSeed == 0)
+                {
+                    currentEncounterSeed = 1;
+                }
+            }
+
+            checkpointResumePhase = GamePhase.Combat;
+            pendingResolvedDoorTypeId = NoPendingDoorType;
+            SaveRunCheckpointAtResolvedSurface();
+            restoredRunCheckpoint = null;
             SetLogVisible(true);
             topBar.gameObject.SetActive(true);
             SetBackground(enemy.IsBoss ? bossBackground : battleBackground);
@@ -8086,6 +8129,14 @@ namespace ThreeDoorsOfFate.Game
             PlayNonCombatMusic();
             PlayGameSfx(GameSfxCue.RewardReveal);
             phase = GamePhase.Reward;
+            checkpointResumePhase = GamePhase.Reward;
+            pendingResolvedDoorTypeId = NoPendingDoorType;
+            pendingRewardCardIds.Clear();
+            pendingRewardCardIds.AddRange(rewards
+                .Where(card => card != null && !string.IsNullOrWhiteSpace(card.CardId))
+                .Select(card => card.CardId));
+            restoredRunCheckpoint = null;
+            SaveRunCheckpointAtResolvedSurface();
             SetBackground(rewardBackground);
             ClearContent();
             SetDefaultContentRootPlacement();
@@ -8345,6 +8396,10 @@ namespace ThreeDoorsOfFate.Game
             EnsureCurrentShopOffers();
             PlayNonCombatMusic();
             phase = GamePhase.Shop;
+            checkpointResumePhase = GamePhase.Shop;
+            pendingResolvedDoorTypeId = NoPendingDoorType;
+            restoredRunCheckpoint = null;
+            SaveRunCheckpointAtResolvedSurface();
             SetBackground(shopBackground);
             ClearContent();
             SetDefaultContentRootPlacement();
@@ -12003,7 +12058,7 @@ namespace ThreeDoorsOfFate.Game
         }
 
         [Serializable]
-        private sealed class RunSaveData
+        private sealed class RunSaveDataV1
         {
             public int version;
             public int selectedClass;
