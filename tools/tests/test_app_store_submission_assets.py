@@ -22,9 +22,9 @@ SUBMISSION_ROOT = PROJECT_ROOT / "docs" / "submission" / "app-store"
 KOREAN_104_METADATA = SUBMISSION_ROOT / "metadata-1.0.4.ko-KR.json"
 ENGLISH_104_METADATA = SUBMISSION_ROOT / "metadata-1.0.4.en-US.json"
 REVIEW_NOTES_104 = SUBMISSION_ROOT / "review-notes-1.0.4.en-US.md"
-KOREAN_ACTIVE_METADATA = SUBMISSION_ROOT / "metadata-1.3.0.ko-KR.json"
-ENGLISH_ACTIVE_METADATA = SUBMISSION_ROOT / "metadata-1.3.0.en-US.json"
-ACTIVE_REVIEW_NOTES = SUBMISSION_ROOT / "review-notes-1.3.0.en-US.md"
+KOREAN_ACTIVE_METADATA = SUBMISSION_ROOT / "metadata-1.4.0.ko-KR.json"
+ENGLISH_ACTIVE_METADATA = SUBMISSION_ROOT / "metadata-1.4.0.en-US.json"
+ACTIVE_REVIEW_NOTES = SUBMISSION_ROOT / "review-notes-1.4.0.en-US.md"
 PUBLIC_PAGE_ROOT = (
     PROJECT_ROOT / "docs" / "submission" / "app-store" / "web" / "three-doors-of-fate"
 )
