@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "baseDecks": [
+    {
+      "characterClass": "Gambler",
+      "cards": [
+        { "cardId": "card_worn_dagger", "count": 4 },
+        { "cardId": "card_throwing_dagger", "count": 2 },
+        { "cardId": "card_fate_strike", "count": 1 },
+        { "cardId": "class_gambler_attack_wager_dagger", "count": 3 },
+        { "cardId": "card_worn_shield", "count": 3 },
+        { "cardId": "card_guard_stance", "count": 2 },
+        { "cardId": "card_duck_low", "count": 1 },
+        { "cardId": "class_gambler_defense_stake_shield", "count": 2 },
+        { "cardId": "card_reroll", "count": 2 },
+        { "cardId": "card_store_luck", "count": 1 },
+        { "cardId": "card_odd_pouch", "count": 1 },
+        { "cardId": "class_gambler_skill_turn_the_table", "count": 2 }
+      ]
+    },
+    {
+      "characterClass": "Oracle",
+      "cards": [
+        { "cardId": "card_worn_dagger", "count": 3 },
+        { "cardId": "card_fate_strike", "count": 2 },
+        { "cardId": "card_throwing_dagger", "count": 2 },
+        { "cardId": "class_oracle_attack_constellation_cut", "count": 3 },
+        { "cardId": "card_worn_shield", "count": 3 },
+        { "cardId": "card_protection_charm", "count": 2 },
+        { "cardId": "card_evade", "count": 1 },
+        { "cardId": "class_oracle_defense_foreseen_barrier", "count": 2 },
+        { "cardId": "card_read_the_rift", "count": 2 },
+        { "cardId": "card_fix_fate", "count": 1 },
+        { "cardId": "card_reroll", "count": 1 },
+        { "cardId": "class_oracle_skill_three_door_omen", "count": 2 }
+      ]
+    },
+    {
+      "characterClass": "Exile",
+      "cards": [
+        { "cardId": "card_worn_dagger", "count": 3 },
+        { "cardId": "card_heavy_blow", "count": 2 },
+        { "cardId": "card_deep_stab", "count": 2 },
+        { "cardId": "class_exile_attack_chain_execution", "count": 3 },
+        { "cardId": "card_worn_shield", "count": 3 },
+        { "cardId": "card_endure", "count": 2 },
+        { "cardId": "card_last_defense", "count": 1 },
+        { "cardId": "class_exile_defense_oath_of_exile", "count": 2 },
+        { "cardId": "card_purify", "count": 2 },
+        { "cardId": "card_absorb_curse", "count": 1 },
+        { "cardId": "card_reroll", "count": 1 },
+        { "cardId": "class_exile_skill_brand_purification", "count": 2 }
+      ]
+    }
+  ],
+  "contracts": [
+    {
+      "id": "gambler.high_roll",
+      "characterClass": "Gambler",
+      "nameKey": "contract.gambler.highRoll.name",
+      "roleKey": "contract.gambler.highRoll.role",
+      "descriptionKey": "contract.gambler.highRoll.description",
+      "swaps": [
+        { "removeCardId": "card_worn_dagger", "addCardId": "card_reckless_attack", "count": 2 }
+      ],
+      "startingGoldDelta": -5,
+      "startingHealthDelta": -4,
+      "startingLuckDelta": 1,
+      "startingDebtDelta": 0
+    },
+    {
+      "id": "gambler.house_edge",
+      "characterClass": "Gambler",
+      "nameKey": "contract.gambler.houseEdge.name",
+      "roleKey": "contract.gambler.houseEdge.role",
+      "descriptionKey": "contract.gambler.houseEdge.description",
+      "swaps": [
+        { "removeCardId": "card_reroll", "addCardId": "card_small_contract", "count": 1 }
+      ],
+      "startingGoldDelta": 10,
+      "startingHealthDelta": 0,
+      "startingLuckDelta": 0,
+      "startingDebtDelta": 1
+    },
+    {
+      "id": "gambler.reroll_control",
+      "characterClass": "Gambler",
+      "nameKey": "contract.gambler.rerollControl.name",
+      "roleKey": "contract.gambler.rerollControl.role",
+      "descriptionKey": "contract.gambler.rerollControl.description",
+      "swaps": [
+        { "removeCardId": "card_odd_pouch", "addCardId": "card_fix_fate", "count": 1 }
+      ],
+      "startingGoldDelta": -5,
+      "startingHealthDelta": 2,
+      "startingLuckDelta": 0,
+      "startingDebtDelta": 0
+    },
+    {
+      "id": "oracle.intent_reader",
+      "characterClass": "Oracle",
+      "nameKey": "contract.oracle.intentReader.name",
+      "roleKey": "contract.oracle.intentReader.role",
+      "descriptionKey": "contract.oracle.intentReader.description",
+      "swaps": [
+        { "removeCardId": "card_fate_strike", "addCardId": "card_counter_ready", "count": 1 }
+      ],
+      "startingGoldDelta": -5,
+      "startingHealthDelta": 2,
+      "startingLuckDelta": 0,
+      "startingDebtDelta": 0
+    },
+    {
+      "id": "oracle.door_prophet",
+      "characterClass": "Oracle",
+      "nameKey": "contract.oracle.doorProphet.name",
+      "roleKey": "contract.oracle.doorProphet.role",
+      "descriptionKey": "contract.oracle.doorProphet.description",
+      "swaps": [
+        { "removeCardId": "card_reroll", "addCardId": "card_read_the_rift", "count": 1 }
+      ],
+      "startingGoldDelta": -10,
+      "startingHealthDelta": 0,
+      "startingLuckDelta": 0,
+      "startingDebtDelta": 0
+    },
+    {
+      "id": "oracle.luck_keeper",
+      "characterClass": "Oracle",
+      "nameKey": "contract.oracle.luckKeeper.name",
+      "roleKey": "contract.oracle.luckKeeper.role",
+      "descriptionKey": "contract.oracle.luckKeeper.description",
+      "swaps": [
+        { "removeCardId": "card_read_the_rift", "addCardId": "card_store_luck", "count": 1 }
+      ],
+      "startingGoldDelta": 0,
+      "startingHealthDelta": -6,
+      "startingLuckDelta": 1,
+      "startingDebtDelta": 0
+    },
+    {
+      "id": "exile.low_health",
+      "characterClass": "Exile",
+      "nameKey": "contract.exile.lowHealth.name",
+      "roleKey": "contract.exile.lowHealth.role",
+      "descriptionKey": "contract.exile.lowHealth.description",
+      "swaps": [
+        { "removeCardId": "card_worn_dagger", "addCardId": "card_reckless_attack", "count": 2 }
+      ],
+      "startingGoldDelta": 5,
+      "startingHealthDelta": -6,
+      "startingLuckDelta": 0,
+      "startingDebtDelta": 0
+    },
+    {
+      "id": "exile.debt_cleanser",
+      "characterClass": "Exile",
+      "nameKey": "contract.exile.debtCleanser.name",
+      "roleKey": "contract.exile.debtCleanser.role",
+      "descriptionKey": "contract.exile.debtCleanser.description",
+      "swaps": [
+        { "removeCardId": "card_reroll", "addCardId": "card_purify", "count": 1 }
+      ],
+      "startingGoldDelta": -5,
+      "startingHealthDelta": 0,
+      "startingLuckDelta": 0,
+      "startingDebtDelta": -1
+    },
+    {
+      "id": "exile.counter_guard",
+      "characterClass": "Exile",
+      "nameKey": "contract.exile.counterGuard.name",
+      "roleKey": "contract.exile.counterGuard.role",
+      "descriptionKey": "contract.exile.counterGuard.description",
+      "swaps": [
+        { "removeCardId": "card_heavy_blow", "addCardId": "card_counter_ready", "count": 1 }
+      ],
+      "startingGoldDelta": -10,
+      "startingHealthDelta": 4,
+      "startingLuckDelta": 0,
+      "startingDebtDelta": 0
+    }
+  ]
+}

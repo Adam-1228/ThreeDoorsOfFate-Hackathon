@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "events": [
+    {
+      "id": "event.forgotten_altar",
+      "titleKey": "event.forgottenAltar.title",
+      "bodyKey": "event.forgottenAltar.body",
+      "requiredClass": "Any",
+      "minimumDebt": 0,
+      "oncePerTenDoors": true,
+      "choices": [
+        {
+          "id": "restore",
+          "labelKey": "event.forgottenAltar.restore.label",
+          "previewKey": "event.forgottenAltar.restore.preview",
+          "effects": [
+            { "type": "Health", "amount": 14, "cardId": "", "itemId": "" },
+            { "type": "Gold", "amount": -12, "cardId": "", "itemId": "" }
+          ]
+        },
+        {
+          "id": "endure",
+          "labelKey": "event.forgottenAltar.endure.label",
+          "previewKey": "event.forgottenAltar.endure.preview",
+          "effects": [
+            { "type": "MaxHealth", "amount": 4, "cardId": "", "itemId": "" },
+            { "type": "Health", "amount": -8, "cardId": "", "itemId": "" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "event.echoing_vault",
+      "titleKey": "event.echoingVault.title",
+      "bodyKey": "event.echoingVault.body",
+      "requiredClass": "Any",
+      "minimumDebt": 0,
+      "oncePerTenDoors": true,
+      "choices": [
+        {
+          "id": "borrow",
+          "labelKey": "event.echoingVault.borrow.label",
+          "previewKey": "event.echoingVault.borrow.preview",
+          "effects": [
+            { "type": "Gold", "amount": 45, "cardId": "", "itemId": "" },
+            { "type": "Debt", "amount": 2, "cardId": "", "itemId": "" }
+          ]
+        },
+        {
+          "id": "leave",
+          "labelKey": "event.echoingVault.leave.label",
+          "previewKey": "event.echoingVault.leave.preview",
+          "effects": [
+            { "type": "DoorInsight", "amount": 1, "cardId": "", "itemId": "" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "event.wounded_cartographer",
+      "titleKey": "event.woundedCartographer.title",
+      "bodyKey": "event.woundedCartographer.body",
+      "requiredClass": "Any",
+      "minimumDebt": 0,
+      "oncePerTenDoors": true,
+      "choices": [
+        {
+          "id": "trade_blood",
+          "labelKey": "event.woundedCartographer.tradeBlood.label",
+          "previewKey": "event.woundedCartographer.tradeBlood.preview",
+          "effects": [
+            { "type": "Health", "amount": -7, "cardId": "", "itemId": "" },
+            { "type": "DoorInsight", "amount": 2, "cardId": "", "itemId": "" }
+          ]
+        },
+        {
+          "id": "buy_map",
+          "labelKey": "event.woundedCartographer.buyMap.label",
+          "previewKey": "event.woundedCartographer.buyMap.preview",
+          "effects": [
+            { "type": "Gold", "amount": -18, "cardId": "", "itemId": "" },
+            { "type": "DoorInsight", "amount": 1, "cardId": "", "itemId": "" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "event.mirror_of_names",
+      "titleKey": "event.mirrorOfNames.title",
+      "bodyKey": "event.mirrorOfNames.body",
+      "requiredClass": "Any",
+      "minimumDebt": 0,
+      "oncePerTenDoors": true,
+      "choices": [
+        {
+          "id": "take_reflection",
+          "labelKey": "event.mirrorOfNames.takeReflection.label",
+          "previewKey": "event.mirrorOfNames.takeReflection.preview",
+          "effects": [
+            { "type": "AddCard", "amount": 1, "cardId": "card_mirror_shield", "itemId": "" },
+            { "type": "Debt", "amount": 1, "cardId": "", "itemId": "" }
+          ]
+        },
+        {
+          "id": "erase_name",
+          "labelKey": "event.mirrorOfNames.eraseName.label",
+          "previewKey": "event.mirrorOfNames.eraseName.preview",
+          "effects": [
+            { "type": "RemoveCard", "amount": 1, "cardId": "", "itemId": "" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "event.gambler_last_table",
+      "titleKey": "event.gamblerLastTable.title",
+      "bodyKey": "event.gamblerLastTable.body",
+      "requiredClass": "Gambler",
+      "minimumDebt": 0,
+      "oncePerTenDoors": true,
+      "choices": [
+        {
+          "id": "double_down",
+          "labelKey": "event.gamblerLastTable.doubleDown.label",
+          "previewKey": "event.gamblerLastTable.doubleDown.preview",
+          "effects": [
+            { "type": "Gold", "amount": 60, "cardId": "", "itemId": "" },
+            { "type": "Debt", "amount": 2, "cardId": "", "itemId": "" }
+          ]
+        },
+        {
+          "id": "mark_cards",
+          "labelKey": "event.gamblerLastTable.markCards.label",
+          "previewKey": "event.gamblerLastTable.markCards.preview",
+          "effects": [
+            { "type": "AddCard", "amount": 1, "cardId": "class_gambler_skill_turn_the_table", "itemId": "" },
+            { "type": "Gold", "amount": -15, "cardId": "", "itemId": "" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "event.oracle_blind_star",
+      "titleKey": "event.oracleBlindStar.title",
+      "bodyKey": "event.oracleBlindStar.body",
+      "requiredClass": "Oracle",
+      "minimumDebt": 0,
+      "oncePerTenDoors": true,
+      "choices": [
+        {
+          "id": "stare",
+          "labelKey": "event.oracleBlindStar.stare.label",
+          "previewKey": "event.oracleBlindStar.stare.preview",
+          "effects": [
+            { "type": "DoorInsight", "amount": 2, "cardId": "", "itemId": "" },
+            { "type": "MaxHealth", "amount": -4, "cardId": "", "itemId": "" }
+          ]
+        },
+        {
+          "id": "chart",
+          "labelKey": "event.oracleBlindStar.chart.label",
+          "previewKey": "event.oracleBlindStar.chart.preview",
+          "effects": [
+            { "type": "AddCard", "amount": 1, "cardId": "class_oracle_skill_three_door_omen", "itemId": "" },
+            { "type": "Gold", "amount": -15, "cardId": "", "itemId": "" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "event.exile_broken_chain",
+      "titleKey": "event.exileBrokenChain.title",
+      "bodyKey": "event.exileBrokenChain.body",
+      "requiredClass": "Exile",
+      "minimumDebt": 0,
+      "oncePerTenDoors": true,
+      "choices": [
+        {
+          "id": "break_link",
+          "labelKey": "event.exileBrokenChain.breakLink.label",
+          "previewKey": "event.exileBrokenChain.breakLink.preview",
+          "effects": [
+            { "type": "Debt", "amount": -2, "cardId": "", "itemId": "" },
+            { "type": "Health", "amount": -6, "cardId": "", "itemId": "" }
+          ]
+        },
+        {
+          "id": "forge_guard",
+          "labelKey": "event.exileBrokenChain.forgeGuard.label",
+          "previewKey": "event.exileBrokenChain.forgeGuard.preview",
+          "effects": [
+            { "type": "AddCard", "amount": 1, "cardId": "class_exile_defense_oath_of_exile", "itemId": "" },
+            { "type": "Gold", "amount": -15, "cardId": "", "itemId": "" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "event.compound_broker",
+      "titleKey": "event.compoundBroker.title",
+      "bodyKey": "event.compoundBroker.body",
+      "requiredClass": "Any",
+      "minimumDebt": 4,
+      "oncePerTenDoors": true,
+      "choices": [
+        {
+          "id": "settle",
+          "labelKey": "event.compoundBroker.settle.label",
+          "previewKey": "event.compoundBroker.settle.preview",
+          "effects": [
+            { "type": "Debt", "amount": -3, "cardId": "", "itemId": "" },
+            { "type": "Gold", "amount": -30, "cardId": "", "itemId": "" }
+          ]
+        },
+        {
+          "id": "refinance",
+          "labelKey": "event.compoundBroker.refinance.label",
+          "previewKey": "event.compoundBroker.refinance.preview",
+          "effects": [
+            { "type": "Gold", "amount": 70, "cardId": "", "itemId": "" },
+            { "type": "Debt", "amount": 3, "cardId": "", "itemId": "" }
+          ]
+        },
+        {
+          "id": "burn_ledger",
+          "labelKey": "event.compoundBroker.burnLedger.label",
+          "previewKey": "event.compoundBroker.burnLedger.preview",
+          "effects": [
+            { "type": "Debt", "amount": -1, "cardId": "", "itemId": "" },
+            { "type": "MaxHealth", "amount": -5, "cardId": "", "itemId": "" }
+          ]
+        }
+      ]
+    }
+  ]
+}

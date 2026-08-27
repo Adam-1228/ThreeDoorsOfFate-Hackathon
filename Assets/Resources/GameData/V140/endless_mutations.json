@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "mutations": [
+    {
+      "id": "abyss.compound_interest",
+      "nameKey": "abyss.compoundInterest.name",
+      "riskKey": "abyss.compoundInterest.risk",
+      "rewardKey": "abyss.compoundInterest.reward",
+      "risks": [
+        { "type": "EnemyAttackMultiplier", "value": 1.15, "minimum": 1.0, "maximum": 1.5 }
+      ],
+      "rewards": [
+        { "type": "CombatGoldMultiplier", "value": 1.25, "minimum": 1.0, "maximum": 2.0 }
+      ]
+    },
+    {
+      "id": "abyss.iron_ledger",
+      "nameKey": "abyss.ironLedger.name",
+      "riskKey": "abyss.ironLedger.risk",
+      "rewardKey": "abyss.ironLedger.reward",
+      "risks": [
+        { "type": "EnemyBlockMultiplier", "value": 1.20, "minimum": 1.0, "maximum": 1.5 }
+      ],
+      "rewards": [
+        { "type": "RareCardWeightMultiplier", "value": 1.30, "minimum": 1.0, "maximum": 2.0 }
+      ]
+    },
+    {
+      "id": "abyss.fading_rest",
+      "nameKey": "abyss.fadingRest.name",
+      "riskKey": "abyss.fadingRest.risk",
+      "rewardKey": "abyss.fadingRest.reward",
+      "risks": [
+        { "type": "RestHealingMultiplier", "value": 0.70, "minimum": 0.4, "maximum": 1.0 }
+      ],
+      "rewards": [
+        { "type": "RemovalCostMultiplier", "value": 0.60, "minimum": 0.4, "maximum": 1.0 }
+      ]
+    },
+    {
+      "id": "abyss.cracked_foresight",
+      "nameKey": "abyss.crackedForesight.name",
+      "riskKey": "abyss.crackedForesight.risk",
+      "rewardKey": "abyss.crackedForesight.reward",
+      "risks": [
+        { "type": "DebtGainBonus", "value": 1.0, "minimum": 0.0, "maximum": 2.0 }
+      ],
+      "rewards": [
+        { "type": "DoorInsightBonus", "value": 1.0, "minimum": 0.0, "maximum": 2.0 }
+      ]
+    },
+    {
+      "id": "abyss.hungry_shop",
+      "nameKey": "abyss.hungryShop.name",
+      "riskKey": "abyss.hungryShop.risk",
+      "rewardKey": "abyss.hungryShop.reward",
+      "risks": [
+        { "type": "ShopPriceMultiplier", "value": 1.20, "minimum": 1.0, "maximum": 1.5 }
+      ],
+      "rewards": [
+        { "type": "ShopOfferBonus", "value": 1.0, "minimum": 0.0, "maximum": 2.0 }
+      ]
+    },
+    {
+      "id": "abyss.sealed_hand",
+      "nameKey": "abyss.sealedHand.name",
+      "riskKey": "abyss.sealedHand.risk",
+      "rewardKey": "abyss.sealedHand.reward",
+      "risks": [
+        { "type": "OpeningHandPenalty", "value": -1.0, "minimum": -2.0, "maximum": 0.0 }
+      ],
+      "rewards": [
+        { "type": "FirstTurnActionBonus", "value": 1.0, "minimum": 0.0, "maximum": 2.0 }
+      ]
+    }
+  ]
+}
