@@ -119,6 +119,26 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(RaycastAndClick(row), Is.SameAs(row.gameObject));
             yield return null;
             Canvas.ForceUpdateCanvases();
+
+            RectTransform listPanel = FindRequired("운명 기록 목록 패널");
+            RectTransform summaryPanel = FindRequired("운명 기록 선택 요약");
+            RectTransform causePanel = FindRequired("운명 기록 종료 원인");
+            RectTransform deckPanel = FindRequired("운명 기록 최종 덱");
+            RectTransform loadoutPanel = FindRequired("운명 기록 유물 변칙");
+            RectTransform detailButton = FindRequired("운명 기록 상세 보기");
+
+            AssertWorldRectsDoNotOverlap(listPanel, summaryPanel);
+            AssertWorldRectsDoNotOverlap(causePanel, deckPanel);
+            AssertWorldRectsDoNotOverlap(causePanel, loadoutPanel);
+            AssertWorldRectsDoNotOverlap(deckPanel, loadoutPanel);
+            AssertWorldRectsDoNotOverlap(deckPanel, detailButton);
+            AssertWorldRectsDoNotOverlap(loadoutPanel, detailButton);
+
+            Assert.That(
+                RaycastAndClick(detailButton),
+                Is.SameAs(detailButton.gameObject));
+            yield return null;
+            Canvas.ForceUpdateCanvases();
             Assert.That(
                 FindRequired("운명 기록 상세 외곽 프레임"),
                 Is.Not.Null);
@@ -135,6 +155,30 @@ namespace ThreeDoorsOfFate.Tests
             Canvas.ForceUpdateCanvases();
             Assert.That(GetField<object>("phase").ToString(), Is.EqualTo("MainMenu"));
             Assert.That(FindRequired("게임시작"), Is.Not.Null);
+        }
+
+        private static void AssertWorldRectsDoNotOverlap(
+            RectTransform first,
+            RectTransform second)
+        {
+            Rect firstRect = GetWorldRect(first);
+            Rect secondRect = GetWorldRect(second);
+            Assert.That(
+                firstRect.Overlaps(secondRect),
+                Is.False,
+                $"UI frames overlap: '{first.name}' {firstRect} and "
+                + $"'{second.name}' {secondRect}.");
+        }
+
+        private static Rect GetWorldRect(RectTransform rectTransform)
+        {
+            Vector3[] corners = new Vector3[4];
+            rectTransform.GetWorldCorners(corners);
+            return Rect.MinMaxRect(
+                corners[0].x,
+                corners[0].y,
+                corners[2].x,
+                corners[2].y);
         }
 
         private void AppendHistoryEntry()

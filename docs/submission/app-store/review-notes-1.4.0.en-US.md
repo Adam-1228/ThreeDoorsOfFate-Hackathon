@@ -4,7 +4,7 @@
 
 - Build under review: `1.4.0 (14000)`.
 - Bundle ID: `com.adam.threedoorsfate`.
-- Status in this repository: `release candidate`; upload and App Review submission await separate owner approval.
+- Status in this repository: `release candidate`; the owner approved upload and App Review submission on 2026-08-28.
 - No account is required. The complete single-player game remains usable if the player declines Game Center authentication or is offline.
 
 ## Changes in this build
@@ -30,4 +30,4 @@
 - Ads remain optional rewarded ads selected by the player. There are no automatic, interstitial, or banner ads, and no in-app purchases or subscriptions.
 - The app uses non-personalized ad requests, disables publisher first-party identification before SDK initialization, and does not request ATT permission.
 - `ITSAppUsesNonExemptEncryption` is false. The app uses only platform-provided encryption for Game Center and iCloud transport.
-- When separately approved for submission, this version is configured for automatic release immediately after approval, without phased release.
+- This version is configured for automatic release immediately after approval, without phased release.

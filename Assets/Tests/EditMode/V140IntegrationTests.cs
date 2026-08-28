@@ -178,6 +178,7 @@ namespace ThreeDoorsOfFate.Tests
 
             object gambler = ParseEnum(CharacterClassTypeName, "Gambler");
             Invoke("ShowStarterContractSelection", gambler);
+            Canvas.ForceUpdateCanvases();
             Assert.That(GetRawField("phase").ToString(), Is.EqualTo("ContractSelection"));
             Assert.That(FindRequired("계약 설정").GetComponent<Button>(), Is.Not.Null);
             for (int index = 1; index <= 3; index += 1)
@@ -301,13 +302,27 @@ namespace ThreeDoorsOfFate.Tests
             Invoke("ShowRunHistory");
             RectTransform historyOuter = FindRequired("운명 기록 외곽 프레임");
             RectTransform historySafeRoot = FindRequired(
-                "운명 기록 목록 안전영역");
+                "운명 기록 안전영역");
+            RectTransform historyListPanel = FindRequired(
+                "운명 기록 목록 패널");
+            RectTransform historyListContent = FindRequired(
+                "운명 기록 목록 내용 안전영역");
+            RectTransform historySummary = FindRequired(
+                "운명 기록 선택 요약");
             RectTransform historyRow = FindRequired("운명 기록 항목 0");
             AssertInsideUnitAnchors(historyOuter);
             AssertInsideUnitAnchors(historySafeRoot);
+            AssertInsideUnitAnchors(historyListPanel);
+            AssertInsideUnitAnchors(historySummary);
             AssertInsideUnitAnchors(historyRow);
             Assert.That(historySafeRoot.parent, Is.SameAs(historyOuter));
-            Assert.That(historyRow.parent, Is.SameAs(historySafeRoot));
+            Assert.That(historyListPanel.parent, Is.SameAs(historySafeRoot));
+            Assert.That(historySummary.parent, Is.SameAs(historySafeRoot));
+            Assert.That(historyListContent.parent, Is.SameAs(historyListPanel));
+            Assert.That(historyRow.parent, Is.SameAs(historyListContent));
+            Assert.That(
+                historyListPanel.anchorMax.x,
+                Is.LessThan(historySummary.anchorMin.x));
         }
 
         private object CreateTypedCardList()
@@ -400,22 +415,64 @@ namespace ThreeDoorsOfFate.Tests
 
         private static void AssertStarterContractTextSafe(RectTransform panel)
         {
-            RectTransform name = panel.Find("계약 이름") as RectTransform;
-            RectTransform role = panel.Find("계약 역할") as RectTransform;
-            RectTransform description = panel.Find("계약 설명") as RectTransform;
-            RectTransform changes = panel.Find("계약 변경점") as RectTransform;
-            foreach (RectTransform text in new[] { name, role, description, changes })
+            RectTransform safeRoot = ActiveDescendants(panel)
+                .FirstOrDefault(rect => rect.name == "계약 텍스트 안전영역");
+            Assert.That(safeRoot, Is.Not.Null, panel.name);
+            Assert.That(
+                safeRoot.GetComponent<RectMask2D>(),
+                Is.Not.Null,
+                $"{panel.name} must clip localized text at its safe boundary.");
+
+            RectTransform name = ActiveDescendants(panel)
+                .FirstOrDefault(rect => rect.name == "계약 이름");
+            RectTransform role = ActiveDescendants(panel)
+                .FirstOrDefault(rect => rect.name == "계약 역할");
+            RectTransform description = ActiveDescendants(panel)
+                .FirstOrDefault(rect => rect.name == "계약 설명");
+            RectTransform swapBox = ActiveDescendants(panel)
+                .FirstOrDefault(rect => rect.name == "계약 카드 교체");
+            RectTransform swapText = ActiveDescendants(panel)
+                .FirstOrDefault(rect => rect.name == "계약 카드 교체 텍스트");
+            RectTransform resourceBox = ActiveDescendants(panel)
+                .FirstOrDefault(rect => rect.name == "계약 자원 변화");
+            RectTransform resourceText = ActiveDescendants(panel)
+                .FirstOrDefault(rect => rect.name == "계약 자원 변화 텍스트");
+            Assert.That(swapBox, Is.Not.Null, panel.name);
+            Assert.That(resourceBox, Is.Not.Null, panel.name);
+            foreach (RectTransform text in new[]
+            {
+                name,
+                role,
+                description,
+                swapText,
+                resourceText
+            })
             {
                 Assert.That(text, Is.Not.Null, panel.name);
-                Assert.That(text.anchorMin.x, Is.GreaterThanOrEqualTo(0.17f), text.name);
-                Assert.That(text.anchorMax.x, Is.LessThanOrEqualTo(0.83f), text.name);
+                Assert.That(text.IsChildOf(safeRoot), Is.True, text.name);
+                Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(
+                    panel,
+                    text);
+                float normalizedMinX =
+                    (bounds.min.x - panel.rect.xMin) / panel.rect.width;
+                float normalizedMaxX =
+                    (bounds.max.x - panel.rect.xMin) / panel.rect.width;
+                Assert.That(
+                    normalizedMinX,
+                    Is.GreaterThanOrEqualTo(0.25f),
+                    $"{text.name} begins inside the visible frame ornament.");
+                Assert.That(
+                    normalizedMaxX,
+                    Is.LessThanOrEqualTo(0.75f),
+                    $"{text.name} ends inside the visible frame ornament.");
             }
 
             Assert.That(name.anchorMin.y, Is.GreaterThanOrEqualTo(0.70f));
             Assert.That(name.anchorMax.y, Is.LessThanOrEqualTo(0.82f));
             Assert.That(role.anchorMax.y, Is.LessThanOrEqualTo(name.anchorMin.y));
             Assert.That(description.anchorMax.y, Is.LessThanOrEqualTo(role.anchorMin.y));
-            Assert.That(changes.anchorMax.y, Is.LessThanOrEqualTo(description.anchorMin.y));
+            Assert.That(swapBox.anchorMax.y, Is.LessThan(description.anchorMin.y));
+            Assert.That(resourceBox.anchorMax.y, Is.LessThan(swapBox.anchorMin.y));
         }
 
         private static void AssertNoHangul(string value, string label)

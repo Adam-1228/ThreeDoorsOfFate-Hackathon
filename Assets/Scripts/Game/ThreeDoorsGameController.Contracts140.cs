@@ -126,8 +126,19 @@ namespace ThreeDoorsOfFate.Game
                 new Vector2(left, 0.115f),
                 new Vector2(left + width, 0.875f));
 
-            Text name = AddLocalizedText(
+            RectTransform textSafeRoot = AddPanel(
                 panel,
+                "계약 텍스트 안전영역",
+                new Color(1f, 1f, 1f, 0f));
+            textSafeRoot.GetComponent<Image>().raycastTarget = false;
+            textSafeRoot.gameObject.AddComponent<RectMask2D>();
+            SetAnchors(
+                textSafeRoot,
+                new Vector2(0.224f, 0.000f),
+                new Vector2(0.776f, 1.000f));
+
+            Text name = AddLocalizedText(
+                textSafeRoot,
                 "계약 이름",
                 contract.NameKey,
                 27,
@@ -139,11 +150,11 @@ namespace ThreeDoorsOfFate.Game
             name.resizeTextMaxSize = 27;
             SetAnchors(
                 name.rectTransform,
-                new Vector2(0.18f, 0.705f),
-                new Vector2(0.82f, 0.800f));
+                new Vector2(0.050f, 0.725f),
+                new Vector2(0.950f, 0.820f));
 
             Text role = AddLocalizedText(
-                panel,
+                textSafeRoot,
                 "계약 역할",
                 contract.RoleKey,
                 18,
@@ -152,40 +163,71 @@ namespace ThreeDoorsOfFate.Game
             role.fontStyle = FontStyle.Bold;
             SetAnchors(
                 role.rectTransform,
-                new Vector2(0.18f, 0.625f),
-                new Vector2(0.82f, 0.695f));
+                new Vector2(0.050f, 0.645f),
+                new Vector2(0.950f, 0.715f));
 
             Text description = AddLocalizedText(
-                panel,
+                textSafeRoot,
                 "계약 설명",
                 contract.DescriptionKey,
                 17,
                 TextAnchor.UpperCenter,
                 new Color(0.91f, 0.87f, 0.78f, 1f));
             description.resizeTextForBestFit = true;
-            description.resizeTextMinSize = 13;
+            description.resizeTextMinSize = 15;
             description.resizeTextMaxSize = 17;
             description.lineSpacing = 1.02f;
+            description.horizontalOverflow = HorizontalWrapMode.Wrap;
+            description.verticalOverflow = VerticalWrapMode.Truncate;
             SetAnchors(
                 description.rectTransform,
-                new Vector2(0.18f, 0.475f),
-                new Vector2(0.82f, 0.615f));
+                new Vector2(0.050f, 0.555f),
+                new Vector2(0.950f, 0.635f));
 
-            Text changes = AddText(
-                panel,
-                "계약 변경점",
-                BuildStarterContractChangeSummary(contract),
+            Sprite infoFrame = contractInfoFrameSprite != null
+                ? contractInfoFrameSprite
+                : statusInnerHeaderFrameSprite != null
+                    ? statusInnerHeaderFrameSprite
+                    : statusItemSlotFrameSprite;
+            RectTransform swapBox = AddRunStatusContentBox(
+                textSafeRoot,
+                "계약 카드 교체",
+                new Vector2(0.055f, 0.415f),
+                new Vector2(0.945f, 0.535f),
+                infoFrame);
+            ConfigureStarterContractInfoBox(swapBox);
+            Text swaps = AddText(
+                swapBox,
+                "계약 카드 교체 텍스트",
+                BuildStarterContractSwapSummary(contract),
                 15,
-                TextAnchor.UpperLeft,
+                TextAnchor.MiddleCenter,
                 new Color(0.84f, 0.96f, 0.93f, 1f));
-            changes.resizeTextForBestFit = true;
-            changes.resizeTextMinSize = 11;
-            changes.resizeTextMaxSize = 15;
-            changes.lineSpacing = 0.94f;
+            ConfigureStarterContractChangeText(swaps, 15, 14);
             SetAnchors(
-                changes.rectTransform,
-                new Vector2(0.18f, 0.225f),
-                new Vector2(0.82f, 0.455f));
+                swaps.rectTransform,
+                new Vector2(0.085f, 0.140f),
+                new Vector2(0.915f, 0.860f));
+
+            RectTransform resourceBox = AddRunStatusContentBox(
+                textSafeRoot,
+                "계약 자원 변화",
+                new Vector2(0.055f, 0.275f),
+                new Vector2(0.945f, 0.395f),
+                infoFrame);
+            ConfigureStarterContractInfoBox(resourceBox);
+            Text resources = AddText(
+                resourceBox,
+                "계약 자원 변화 텍스트",
+                BuildStarterContractResourceSummary(contract),
+                15,
+                TextAnchor.MiddleCenter,
+                new Color(0.84f, 0.96f, 0.93f, 1f));
+            ConfigureStarterContractChangeText(resources, 15, 14);
+            SetAnchors(
+                resources.rectTransform,
+                new Vector2(0.085f, 0.140f),
+                new Vector2(0.915f, 0.860f));
 
             Button select = AddClassDetailActionButton(
                 panel,
@@ -200,11 +242,46 @@ namespace ThreeDoorsOfFate.Game
             SetAnchors(
                 select.GetComponent<RectTransform>(),
                 new Vector2(0.130f, 0.065f),
-                new Vector2(0.870f, 0.205f));
+                new Vector2(0.870f, 0.190f));
             select.onClick.AddListener(() => StartRun(characterClass, contract.Id));
         }
 
-        private string BuildStarterContractChangeSummary(
+        private static void ConfigureStarterContractInfoBox(RectTransform box)
+        {
+            Image background = box.GetComponent<Image>();
+            if (background != null)
+            {
+                background.color = Color.clear;
+            }
+
+            Transform frameTransform = box.Find("생성 투명 프레임");
+            if (frameTransform != null
+                && frameTransform.TryGetComponent(out Image frameImage))
+            {
+                frameImage.type = Image.Type.Simple;
+                frameImage.preserveAspect = false;
+                SetAnchors(
+                    frameImage.rectTransform,
+                    new Vector2(0f, -0.180f),
+                    new Vector2(1f, 1.170f));
+            }
+        }
+
+        private static void ConfigureStarterContractChangeText(
+            Text text,
+            int fontSize,
+            int minFontSize)
+        {
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = minFontSize;
+            text.resizeTextMaxSize = fontSize;
+            text.lineSpacing = 0.96f;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
+            text.raycastTarget = false;
+        }
+
+        private string BuildStarterContractSwapSummary(
             StarterContractDefinition contract)
         {
             List<string> lines = new();
@@ -232,13 +309,18 @@ namespace ThreeDoorsOfFate.Game
                 lines.Add(L("contract.ui.noSwap"));
             }
 
-            lines.Add(LF(
+            return string.Join("\n", lines);
+        }
+
+        private string BuildStarterContractResourceSummary(
+            StarterContractDefinition contract)
+        {
+            return LF(
                 "contract.ui.resourceDelta",
                 FormatSigned(contract.StartingGoldDelta),
                 FormatSigned(contract.StartingHealthDelta),
                 FormatSigned(contract.StartingLuckDelta),
-                FormatSigned(contract.StartingDebtDelta)));
-            return string.Join("\n", lines);
+                FormatSigned(contract.StartingDebtDelta));
         }
 
         private static string FormatSigned(int value)
@@ -583,7 +665,7 @@ namespace ThreeDoorsOfFate.Game
                     0,
                     1,
                     false,
-                    false,
+                    true,
                     GameSfxCue.UiAccept);
                 cardButton.gameObject.name = $"제거 카드 {choiceIndex}";
                 SetAnchors(

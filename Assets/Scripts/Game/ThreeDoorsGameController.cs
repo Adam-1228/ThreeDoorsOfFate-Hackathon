@@ -232,6 +232,7 @@ namespace ThreeDoorsOfFate.Game
         [SerializeField] private Sprite statusInnerPanelFrameSprite;
         [SerializeField] private Sprite statusInnerHeaderFrameSprite;
         [SerializeField] private Sprite statusItemSlotFrameSprite;
+        [SerializeField] private Sprite contractInfoFrameSprite;
         [SerializeField] private Sprite shopCombinationPanelFrameSprite;
         [SerializeField] private Sprite buttonIdleSprite;
         [SerializeField] private Sprite buttonHoverSprite;

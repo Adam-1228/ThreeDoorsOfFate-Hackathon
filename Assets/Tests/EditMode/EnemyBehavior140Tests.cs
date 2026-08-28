@@ -133,7 +133,10 @@ namespace ThreeDoorsOfFate.Tests
         [Test]
         public void ControllerUsesProfileAndAnnouncesBossPhaseWithoutTransitionDamage()
         {
-            GameLocalization.Initialize(SystemLanguage.English);
+            bool hadLanguage = PlayerPrefs.HasKey(GameLanguagePolicy.PreferenceKey);
+            string previousLanguage = PlayerPrefs.GetString(
+                GameLanguagePolicy.PreferenceKey,
+                string.Empty);
             Type controllerType = RequireType(ControllerTypeName);
             GameObject host = new("Enemy Behavior 1.4 Controller Test");
             EventSystem originalEventSystem =
@@ -142,6 +145,7 @@ namespace ThreeDoorsOfFate.Tests
             try
             {
                 controller = host.AddComponent(controllerType);
+                GameLocalization.SetLanguage(GameLanguage.English);
                 SetControllerField(controller, "playerHealth", 60);
                 SetControllerField(controller, "playerMaxHealth", 60);
                 SetControllerField(controller, "playerBlock", 0);
@@ -201,6 +205,19 @@ namespace ThreeDoorsOfFate.Tests
                         UnityEngine.Object.DestroyImmediate(created.gameObject);
                     }
                 }
+
+                if (hadLanguage)
+                {
+                    PlayerPrefs.SetString(
+                        GameLanguagePolicy.PreferenceKey,
+                        previousLanguage);
+                }
+                else
+                {
+                    PlayerPrefs.DeleteKey(GameLanguagePolicy.PreferenceKey);
+                }
+
+                PlayerPrefs.Save();
                 GameLocalization.Initialize(Application.systemLanguage);
             }
         }

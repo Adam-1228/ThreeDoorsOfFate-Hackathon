@@ -640,6 +640,7 @@ namespace ThreeDoorsOfFate.Editor
             serializedObject.FindProperty("statusInnerPanelFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_status_inner_panel_frame_ai.png");
             serializedObject.FindProperty("statusInnerHeaderFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_status_inner_header_frame_ai.png");
             serializedObject.FindProperty("statusItemSlotFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_status_item_slot_frame_ai.png");
+            serializedObject.FindProperty("contractInfoFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_contract_info_frame_v1.png");
             serializedObject.FindProperty("shopCombinationPanelFrameSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/GeneratedFrames/ui_shop_combination_panel_frame.png");
             serializedObject.FindProperty("buttonIdleSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/Buttons/button_idle.png");
             serializedObject.FindProperty("buttonHoverSprite").objectReferenceValue = LoadSprite("Assets/Art/UI/Buttons/button_hover.png");

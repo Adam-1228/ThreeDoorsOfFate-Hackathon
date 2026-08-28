@@ -101,10 +101,14 @@ namespace ThreeDoorsOfFate.Tests
         [Test]
         public void MutationCanOnlyBeActivatedOnceAndStatusShowsBothSides()
         {
-            GameLocalization.Initialize(SystemLanguage.English);
+            bool hadLanguage = PlayerPrefs.HasKey(GameLanguagePolicy.PreferenceKey);
+            string previousLanguage = PlayerPrefs.GetString(
+                GameLanguagePolicy.PreferenceKey,
+                string.Empty);
             Component controller = CreateController(out GameObject host);
             try
             {
+                GameLocalization.SetLanguage(GameLanguage.English);
                 SetField(controller, "endlessModeActive", true);
                 Assert.That(
                     Invoke(controller, "ActivateEndlessMutation", "abyss.compound_interest"),
@@ -125,6 +129,18 @@ namespace ThreeDoorsOfFate.Tests
             finally
             {
                 DestroyController(host, controller);
+                if (hadLanguage)
+                {
+                    PlayerPrefs.SetString(
+                        GameLanguagePolicy.PreferenceKey,
+                        previousLanguage);
+                }
+                else
+                {
+                    PlayerPrefs.DeleteKey(GameLanguagePolicy.PreferenceKey);
+                }
+
+                PlayerPrefs.Save();
                 GameLocalization.Initialize(Application.systemLanguage);
             }
         }

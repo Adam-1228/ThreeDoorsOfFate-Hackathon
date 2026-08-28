@@ -210,6 +210,34 @@ namespace ThreeDoorsOfFate.Tests
             Assert.That(deck, Has.Count.Zero);
         }
 
+        [UnityTest]
+        public IEnumerator DeckRemovalCardHoverUsesStablePreviewLifecycle()
+        {
+            IList deck = GetField<IList>("deck");
+            for (int index = 0; index < 13; index += 1)
+            {
+                deck.Add(shopCard);
+            }
+
+            Invoke("ShowShop");
+            yield return null;
+            FindRequired("상점 카드 제거").GetComponent<Button>().onClick.Invoke();
+            yield return null;
+
+            RectTransform removalCard = FindRequired("제거 카드 0");
+            SendPointerEnter(removalCard);
+
+            Image preview = GetField<Image>("cardPreviewImage");
+            Assert.That(preview, Is.Not.Null);
+            Assert.That(preview.gameObject.activeInHierarchy, Is.True);
+            Assert.That(preview.sprite, Is.SameAs(cardSprite));
+            Assert.That(preview.color, Is.EqualTo(Color.white));
+            Assert.That(preview.raycastTarget, Is.False);
+
+            SendPointerExit(removalCard);
+            Assert.That(preview.gameObject.activeSelf, Is.False);
+        }
+
         private GameObject RaycastAndClick(RectTransform target)
         {
             Canvas.ForceUpdateCanvases();
@@ -251,6 +279,17 @@ namespace ThreeDoorsOfFate.Tests
                 target.gameObject,
                 pointer,
                 ExecuteEvents.pointerExitHandler);
+        }
+
+        private static void SendPointerEnter(RectTransform target)
+        {
+            EventSystem eventSystem = UnityEngine.Object.FindAnyObjectByType<EventSystem>();
+            Assert.That(eventSystem, Is.Not.Null);
+            PointerEventData pointer = new(eventSystem);
+            ExecuteEvents.ExecuteHierarchy(
+                target.gameObject,
+                pointer,
+                ExecuteEvents.pointerEnterHandler);
         }
 
         private RectTransform FindRequired(string objectName)

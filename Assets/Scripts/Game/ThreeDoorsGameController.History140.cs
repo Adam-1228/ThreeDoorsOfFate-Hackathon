@@ -14,10 +14,13 @@ namespace ThreeDoorsOfFate.Game
     public sealed partial class ThreeDoorsGameController
     {
         private const string RunHistoryGameVersion = "1.4.0";
+        private const int RunHistoryEntriesPerPage = 3;
 
         private string runHistoryKeyPrefix =
             PlayerPrefsProgressStore.ProductionPrefix;
         private readonly List<RunHistoryEntry> displayedRunHistoryEntries = new();
+        private int runHistoryPage;
+        private int selectedRunHistoryIndex = -1;
         private long runStartedAtUnixSeconds;
         private bool runHistoryRecordedThisRun;
         private int runHistoryCardsPlayed;
@@ -251,9 +254,22 @@ namespace ThreeDoorsOfFate.Game
                 mainMenuBackground != null
                     ? mainMenuBackground
                     : classSelectBackground);
-            ClearContent();
             AppleGameServicesRuntime.SetAccessPointVisible(false);
             titleText.text = L("app.title");
+
+            displayedRunHistoryEntries.Clear();
+            displayedRunHistoryEntries.AddRange(
+                RunHistoryStore.Read(runHistoryKeyPrefix));
+            runHistoryPage = 0;
+            selectedRunHistoryIndex = displayedRunHistoryEntries.Count > 0
+                ? 0
+                : -1;
+            RenderRunHistoryLayout();
+        }
+
+        private void RenderRunHistoryLayout()
+        {
+            ClearContent();
             subtitleText.text = L("runHistory.title");
             BindLocalizedText(subtitleText, "runHistory.title");
             SetSubtitleBoxVisible(true);
@@ -261,10 +277,6 @@ namespace ThreeDoorsOfFate.Game
             topBar.gameObject.SetActive(false);
             SetLogVisible(false);
             SetAnchors(contentRoot, Vector2.zero, Vector2.one);
-
-            displayedRunHistoryEntries.Clear();
-            displayedRunHistoryEntries.AddRange(
-                RunHistoryStore.Read(runHistoryKeyPrefix));
 
             Sprite outerSprite = statusPanelFrameSprite != null
                 ? statusPanelFrameSprite
@@ -280,13 +292,16 @@ namespace ThreeDoorsOfFate.Game
                 new Vector2(0.045f, 0.105f),
                 new Vector2(0.955f, 0.865f));
 
-            RectTransform listSafeRoot = AddPanel(
+            RectTransform historySafeRoot = AddPanel(
                 outer,
-                "운명 기록 목록 안전영역",
+                "운명 기록 안전영역",
                 new Color(1f, 1f, 1f, 0f));
-            listSafeRoot.GetComponent<Image>().raycastTarget = false;
-            listSafeRoot.gameObject.AddComponent<RectMask2D>();
-            SetAnchors(listSafeRoot, PcUiLayoutPolicy.StatusDetailBody);
+            historySafeRoot.GetComponent<Image>().raycastTarget = false;
+            historySafeRoot.gameObject.AddComponent<RectMask2D>();
+            SetAnchors(
+                historySafeRoot,
+                new Vector2(0.090f, 0.145f),
+                new Vector2(0.910f, 0.800f));
 
             AddRunStatusLabelBox(
                 contentRoot,
@@ -307,7 +322,7 @@ namespace ThreeDoorsOfFate.Game
             if (displayedRunHistoryEntries.Count == 0)
             {
                 Text empty = AddText(
-                    listSafeRoot,
+                    historySafeRoot,
                     "운명 기록 없음",
                     L("runHistory.empty"),
                     24,
@@ -320,23 +335,94 @@ namespace ThreeDoorsOfFate.Game
                 return;
             }
 
-            for (int index = 0;
-                index < displayedRunHistoryEntries.Count;
-                index += 1)
+            int pageCount = Mathf.Max(
+                1,
+                Mathf.CeilToInt(
+                    displayedRunHistoryEntries.Count
+                    / (float)RunHistoryEntriesPerPage));
+            runHistoryPage = Mathf.Clamp(runHistoryPage, 0, pageCount - 1);
+            int pageStart = runHistoryPage * RunHistoryEntriesPerPage;
+            int pageEnd = Mathf.Min(
+                displayedRunHistoryEntries.Count,
+                pageStart + RunHistoryEntriesPerPage);
+            if (selectedRunHistoryIndex < pageStart
+                || selectedRunHistoryIndex >= pageEnd)
             {
-                int column = index / 5;
-                int row = index % 5;
-                float minX = column == 0 ? 0.045f : 0.515f;
-                float maxX = column == 0 ? 0.485f : 0.955f;
-                float maxY = 0.945f - row * 0.180f;
-                float minY = maxY - 0.145f;
+                selectedRunHistoryIndex = pageStart;
+            }
+
+            RectTransform listPanel = AddRunStatusContentBox(
+                historySafeRoot,
+                "운명 기록 목록 패널",
+                new Vector2(0.000f, 0.000f),
+                new Vector2(0.390f, 1.000f),
+                statusInnerPanelFrameSprite);
+            RectTransform listContent = AddPanel(
+                listPanel,
+                "운명 기록 목록 내용 안전영역",
+                new Color(1f, 1f, 1f, 0f));
+            listContent.GetComponent<Image>().raycastTarget = false;
+            listContent.gameObject.AddComponent<RectMask2D>();
+            SetAnchors(
+                listContent,
+                new Vector2(0.065f, 0.065f),
+                new Vector2(0.935f, 0.935f));
+
+            AddRunStatusFlatLabelBox(
+                listContent,
+                "운명 기록 페이지 제목",
+                LF("runHistory.recentPage", runHistoryPage + 1, pageCount),
+                new Vector2(0.000f, 0.875f),
+                new Vector2(1.000f, 1.000f),
+                22);
+
+            const float rowTop = 0.850f;
+            const float rowHeight = 0.225f;
+            const float rowGap = 0.025f;
+            for (int index = pageStart; index < pageEnd; index += 1)
+            {
+                int visibleRow = index - pageStart;
+                float maxY = rowTop
+                    - visibleRow * (rowHeight + rowGap);
+                float minY = maxY - rowHeight;
                 AddRunHistoryListButton(
-                    listSafeRoot,
+                    listContent,
                     index,
                     displayedRunHistoryEntries[index],
-                    new Vector2(minX, minY),
-                    new Vector2(maxX, maxY));
+                    new Vector2(0.015f, minY),
+                    new Vector2(0.985f, maxY),
+                    index == selectedRunHistoryIndex);
             }
+
+            if (pageCount > 1)
+            {
+                AddRunStatusTextButton(
+                    listContent,
+                    "운명 기록 이전 페이지",
+                    L("common.previous"),
+                    new Vector2(0.015f, 0.000f),
+                    new Vector2(0.470f, 0.085f),
+                    () => ShowRunHistoryPage(runHistoryPage - 1),
+                    14).interactable = runHistoryPage > 0;
+                AddRunStatusTextButton(
+                    listContent,
+                    "운명 기록 다음 페이지",
+                    L("common.next"),
+                    new Vector2(0.530f, 0.000f),
+                    new Vector2(0.985f, 0.085f),
+                    () => ShowRunHistoryPage(runHistoryPage + 1),
+                    14).interactable = runHistoryPage < pageCount - 1;
+            }
+
+            RectTransform summaryPanel = AddRunStatusContentBox(
+                historySafeRoot,
+                "운명 기록 선택 요약",
+                new Vector2(0.415f, 0.000f),
+                new Vector2(1.000f, 1.000f),
+                statusInnerPanelFrameSprite);
+            PopulateRunHistorySelectionSummary(
+                summaryPanel,
+                displayedRunHistoryEntries[selectedRunHistoryIndex]);
         }
 
         private void AddRunHistoryListButton(
@@ -344,41 +430,422 @@ namespace ThreeDoorsOfFate.Game
             int index,
             RunHistoryEntry entry,
             Vector2 minimum,
-            Vector2 maximum)
+            Vector2 maximum,
+            bool selected)
         {
-            RectTransform row = AddPanel(
+            RectTransform row = AddRunStatusContentBox(
                 parent,
                 $"운명 기록 항목 {index}",
-                Color.white,
-                GetRunStatusWideBoxFrameSprite());
+                minimum,
+                maximum,
+                statusInnerHeaderFrameSprite != null
+                    ? statusInnerHeaderFrameSprite
+                    : GetRunStatusWideBoxFrameSprite());
             Image image = row.GetComponent<Image>();
-            image.type = Image.Type.Simple;
             image.raycastTarget = true;
-            SetAnchors(row, minimum, maximum);
+            image.color = selected
+                ? new Color(0.055f, 0.115f, 0.120f, 1f)
+                : new Color(0.018f, 0.024f, 0.028f, 0.985f);
 
             Button button = AddSfxButton(row.gameObject);
             button.targetGraphic = image;
             button.colors = CreateButtonColors();
             int capturedIndex = index;
             button.onClick.AddListener(
-                () => ShowRunHistoryDetail(capturedIndex));
+                () => SelectRunHistoryEntry(capturedIndex));
 
-            Text label = AddText(
+            Text title = AddText(
                 row,
-                $"운명 기록 항목 {index} 라벨",
-                BuildRunHistoryListLabel(entry),
-                16,
+                $"운명 기록 항목 {index} 제목",
+                BuildRunHistoryListTitle(entry),
+                24,
                 TextAnchor.MiddleLeft,
-                new Color(0.88f, 0.95f, 0.87f, 1f));
-            label.resizeTextForBestFit = true;
-            label.resizeTextMinSize = 11;
-            label.resizeTextMaxSize = 16;
-            label.lineSpacing = 0.90f;
-            label.raycastTarget = false;
+                new Color(0.76f, 1f, 0.96f, 1f));
+            title.fontStyle = FontStyle.Bold;
+            title.resizeTextForBestFit = true;
+            title.resizeTextMinSize = 20;
+            title.resizeTextMaxSize = 24;
+            title.raycastTarget = false;
             SetAnchors(
-                label.rectTransform,
-                new Vector2(0.075f, 0.115f),
-                new Vector2(0.925f, 0.885f));
+                title.rectTransform,
+                new Vector2(0.120f, 0.540f),
+                new Vector2(0.880f, 0.820f));
+
+            Text metadata = AddText(
+                row,
+                $"운명 기록 항목 {index} 정보",
+                BuildRunHistoryListMetadata(entry),
+                20,
+                TextAnchor.MiddleLeft,
+                new Color(0.88f, 0.93f, 0.84f, 1f));
+            metadata.resizeTextForBestFit = true;
+            metadata.resizeTextMinSize = 18;
+            metadata.resizeTextMaxSize = 20;
+            metadata.raycastTarget = false;
+            SetAnchors(
+                metadata.rectTransform,
+                new Vector2(0.120f, 0.180f),
+                new Vector2(0.880f, 0.480f));
+        }
+
+        private void ShowRunHistoryPage(int page)
+        {
+            int pageCount = Mathf.Max(
+                1,
+                Mathf.CeilToInt(
+                    displayedRunHistoryEntries.Count
+                    / (float)RunHistoryEntriesPerPage));
+            runHistoryPage = Mathf.Clamp(page, 0, pageCount - 1);
+            selectedRunHistoryIndex = Mathf.Min(
+                displayedRunHistoryEntries.Count - 1,
+                runHistoryPage * RunHistoryEntriesPerPage);
+            RenderRunHistoryLayout();
+        }
+
+        private void SelectRunHistoryEntry(int index)
+        {
+            if (index < 0 || index >= displayedRunHistoryEntries.Count)
+            {
+                return;
+            }
+
+            selectedRunHistoryIndex = index;
+            runHistoryPage = index / RunHistoryEntriesPerPage;
+            RenderRunHistoryLayout();
+        }
+
+        private void ShowSelectedRunHistoryDetail()
+        {
+            if (selectedRunHistoryIndex < 0
+                || selectedRunHistoryIndex >= displayedRunHistoryEntries.Count)
+            {
+                ShowRunHistory();
+                return;
+            }
+
+            ShowRunHistoryDetail(selectedRunHistoryIndex);
+        }
+
+        private void PopulateRunHistorySelectionSummary(
+            RectTransform parent,
+            RunHistoryEntry entry)
+        {
+            RectTransform content = AddPanel(
+                parent,
+                "운명 기록 선택 요약 안전영역",
+                new Color(1f, 1f, 1f, 0f));
+            content.GetComponent<Image>().raycastTarget = false;
+            content.gameObject.AddComponent<RectMask2D>();
+            SetAnchors(
+                content,
+                new Vector2(0.045f, 0.060f),
+                new Vector2(0.955f, 0.940f));
+
+            RectTransform heading = AddRunStatusContentBox(
+                content,
+                "운명 기록 선택 제목",
+                new Vector2(0.000f, 0.870f),
+                new Vector2(1.000f, 1.000f),
+                statusInnerHeaderFrameSprite);
+            AddRunHistoryBoxText(
+                heading,
+                LF(
+                    "runHistory.summary.selectedTitle",
+                    GetRunHistoryResultName(entry),
+                    GetRunHistoryClassName(entry.CharacterClass)),
+                24,
+                TextAnchor.MiddleCenter,
+                new Vector2(0.100f, 0.180f),
+                new Vector2(0.900f, 0.820f));
+
+            string[] statNames =
+            {
+                L("runHistory.summary.doorsLabel"),
+                L("runHistory.summary.battlesLabel"),
+                L("runHistory.summary.goldLabel"),
+                L("runHistory.summary.debtLabel")
+            };
+            int[] statValues =
+            {
+                entry.DoorsCleared,
+                entry.BattlesDefeated,
+                entry.FinalGold,
+                entry.FinalDebt
+            };
+            Vector2[] statMinimums =
+            {
+                new(0.000f, 0.715f),
+                new(0.508f, 0.715f),
+                new(0.000f, 0.560f),
+                new(0.508f, 0.560f)
+            };
+            Vector2[] statMaximums =
+            {
+                new(0.492f, 0.850f),
+                new(1.000f, 0.850f),
+                new(0.492f, 0.695f),
+                new(1.000f, 0.695f)
+            };
+            for (int index = 0; index < statNames.Length; index += 1)
+            {
+                AddRunHistoryStatBox(
+                    content,
+                    index,
+                    statNames[index],
+                    statValues[index],
+                    statMinimums[index],
+                    statMaximums[index]);
+            }
+
+            RectTransform cause = AddRunStatusContentBox(
+                content,
+                "운명 기록 종료 원인",
+                new Vector2(0.000f, 0.350f),
+                new Vector2(1.000f, 0.540f),
+                statusInnerPanelFrameSprite);
+            AddRunHistorySectionTitle(
+                cause,
+                L("runHistory.summary.cause"));
+            AddRunHistoryBoxText(
+                cause,
+                "운명 기록 종료 원인 내용",
+                ResolveRunHistoryEnding(entry),
+                20,
+                TextAnchor.MiddleCenter,
+                new Vector2(0.120f, 0.120f),
+                new Vector2(0.880f, 0.600f));
+
+            RectTransform deck = AddRunStatusContentBox(
+                content,
+                "운명 기록 최종 덱",
+                new Vector2(0.000f, 0.105f),
+                new Vector2(0.492f, 0.330f),
+                statusInnerPanelFrameSprite);
+            AddRunHistorySectionTitle(
+                deck,
+                L("runHistory.summary.deck"));
+            AddRunHistoryBoxText(
+                deck,
+                "운명 기록 최종 덱 내용",
+                BuildRunHistoryDeckPreview(entry.FinalDeckCardIds),
+                20,
+                TextAnchor.UpperLeft,
+                new Vector2(0.120f, 0.120f),
+                new Vector2(0.880f, 0.600f));
+
+            RectTransform loadout = AddRunStatusContentBox(
+                content,
+                "운명 기록 유물 변칙",
+                new Vector2(0.508f, 0.105f),
+                new Vector2(1.000f, 0.330f),
+                statusInnerPanelFrameSprite);
+            AddRunHistorySectionTitle(
+                loadout,
+                L("runHistory.summary.loadout"));
+            AddRunHistoryBoxText(
+                loadout,
+                "운명 기록 유물 변칙 내용",
+                BuildRunHistoryLoadoutPreview(entry),
+                20,
+                TextAnchor.UpperLeft,
+                new Vector2(0.120f, 0.120f),
+                new Vector2(0.880f, 0.600f));
+
+            AddRunStatusTextButton(
+                content,
+                "운명 기록 상세 보기",
+                L("runHistory.summary.detail"),
+                new Vector2(0.000f, 0.000f),
+                new Vector2(1.000f, 0.085f),
+                ShowSelectedRunHistoryDetail,
+                22);
+        }
+
+        private void AddRunHistoryStatBox(
+            RectTransform parent,
+            int index,
+            string label,
+            int value,
+            Vector2 minimum,
+            Vector2 maximum)
+        {
+            RectTransform stat = AddRunStatusContentBox(
+                parent,
+                $"운명 기록 통계 {index}",
+                minimum,
+                maximum,
+                statusItemSlotFrameSprite != null
+                    ? statusItemSlotFrameSprite
+                    : GetRunStatusSlotFrameSprite());
+            Text name = AddText(
+                stat,
+                $"운명 기록 통계 {index} 이름",
+                label,
+                20,
+                TextAnchor.MiddleCenter,
+                new Color(0.72f, 1f, 0.96f, 1f));
+            name.fontStyle = FontStyle.Bold;
+            name.resizeTextForBestFit = false;
+            name.raycastTarget = false;
+            AddTextGlow(
+                name,
+                new Color(0f, 0f, 0f, 0.88f),
+                new Color(0.08f, 0.62f, 0.58f, 0.34f),
+                new Vector2(0.9f, -1.0f));
+            SetAnchors(
+                name.rectTransform,
+                new Vector2(0.140f, 0.200f),
+                new Vector2(0.520f, 0.800f));
+
+            Text amount = AddText(
+                stat,
+                $"운명 기록 통계 {index} 값",
+                value.ToString(),
+                28,
+                TextAnchor.MiddleCenter,
+                new Color(1f, 0.92f, 0.76f, 1f));
+            amount.fontStyle = FontStyle.Bold;
+            amount.resizeTextForBestFit = false;
+            amount.raycastTarget = false;
+            AddTextGlow(
+                amount,
+                new Color(0f, 0f, 0f, 0.90f),
+                new Color(0.54f, 0.42f, 0.24f, 0.46f),
+                new Vector2(0.9f, -1.0f));
+            SetAnchors(
+                amount.rectTransform,
+                new Vector2(0.560f, 0.140f),
+                new Vector2(0.860f, 0.860f));
+        }
+
+        private void AddRunHistorySectionTitle(
+            RectTransform parent,
+            string label)
+        {
+            AddRunHistoryBoxText(
+                parent,
+                $"{parent.name} 제목",
+                label,
+                20,
+                TextAnchor.MiddleCenter,
+                new Vector2(0.120f, 0.620f),
+                new Vector2(0.880f, 0.920f),
+                true);
+        }
+
+        private void AddRunHistoryBoxText(
+            RectTransform parent,
+            string label,
+            int fontSize,
+            TextAnchor alignment,
+            Vector2 minimum,
+            Vector2 maximum,
+            bool bold = false)
+        {
+            AddRunHistoryBoxText(
+                parent,
+                $"{parent.name} 텍스트",
+                label,
+                fontSize,
+                alignment,
+                minimum,
+                maximum,
+                bold);
+        }
+
+        private void AddRunHistoryBoxText(
+            RectTransform parent,
+            string objectName,
+            string label,
+            int fontSize,
+            TextAnchor alignment,
+            Vector2 minimum,
+            Vector2 maximum,
+            bool bold = false)
+        {
+            Text text = AddText(
+                parent,
+                objectName,
+                label,
+                fontSize,
+                alignment,
+                new Color(0.88f, 0.95f, 0.87f, 1f));
+            text.fontStyle = bold ? FontStyle.Bold : FontStyle.Normal;
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = Mathf.Max(18, fontSize - 2);
+            text.resizeTextMaxSize = fontSize;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
+            text.lineSpacing = 0.88f;
+            text.raycastTarget = false;
+            SetAnchors(text.rectTransform, minimum, maximum);
+        }
+
+        private string BuildRunHistoryListTitle(RunHistoryEntry entry)
+        {
+            return LF(
+                "runHistory.list.mobileTitle",
+                GetRunHistoryResultName(entry),
+                FormatRunHistoryDate(entry.FinishedAtUnixSeconds));
+        }
+
+        private string BuildRunHistoryListMetadata(RunHistoryEntry entry)
+        {
+            return LF(
+                "runHistory.list.mobileMetadata",
+                GetRunHistoryClassName(entry.CharacterClass),
+                GetRunHistoryDifficultyName(entry.Difficulty),
+                entry.DoorsCleared,
+                entry.BattlesDefeated);
+        }
+
+        private string GetRunHistoryResultName(RunHistoryEntry entry)
+        {
+            return L(entry.Victory
+                ? "runHistory.result.victory"
+                : "runHistory.result.defeat");
+        }
+
+        private string BuildRunHistoryDeckPreview(IEnumerable<string> cardIds)
+        {
+            List<IGrouping<string, string>> groups =
+                (cardIds ?? Enumerable.Empty<string>())
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .GroupBy(id => id, StringComparer.Ordinal)
+                .OrderBy(
+                    group => GetRunHistoryCardName(group.Key),
+                    StringComparer.Ordinal)
+                .ToList();
+            List<string> lines = groups
+                .Take(3)
+                .Select(group => LF(
+                    "runHistory.detail.deckLine",
+                    group.Count(),
+                    GetRunHistoryCardName(group.Key)))
+                .ToList();
+            int remaining = groups.Count - lines.Count;
+            if (remaining > 0)
+            {
+                lines.Add(LF("runHistory.summary.moreCards", remaining));
+            }
+
+            return lines.Count > 0
+                ? string.Join("\n", lines)
+                : L("runHistory.none");
+        }
+
+        private string BuildRunHistoryLoadoutPreview(RunHistoryEntry entry)
+        {
+            string items = JoinOrNone(entry.EquippedItemIds
+                .Select(GetRunHistoryItemName)
+                .Take(3));
+            string mutations = JoinOrNone(entry.ActiveMutationIds
+                .Select(GetRunHistoryMutationName)
+                .Take(2));
+            return LF(
+                "runHistory.summary.loadoutBody",
+                items,
+                mutations);
         }
 
         private string BuildRunHistoryListLabel(RunHistoryEntry entry)
@@ -451,7 +918,7 @@ namespace ThreeDoorsOfFate.Game
                 L("runHistory.back"),
                 new Vector2(0.045f, 0.895f),
                 new Vector2(0.180f, 0.975f),
-                ShowRunHistory,
+                RenderRunHistoryLayout,
                 18);
 
             RectTransform summaryPanel = AddRunStatusContentBox(

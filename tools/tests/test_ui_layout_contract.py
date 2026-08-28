@@ -227,23 +227,42 @@ class UiLayoutContractTests(unittest.TestCase):
 
     def test_run_history_frames_and_columns_stay_in_normalized_bounds(self) -> None:
         source = HISTORY_CONTROLLER_PATH.read_text(encoding="utf-8")
-        history = extract_method(source, "ShowRunHistory")
+        history = extract_method(source, "RenderRunHistoryLayout")
+        selection = extract_method(source, "PopulateRunHistorySelectionSummary")
+        stat_box = extract_method(source, "AddRunHistoryStatBox")
         detail = extract_method(source, "ShowRunHistoryDetail")
 
         outer = parse_anchor_pair(history, "outer")
+        safe_root = parse_anchor_pair(history, "historySafeRoot")
+        list_panel = parse_content_box_bounds(history, "listPanel")
+        selection_summary = parse_content_box_bounds(history, "summaryPanel")
         detail_outer = parse_anchor_pair(detail, "outer")
         summary = parse_content_box_bounds(detail, "summaryPanel")
         loadout = parse_content_box_bounds(detail, "loadoutPanel")
-        for rect in (outer, detail_outer, summary, loadout):
+        for rect in (
+            outer,
+            safe_root,
+            list_panel,
+            selection_summary,
+            detail_outer,
+            summary,
+            loadout,
+        ):
             with self.subTest(rect=rect):
                 self.assertLess(rect[0], rect[2])
                 self.assertLess(rect[1], rect[3])
                 for value in rect:
                     self.assertGreaterEqual(value, 0.0)
                     self.assertLessEqual(value, 1.0)
+        self.assertGreaterEqual(selection_summary[0] - list_panel[2], 0.012)
         self.assertLessEqual(summary[2], loadout[0])
-        self.assertIn('"운명 기록 목록 안전영역"', history)
-        self.assertIn("PcUiLayoutPolicy.StatusDetailBody", history)
+        self.assertIn('"운명 기록 안전영역"', history)
+        self.assertIn('"운명 기록 목록 패널"', history)
+        self.assertIn('"운명 기록 선택 요약"', history)
+        self.assertIn("statusInnerPanelFrameSprite", history)
+        self.assertIn("statusInnerHeaderFrameSprite", selection)
+        self.assertIn("AddRunHistoryStatBox(", selection)
+        self.assertIn("statusItemSlotFrameSprite", stat_box)
         self.assertIn('"운명 기록 상세 안전영역"', detail)
         self.assertIn("PcUiLayoutPolicy.StatusDetailBody", detail)
         self.assertGreaterEqual(detail.count("statusInnerPanelFrameSprite"), 2)

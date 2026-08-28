@@ -85,9 +85,11 @@
   },
   "submission": {
     "status": "release_candidate",
-    "approved_for_submission": false,
-    "build_upload_started": false,
-    "app_store_connect_submission_started": false,
-    "approval_gate": "Wait until v1.3.0 has spent meaningful time live and obtain separate owner approval."
+    "approved_for_submission": true,
+    "build_upload_started": true,
+    "app_store_connect_submission_started": true,
+    "app_store_connect_status": "waiting_for_review",
+    "submitted_on": "2026-08-28",
+    "approval_gate": "Owner explicitly approved the 1.4.0 App Review submission on 2026-08-28."
   }
 }

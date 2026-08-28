@@ -195,7 +195,7 @@ def validate_submission_documents(root: Path) -> list[str]:
         (("build", "rewarded_ads_only"), True),
         (("build", "production_ads_required"), True),
         (("submission", "status"), "release_candidate"),
-        (("submission", "approved_for_submission"), False),
+        (("submission", "approved_for_submission"), True),
     )
     for key_path, expected in expected_values:
         current: object = metadata
@@ -277,7 +277,7 @@ def validate_submission_documents(root: Path) -> list[str]:
                 f"docs/submission/app-store/{ACTIVE_REVIEW_NOTES}",
             ),
             (("submission", "status"), "release_candidate"),
-            (("submission", "approved_for_submission"), False),
+            (("submission", "approved_for_submission"), True),
         )
         for key_path, expected in english_expected_values:
             current: object = english_metadata

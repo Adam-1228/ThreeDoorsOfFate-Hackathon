@@ -39,7 +39,7 @@ class Release140ContractTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.require(marker, source)
 
-    def test_release_candidate_metadata_is_bilingual_and_draft_scoped(self) -> None:
+    def test_release_candidate_metadata_is_bilingual_and_submission_approved(self) -> None:
         for locale in ("ko-KR", "en-US"):
             path = SUBMISSION / f"metadata-1.4.0.{locale}.json"
             self.assertTrue(path.is_file(), f"missing App Store metadata: {path}")
@@ -48,7 +48,7 @@ class Release140ContractTests(unittest.TestCase):
             self.assertEqual(metadata["version"]["build_string"], "14000")
             self.assertEqual(metadata["version"]["localization"], locale)
             self.assertEqual(metadata["commercial"]["release_method"], "automatic")
-            self.assertFalse(metadata["submission"]["approved_for_submission"])
+            self.assertTrue(metadata["submission"]["approved_for_submission"])
             whats_new = metadata["version"]["whats_new"]
             for marker in (
                 "24",
@@ -70,17 +70,18 @@ class Release140ContractTests(unittest.TestCase):
         ):
             self.require(marker, notes)
 
-    def test_documentation_marks_1_4_0_as_unsubmitted_release_candidate(self) -> None:
+    def test_documentation_marks_1_4_0_as_waiting_for_review_release(self) -> None:
         changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
         release_notes_path = ROOT / "docs/releases/v1.4.0.md"
         self.assertTrue(release_notes_path.is_file())
         release_notes = release_notes_path.read_text(encoding="utf-8")
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
 
-        self.require("## [v1.4.0] - Unreleased", changelog)
+        self.require("## [v1.4.0] - 2026-08-28", changelog)
         self.require("Marketing version: `1.4.0`", release_notes)
         self.require("iOS build number: `14000`", release_notes)
-        self.require("awaiting separate submission approval", release_notes)
+        self.require("approved for App Review submission", release_notes)
+        self.require("App Store Connect status: `Waiting for Review`", release_notes)
         self.require("v1.4.0 release candidate", readme)
 
     def test_game_center_remains_twenty_achievements_and_one_thousand_points(self) -> None:
