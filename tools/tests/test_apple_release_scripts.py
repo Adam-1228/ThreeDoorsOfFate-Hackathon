@@ -35,7 +35,7 @@ class AppleReleaseScriptPolicyTests(unittest.TestCase):
         for required in (
             "doctor",
             "ios-release-verify",
-            "pod install",
+            "run_cocoapods install",
             "Unity-iPhone.xcworkspace",
             "generic/platform=iOS",
             "CODE_SIGNING_ALLOWED=NO",

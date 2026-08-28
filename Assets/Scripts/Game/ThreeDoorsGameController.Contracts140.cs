@@ -1,0 +1,806 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using ThreeDoorsOfFate.Audio;
+using ThreeDoorsOfFate.Cards;
+using ThreeDoorsOfFate.Game.V140;
+using ThreeDoorsOfFate.Localization;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace ThreeDoorsOfFate.Game
+{
+    public sealed partial class ThreeDoorsGameController
+    {
+        private const string StarterContractResourcePath =
+            "GameData/V140/starter_contracts";
+        private const int MinimumDeckSizeAfterRemoval = 12;
+        private const int MinimumAttackCardsAfterRemoval = 4;
+        private const int DeckRemovalCardsPerPage = 12;
+
+        private enum DeckRemovalSource
+        {
+            Rest,
+            Shop,
+            Event
+        }
+
+        private StarterContractCatalog cachedStarterContractCatalog;
+        private bool starterContractCatalogLoadAttempted;
+        private string selectedStarterContractId = string.Empty;
+        private int cardsRemovedThisRun;
+        private bool currentShopRemovalUsed;
+        private int deckRemovalPage;
+
+        private void ShowStarterContractSelection(CharacterClass characterClass)
+        {
+            selectedClass = characterClass;
+            if (!TryGetStarterContractCatalog(out StarterContractCatalog catalog))
+            {
+                StartRun(characterClass, string.Empty);
+                return;
+            }
+
+            IReadOnlyList<StarterContractDefinition> contracts =
+                catalog.GetContracts(characterClass);
+            if (contracts.Count != 3)
+            {
+                Debug.LogError(
+                    $"Starter contract selection expected 3 entries for {characterClass}.");
+                StartRun(characterClass, string.Empty);
+                return;
+            }
+
+            phase = GamePhase.ContractSelection;
+            SetBackground(classSelectBackground);
+            ClearContent();
+            topBar.gameObject.SetActive(false);
+            SetLogVisible(false);
+            SetAnchors(
+                contentRoot,
+                new Vector2(0.045f, 0.070f),
+                new Vector2(0.955f, 0.925f));
+
+            titleText.text = L("contract.ui.title");
+            BindLocalizedText(titleText, "contract.ui.title");
+            subtitleText.text = L("contract.ui.subtitle");
+            BindLocalizedText(subtitleText, "contract.ui.subtitle");
+
+            Button backButton = AddLocalizedSettingsMenuButton(
+                contentRoot,
+                "계약 뒤로",
+                "contract.ui.back",
+                15);
+            SetAnchors(
+                backButton.GetComponent<RectTransform>(),
+                new Vector2(0.020f, 0.905f),
+                new Vector2(0.160f, 0.985f));
+            backButton.onClick.AddListener(() => ShowClassDetail(characterClass));
+
+            Button settings = AddLocalizedSettingsMenuButton(
+                contentRoot,
+                "계약 설정",
+                "menu.settings",
+                15);
+            SetAnchors(
+                settings.GetComponent<RectTransform>(),
+                new Vector2(0.840f, 0.905f),
+                new Vector2(0.980f, 0.985f));
+            settings.onClick.AddListener(ToggleSettingsPanel);
+            settings.transform.SetAsLastSibling();
+
+            for (int index = 0; index < contracts.Count; index += 1)
+            {
+                AddStarterContractChoice(
+                    contentRoot,
+                    characterClass,
+                    contracts[index],
+                    index);
+            }
+
+            primaryButton.gameObject.SetActive(false);
+        }
+
+        private void AddStarterContractChoice(
+            RectTransform parent,
+            CharacterClass characterClass,
+            StarterContractDefinition contract,
+            int index)
+        {
+            const float gap = 0.020f;
+            const float leftEdge = 0.018f;
+            const float width = 0.308f;
+            float left = leftEdge + index * (width + gap);
+            Sprite frame = statusSectionTallFrameSprite != null
+                ? statusSectionTallFrameSprite
+                : statusPanelFrameSprite != null
+                    ? statusPanelFrameSprite
+                    : panelSprite;
+            RectTransform panel = AddPanel(
+                parent,
+                $"운명 계약 {index + 1}",
+                Color.white,
+                frame);
+            SetAnchors(
+                panel,
+                new Vector2(left, 0.115f),
+                new Vector2(left + width, 0.875f));
+
+            RectTransform textSafeRoot = AddPanel(
+                panel,
+                "계약 텍스트 안전영역",
+                new Color(1f, 1f, 1f, 0f));
+            textSafeRoot.GetComponent<Image>().raycastTarget = false;
+            textSafeRoot.gameObject.AddComponent<RectMask2D>();
+            SetAnchors(
+                textSafeRoot,
+                new Vector2(0.224f, 0.000f),
+                new Vector2(0.776f, 1.000f));
+
+            Text name = AddLocalizedText(
+                textSafeRoot,
+                "계약 이름",
+                contract.NameKey,
+                27,
+                TextAnchor.MiddleCenter,
+                new Color(1f, 0.87f, 0.56f, 1f));
+            name.fontStyle = FontStyle.Bold;
+            name.resizeTextForBestFit = true;
+            name.resizeTextMinSize = 18;
+            name.resizeTextMaxSize = 27;
+            SetAnchors(
+                name.rectTransform,
+                new Vector2(0.050f, 0.725f),
+                new Vector2(0.950f, 0.820f));
+
+            Text role = AddLocalizedText(
+                textSafeRoot,
+                "계약 역할",
+                contract.RoleKey,
+                18,
+                TextAnchor.MiddleCenter,
+                new Color(0.62f, 1f, 0.94f, 1f));
+            role.fontStyle = FontStyle.Bold;
+            SetAnchors(
+                role.rectTransform,
+                new Vector2(0.050f, 0.645f),
+                new Vector2(0.950f, 0.715f));
+
+            Text description = AddLocalizedText(
+                textSafeRoot,
+                "계약 설명",
+                contract.DescriptionKey,
+                17,
+                TextAnchor.UpperCenter,
+                new Color(0.91f, 0.87f, 0.78f, 1f));
+            description.resizeTextForBestFit = true;
+            description.resizeTextMinSize = 15;
+            description.resizeTextMaxSize = 17;
+            description.lineSpacing = 1.02f;
+            description.horizontalOverflow = HorizontalWrapMode.Wrap;
+            description.verticalOverflow = VerticalWrapMode.Truncate;
+            SetAnchors(
+                description.rectTransform,
+                new Vector2(0.050f, 0.555f),
+                new Vector2(0.950f, 0.635f));
+
+            Sprite infoFrame = contractInfoFrameSprite != null
+                ? contractInfoFrameSprite
+                : statusInnerHeaderFrameSprite != null
+                    ? statusInnerHeaderFrameSprite
+                    : statusItemSlotFrameSprite;
+            RectTransform swapBox = AddRunStatusContentBox(
+                textSafeRoot,
+                "계약 카드 교체",
+                new Vector2(0.055f, 0.415f),
+                new Vector2(0.945f, 0.535f),
+                infoFrame);
+            ConfigureStarterContractInfoBox(swapBox);
+            Text swaps = AddText(
+                swapBox,
+                "계약 카드 교체 텍스트",
+                BuildStarterContractSwapSummary(contract),
+                15,
+                TextAnchor.MiddleCenter,
+                new Color(0.84f, 0.96f, 0.93f, 1f));
+            ConfigureStarterContractChangeText(swaps, 15, 14);
+            SetAnchors(
+                swaps.rectTransform,
+                new Vector2(0.085f, 0.140f),
+                new Vector2(0.915f, 0.860f));
+
+            RectTransform resourceBox = AddRunStatusContentBox(
+                textSafeRoot,
+                "계약 자원 변화",
+                new Vector2(0.055f, 0.275f),
+                new Vector2(0.945f, 0.395f),
+                infoFrame);
+            ConfigureStarterContractInfoBox(resourceBox);
+            Text resources = AddText(
+                resourceBox,
+                "계약 자원 변화 텍스트",
+                BuildStarterContractResourceSummary(contract),
+                15,
+                TextAnchor.MiddleCenter,
+                new Color(0.84f, 0.96f, 0.93f, 1f));
+            ConfigureStarterContractChangeText(resources, 15, 14);
+            SetAnchors(
+                resources.rectTransform,
+                new Vector2(0.085f, 0.140f),
+                new Vector2(0.915f, 0.860f));
+
+            Button select = AddClassDetailActionButton(
+                panel,
+                $"운명 계약 선택 {index + 1}",
+                L("contract.ui.select"),
+                18,
+                classConfirmButtonSprite,
+                GameSfxCue.ImportantConfirm);
+            BindLocalizedText(
+                select.GetComponentInChildren<Text>(),
+                "contract.ui.select");
+            SetAnchors(
+                select.GetComponent<RectTransform>(),
+                new Vector2(0.130f, 0.065f),
+                new Vector2(0.870f, 0.190f));
+            select.onClick.AddListener(() => StartRun(characterClass, contract.Id));
+        }
+
+        private static void ConfigureStarterContractInfoBox(RectTransform box)
+        {
+            Image background = box.GetComponent<Image>();
+            if (background != null)
+            {
+                background.color = Color.clear;
+            }
+
+            Transform frameTransform = box.Find("생성 투명 프레임");
+            if (frameTransform != null
+                && frameTransform.TryGetComponent(out Image frameImage))
+            {
+                frameImage.type = Image.Type.Simple;
+                frameImage.preserveAspect = false;
+                SetAnchors(
+                    frameImage.rectTransform,
+                    new Vector2(0f, -0.180f),
+                    new Vector2(1f, 1.170f));
+            }
+        }
+
+        private static void ConfigureStarterContractChangeText(
+            Text text,
+            int fontSize,
+            int minFontSize)
+        {
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = minFontSize;
+            text.resizeTextMaxSize = fontSize;
+            text.lineSpacing = 0.96f;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
+            text.raycastTarget = false;
+        }
+
+        private string BuildStarterContractSwapSummary(
+            StarterContractDefinition contract)
+        {
+            List<string> lines = new();
+            foreach (StarterCardSwapDefinition swap in contract.Swaps)
+            {
+                CardData removed = cardPool.FirstOrDefault(card =>
+                    card != null && card.CardId == swap.RemoveCardId);
+                CardData added = cardPool.FirstOrDefault(card =>
+                    card != null && card.CardId == swap.AddCardId);
+                string removedName = removed != null
+                    ? GetLocalizedCardName(removed)
+                    : swap.RemoveCardId;
+                string addedName = added != null
+                    ? GetLocalizedCardName(added)
+                    : swap.AddCardId;
+                lines.Add(LF(
+                    "contract.ui.swapLine",
+                    removedName,
+                    addedName,
+                    swap.Count));
+            }
+
+            if (lines.Count == 0)
+            {
+                lines.Add(L("contract.ui.noSwap"));
+            }
+
+            return string.Join("\n", lines);
+        }
+
+        private string BuildStarterContractResourceSummary(
+            StarterContractDefinition contract)
+        {
+            return LF(
+                "contract.ui.resourceDelta",
+                FormatSigned(contract.StartingGoldDelta),
+                FormatSigned(contract.StartingHealthDelta),
+                FormatSigned(contract.StartingLuckDelta),
+                FormatSigned(contract.StartingDebtDelta));
+        }
+
+        private static string FormatSigned(int value)
+        {
+            return value > 0 ? $"+{value}" : value.ToString();
+        }
+
+        private bool TryInitializeStarterContractDeck(
+            CharacterClass characterClass,
+            string contractId)
+        {
+            if (!TryGetStarterContractCatalog(out StarterContractCatalog catalog))
+            {
+                return false;
+            }
+
+            string resolvedContractId = string.IsNullOrWhiteSpace(contractId)
+                ? GetDefaultStarterContractId(characterClass)
+                : contractId;
+            try
+            {
+                Dictionary<string, CardData> cards = cardPool
+                    .Where(card => card != null && !string.IsNullOrWhiteSpace(card.CardId))
+                    .GroupBy(card => card.CardId, StringComparer.Ordinal)
+                    .ToDictionary(
+                        group => group.Key,
+                        group => group.First(),
+                        StringComparer.Ordinal);
+                List<CardData> builtDeck = new StarterDeckBuilder(catalog).Build(
+                    characterClass,
+                    resolvedContractId,
+                    cards);
+                deck.Clear();
+                deck.AddRange(builtDeck);
+                Shuffle(deck);
+                selectedStarterContractId = resolvedContractId;
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError(
+                    $"Starter contract deck fallback for {characterClass}: {exception.Message}");
+                return false;
+            }
+        }
+
+        private StarterContractDefinition GetSelectedStarterContract(
+            CharacterClass characterClass,
+            string contractId)
+        {
+            if (!TryGetStarterContractCatalog(out StarterContractCatalog catalog))
+            {
+                return null;
+            }
+
+            string resolvedContractId = string.IsNullOrWhiteSpace(contractId)
+                ? GetDefaultStarterContractId(characterClass)
+                : contractId;
+            try
+            {
+                StarterContractDefinition contract = catalog.GetContract(resolvedContractId);
+                return contract.CharacterClassName == characterClass.ToString()
+                    ? contract
+                    : null;
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+        }
+
+        private void ApplyStarterContractResources(
+            StarterContractDefinition contract)
+        {
+            if (contract == null)
+            {
+                return;
+            }
+
+            playerMaxHealth = Mathf.Max(1, playerMaxHealth + contract.StartingHealthDelta);
+            playerHealth = playerMaxHealth;
+            gold = Mathf.Max(0, gold + contract.StartingGoldDelta);
+            luck = Mathf.Clamp(luck + contract.StartingLuckDelta, 1, 6);
+            debt = Mathf.Max(0, debt + contract.StartingDebtDelta);
+        }
+
+        private string GetDefaultStarterContractId(CharacterClass characterClass)
+        {
+            if (!TryGetStarterContractCatalog(out StarterContractCatalog catalog))
+            {
+                return string.Empty;
+            }
+
+            return catalog.GetContracts(characterClass).FirstOrDefault()?.Id
+                ?? string.Empty;
+        }
+
+        private bool TryGetStarterContractCatalog(
+            out StarterContractCatalog catalog)
+        {
+            if (!starterContractCatalogLoadAttempted)
+            {
+                starterContractCatalogLoadAttempted = true;
+                TextAsset source = Resources.Load<TextAsset>(
+                    StarterContractResourcePath);
+                try
+                {
+                    cachedStarterContractCatalog =
+                        StarterContractCatalog.Load(source);
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogError(
+                        $"Starter contract catalog fallback: {exception.Message}");
+                }
+            }
+
+            catalog = cachedStarterContractCatalog;
+            return catalog != null;
+        }
+
+        private int GetDeckRemovalPrice()
+        {
+            int basePrice = 45 + cardsRemovedThisRun * 25;
+            return Mathf.Max(
+                0,
+                Mathf.FloorToInt(
+                    basePrice * GetEndlessRemovalCostMultiplier()));
+        }
+
+        private bool CanRemoveDeckCard(CardData card)
+        {
+            if (card == null || deck.Count <= MinimumDeckSizeAfterRemoval)
+            {
+                return false;
+            }
+
+            int cardIndex = FindDeckCardIndex(card);
+            if (cardIndex < 0)
+            {
+                return false;
+            }
+
+            return card.Category != CardCategory.Attack
+                || deck.Count(candidate =>
+                    candidate != null
+                    && candidate.Category == CardCategory.Attack)
+                    > MinimumAttackCardsAfterRemoval;
+        }
+
+        private bool TryRemoveDeckCard(CardData card, string source)
+        {
+            if (!CanRemoveDeckCard(card))
+            {
+                return false;
+            }
+
+            int cardIndex = FindDeckCardIndex(card);
+            if (cardIndex < 0)
+            {
+                return false;
+            }
+
+            CardData removed = deck[cardIndex];
+            deck.RemoveAt(cardIndex);
+            cardsRemovedThisRun += 1;
+            string cardName = CardLocalization.Contains(removed.CardId)
+                ? GetLocalizedCardName(removed)
+                : removed.DisplayName;
+            AddLog(LF(
+                "log.deckRemoval.removed",
+                source ?? string.Empty,
+                cardName));
+            return true;
+        }
+
+        private int FindDeckCardIndex(CardData card)
+        {
+            int referenceIndex = deck.FindIndex(candidate =>
+                ReferenceEquals(candidate, card));
+            if (referenceIndex >= 0)
+            {
+                return referenceIndex;
+            }
+
+            return string.IsNullOrWhiteSpace(card?.CardId)
+                ? -1
+                : deck.FindIndex(candidate =>
+                    candidate != null
+                    && string.Equals(
+                        candidate.CardId,
+                        card.CardId,
+                        StringComparison.Ordinal));
+        }
+
+        private void AddShopDeckRemovalService(RectTransform parent)
+        {
+            int price = GetDeckRemovalPrice();
+            string label = currentShopRemovalUsed
+                ? L("deckRemoval.shop.used")
+                : LF("deckRemoval.shop.service", price);
+            Button removal = AddShopActionButton(
+                parent,
+                "상점 카드 제거",
+                label,
+                13);
+            SetAnchors(
+                removal.GetComponent<RectTransform>(),
+                new Vector2(0.110f, 0.455f),
+                new Vector2(0.890f, 0.555f));
+            removal.interactable = !currentShopRemovalUsed
+                && gold >= price
+                && deck.Any(CanRemoveDeckCard);
+            removal.onClick.AddListener(() => ShowDeckRemovalSelection(
+                DeckRemovalSource.Shop,
+                0));
+        }
+
+        private void ShowDeckRemovalSelection(
+            DeckRemovalSource source,
+            int page)
+        {
+            phase = source switch
+            {
+                DeckRemovalSource.Rest => GamePhase.Rest,
+                DeckRemovalSource.Event => GamePhase.Event,
+                _ => GamePhase.Shop
+            };
+            SetBackground(source switch
+            {
+                DeckRemovalSource.Rest => restBackground,
+                DeckRemovalSource.Event => eventBackground,
+                _ => shopBackground
+            });
+            ClearContent();
+            SetDefaultContentRootPlacement();
+            SetLogVisible(true);
+
+            subtitleText.text = L("deckRemoval.subtitle");
+            BindLocalizedText(subtitleText, "deckRemoval.subtitle");
+            SetSubtitleBoxVisible(true);
+            primaryButton.gameObject.SetActive(true);
+            SetButtonLabel(
+                primaryButton,
+                L(source switch
+                {
+                    DeckRemovalSource.Rest => "deckRemoval.back.rest",
+                    DeckRemovalSource.Event => "deckRemoval.back.event",
+                    _ => "deckRemoval.back.shop"
+                }));
+            primaryButton.onClick.RemoveAllListeners();
+            if (source == DeckRemovalSource.Rest)
+            {
+                primaryButton.onClick.AddListener(ShowRest);
+            }
+            else if (source == DeckRemovalSource.Event)
+            {
+                primaryButton.onClick.AddListener(ShowEvent);
+            }
+            else
+            {
+                primaryButton.onClick.AddListener(ShowShop);
+            }
+
+            List<CardData> choices = deck
+                .Where(card => card != null)
+                .GroupBy(card => card.CardId, StringComparer.Ordinal)
+                .Select(group => group.First())
+                .OrderBy(card => card.Category)
+                .ThenBy(card => card.Cost)
+                .ThenBy(
+                    card => CardLocalization.Contains(card.CardId)
+                        ? GetLocalizedCardName(card)
+                        : card.DisplayName,
+                    StringComparer.Ordinal)
+                .ToList();
+            int pageCount = Mathf.Max(
+                1,
+                Mathf.CeilToInt(choices.Count / (float)DeckRemovalCardsPerPage));
+            deckRemovalPage = Mathf.Clamp(page, 0, pageCount - 1);
+
+            RectTransform gallery = AddPanel(
+                contentRoot,
+                "카드 제거 선택 창",
+                new Color(0.006f, 0.014f, 0.018f, 0.92f),
+                statusPanelFrameSprite != null
+                    ? statusPanelFrameSprite
+                    : panelSprite);
+            SetAnchors(
+                gallery,
+                new Vector2(0.020f, 0.035f),
+                new Vector2(0.980f, 0.930f));
+            gallery.GetComponent<Image>().raycastTarget = false;
+
+            Text heading = AddLocalizedText(
+                gallery,
+                "카드 제거 제목",
+                source switch
+                {
+                    DeckRemovalSource.Rest => "deckRemoval.title.rest",
+                    DeckRemovalSource.Event => "deckRemoval.title.event",
+                    _ => "deckRemoval.title.shop"
+                },
+                28,
+                TextAnchor.MiddleCenter,
+                new Color(0.82f, 1f, 0.94f, 1f));
+            heading.fontStyle = FontStyle.Bold;
+            SetAnchors(
+                heading.rectTransform,
+                new Vector2(0.18f, 0.895f),
+                new Vector2(0.82f, 0.980f));
+
+            int startIndex = deckRemovalPage * DeckRemovalCardsPerPage;
+            int visibleCount = Mathf.Min(
+                DeckRemovalCardsPerPage,
+                choices.Count - startIndex);
+            for (int localIndex = 0; localIndex < visibleCount; localIndex += 1)
+            {
+                int choiceIndex = startIndex + localIndex;
+                CardData card = choices[choiceIndex];
+                int column = localIndex % 4;
+                int row = localIndex / 4;
+                const float width = 0.215f;
+                const float horizontalGap = 0.020f;
+                const float height = 0.230f;
+                const float verticalGap = 0.018f;
+                float left = 0.040f + column * (width + horizontalGap);
+                float top = 0.875f - row * (height + verticalGap);
+                RectTransform slot = AddPanel(
+                    gallery,
+                    $"제거 슬롯 {choiceIndex}",
+                    new Color(1f, 1f, 1f, 0f));
+                slot.GetComponent<Image>().raycastTarget = false;
+                SetAnchors(
+                    slot,
+                    new Vector2(left, top - height),
+                    new Vector2(left + width, top));
+
+                Button cardButton = CreateCardButton(
+                    slot,
+                    card,
+                    0,
+                    1,
+                    false,
+                    true,
+                    GameSfxCue.UiAccept);
+                cardButton.gameObject.name = $"제거 카드 {choiceIndex}";
+                SetAnchors(
+                    cardButton.GetComponent<RectTransform>(),
+                    new Vector2(0.060f, 0.115f),
+                    new Vector2(0.940f, 0.985f));
+                cardButton.interactable = CanRemoveDeckCard(card);
+                CardData selectedCard = card;
+                cardButton.onClick.AddListener(() => ShowCardInspection(
+                    selectedCard,
+                    CardInspectionMode.DeckRemove,
+                    source == DeckRemovalSource.Shop
+                        ? LF("deckRemoval.action.removePrice", GetDeckRemovalPrice())
+                        : L("deckRemoval.action.remove"),
+                    () => ConfirmDeckRemoval(selectedCard, source)));
+
+                int ownedCount = deck.Count(candidate =>
+                    candidate != null
+                    && string.Equals(
+                        candidate.CardId,
+                        selectedCard.CardId,
+                        StringComparison.Ordinal));
+                Text count = AddLocalizedText(
+                    slot,
+                    $"제거 카드 수량 {choiceIndex}",
+                    "deckRemoval.count",
+                    14,
+                    TextAnchor.MiddleCenter,
+                    new Color(0.82f, 0.96f, 0.90f, 1f),
+                    ownedCount);
+                SetAnchors(
+                    count.rectTransform,
+                    new Vector2(0.080f, 0.010f),
+                    new Vector2(0.920f, 0.105f));
+            }
+
+            AddDeckRemovalPageControls(gallery, source, pageCount);
+            RefreshTopBar();
+            RefreshLog();
+        }
+
+        private void AddDeckRemovalPageControls(
+            RectTransform gallery,
+            DeckRemovalSource source,
+            int pageCount)
+        {
+            Text pageText = AddLocalizedText(
+                gallery,
+                "카드 제거 페이지",
+                "deckRemoval.page",
+                16,
+                TextAnchor.MiddleCenter,
+                new Color(0.82f, 0.96f, 0.90f, 1f),
+                deckRemovalPage + 1,
+                pageCount);
+            SetAnchors(
+                pageText.rectTransform,
+                new Vector2(0.430f, 0.010f),
+                new Vector2(0.570f, 0.070f));
+
+            if (deckRemovalPage > 0)
+            {
+                Button previous = AddLocalizedSettingsMenuButton(
+                    gallery,
+                    "카드 제거 이전 페이지",
+                    "deckRemoval.previous",
+                    15);
+                SetAnchors(
+                    previous.GetComponent<RectTransform>(),
+                    new Vector2(0.290f, 0.010f),
+                    new Vector2(0.420f, 0.075f));
+                previous.onClick.AddListener(() => ShowDeckRemovalSelection(
+                    source,
+                    deckRemovalPage - 1));
+            }
+
+            if (deckRemovalPage + 1 < pageCount)
+            {
+                Button next = AddLocalizedSettingsMenuButton(
+                    gallery,
+                    "카드 제거 다음 페이지",
+                    "deckRemoval.next",
+                    15);
+                SetAnchors(
+                    next.GetComponent<RectTransform>(),
+                    new Vector2(0.580f, 0.010f),
+                    new Vector2(0.710f, 0.075f));
+                next.onClick.AddListener(() => ShowDeckRemovalSelection(
+                    source,
+                    deckRemovalPage + 1));
+            }
+        }
+
+        private void ConfirmDeckRemoval(
+            CardData card,
+            DeckRemovalSource source)
+        {
+            if (source == DeckRemovalSource.Shop)
+            {
+                int price = GetDeckRemovalPrice();
+                if (currentShopRemovalUsed || gold < price)
+                {
+                    ShowShop();
+                    return;
+                }
+
+                if (TryRemoveDeckCard(card, L("deckRemoval.source.shop")))
+                {
+                    gold -= price;
+                    currentShopRemovalUsed = true;
+                }
+
+                ShowShop();
+                return;
+            }
+
+            if (source == DeckRemovalSource.Event)
+            {
+                if (TryRemoveDeckCard(card, L("deckRemoval.source.event")))
+                {
+                    ShowDoors();
+                    return;
+                }
+
+                ShowDeckRemovalSelection(DeckRemovalSource.Event, deckRemovalPage);
+                return;
+            }
+
+            if (TryRemoveDeckCard(card, L("deckRemoval.source.rest")))
+            {
+                ShowDoors();
+                return;
+            }
+
+            ShowDeckRemovalSelection(DeckRemovalSource.Rest, deckRemovalPage);
+        }
+    }
+}

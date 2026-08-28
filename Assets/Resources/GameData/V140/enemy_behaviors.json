@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "behaviors": [
+    {
+      "enemyId": "monster_cave_lurker", "archetype": "Attack", "phases": [],
+      "actions": [
+        { "id": "lurker.ambush", "nameKey": "enemy.action.lurkerAmbush.name", "kind": "Attack", "weight": 5, "power": 100, "unique": true },
+        { "id": "lurker.rend", "nameKey": "enemy.action.lurkerRend.name", "kind": "AttackVulnerable", "weight": 3, "power": 75, "unique": true },
+        { "id": "common.guard", "nameKey": "enemy.action.commonGuard.name", "kind": "Guard", "weight": 2, "power": 80, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_debt_hound", "archetype": "Collector", "phases": [],
+      "actions": [
+        { "id": "hound.collect", "nameKey": "enemy.action.houndCollect.name", "kind": "Debt", "weight": 4, "power": 1, "unique": true },
+        { "id": "hound.arrears_bite", "nameKey": "enemy.action.houndArrearsBite.name", "kind": "DebtAttack", "weight": 5, "power": 90, "unique": true },
+        { "id": "common.attack", "nameKey": "enemy.action.commonAttack.name", "kind": "Attack", "weight": 2, "power": 85, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_ash_gambler", "archetype": "Disruptor", "phases": [],
+      "actions": [
+        { "id": "ash.bad_roll", "nameKey": "enemy.action.ashBadRoll.name", "kind": "LuckDown", "weight": 4, "power": 1, "unique": true },
+        { "id": "ash.loaded_strike", "nameKey": "enemy.action.ashLoadedStrike.name", "kind": "LuckAttack", "weight": 5, "power": 95, "unique": true },
+        { "id": "common.guard", "nameKey": "enemy.action.commonGuard.name", "kind": "Guard", "weight": 2, "power": 75, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_rune_thief", "archetype": "Disruptor", "phases": [],
+      "actions": [
+        { "id": "thief.seal_draw", "nameKey": "enemy.action.thiefSealDraw.name", "kind": "DrawPenalty", "weight": 4, "power": 1, "unique": true },
+        { "id": "thief.stolen_rune", "nameKey": "enemy.action.thiefStolenRune.name", "kind": "ActionDrain", "weight": 4, "power": 1, "unique": true },
+        { "id": "common.attack", "nameKey": "enemy.action.commonAttack.name", "kind": "Attack", "weight": 3, "power": 90, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_candle_warden", "archetype": "Guard", "phases": [],
+      "actions": [
+        { "id": "warden.wax_wall", "nameKey": "enemy.action.wardenWaxWall.name", "kind": "Guard", "weight": 5, "power": 120, "unique": true },
+        { "id": "warden.flame_smite", "nameKey": "enemy.action.wardenFlameSmite.name", "kind": "GuardAttack", "weight": 4, "power": 110, "unique": true },
+        { "id": "common.attack", "nameKey": "enemy.action.commonAttack.name", "kind": "Attack", "weight": 2, "power": 80, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_contract_knight", "archetype": "Guard", "phases": [],
+      "actions": [
+        { "id": "knight.sealed_guard", "nameKey": "enemy.action.knightSealedGuard.name", "kind": "Guard", "weight": 4, "power": 130, "unique": true },
+        { "id": "knight.contract_smite", "nameKey": "enemy.action.knightContractSmite.name", "kind": "GuardAttack", "weight": 5, "power": 120, "unique": true },
+        { "id": "common.debt", "nameKey": "enemy.action.commonDebt.name", "kind": "Debt", "weight": 2, "power": 1, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_hollow_collector", "archetype": "Collector", "phases": [],
+      "actions": [
+        { "id": "collector.levy", "nameKey": "enemy.action.collectorLevy.name", "kind": "Debt", "weight": 5, "power": 1, "unique": true },
+        { "id": "collector.compound_blow", "nameKey": "enemy.action.collectorCompoundBlow.name", "kind": "DebtAttack", "weight": 4, "power": 105, "unique": true },
+        { "id": "common.guard", "nameKey": "enemy.action.commonGuard.name", "kind": "Guard", "weight": 2, "power": 80, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_rift_spider", "archetype": "Attack", "phases": [],
+      "actions": [
+        { "id": "spider.double_fang", "nameKey": "enemy.action.spiderDoubleFang.name", "kind": "MultiAttack", "weight": 5, "power": 60, "unique": true },
+        { "id": "spider.rift_web", "nameKey": "enemy.action.spiderRiftWeb.name", "kind": "ActionDrain", "weight": 3, "power": 1, "unique": true },
+        { "id": "common.attack", "nameKey": "enemy.action.commonAttack.name", "kind": "Attack", "weight": 3, "power": 90, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_curse_bearer", "archetype": "Regenerator", "phases": [],
+      "actions": [
+        { "id": "bearer.curse_bloom", "nameKey": "enemy.action.bearerCurseBloom.name", "kind": "Regenerate", "weight": 4, "power": 8, "unique": true },
+        { "id": "bearer.burden", "nameKey": "enemy.action.bearerBurden.name", "kind": "DebtAttack", "weight": 4, "power": 100, "unique": true },
+        { "id": "common.guard", "nameKey": "enemy.action.commonGuard.name", "kind": "Guard", "weight": 2, "power": 85, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_gold_mimic", "archetype": "Collector", "phases": [],
+      "actions": [
+        { "id": "mimic.coin_bite", "nameKey": "enemy.action.mimicCoinBite.name", "kind": "GoldAttack", "weight": 5, "power": 105, "unique": true },
+        { "id": "mimic.gilded_shell", "nameKey": "enemy.action.mimicGildedShell.name", "kind": "GuardGold", "weight": 4, "power": 110, "unique": true },
+        { "id": "common.attack", "nameKey": "enemy.action.commonAttack.name", "kind": "Attack", "weight": 2, "power": 85, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_abyss_bailiff", "archetype": "Collector", "phases": [],
+      "actions": [
+        { "id": "bailiff.summons", "nameKey": "enemy.action.bailiffSummons.name", "kind": "Debt", "weight": 4, "power": 2, "unique": true },
+        { "id": "bailiff.foreclosure", "nameKey": "enemy.action.bailiffForeclosure.name", "kind": "DebtAttack", "weight": 5, "power": 120, "unique": true },
+        { "id": "common.guard", "nameKey": "enemy.action.commonGuard.name", "kind": "Guard", "weight": 2, "power": 95, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_ledger_moth", "archetype": "Disruptor", "phases": [],
+      "actions": [
+        { "id": "moth.erase_line", "nameKey": "enemy.action.mothEraseLine.name", "kind": "DrawPenalty", "weight": 4, "power": 1, "unique": true },
+        { "id": "moth.dust_account", "nameKey": "enemy.action.mothDustAccount.name", "kind": "LuckDown", "weight": 4, "power": 1, "unique": true },
+        { "id": "common.attack", "nameKey": "enemy.action.commonAttack.name", "kind": "Attack", "weight": 3, "power": 95, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_coin_sutured_husk", "archetype": "Guard", "phases": [],
+      "actions": [
+        { "id": "husk.coin_plate", "nameKey": "enemy.action.huskCoinPlate.name", "kind": "Guard", "weight": 5, "power": 140, "unique": true },
+        { "id": "husk.rattle_charge", "nameKey": "enemy.action.huskRattleCharge.name", "kind": "GuardAttack", "weight": 4, "power": 115, "unique": true },
+        { "id": "common.attack", "nameKey": "enemy.action.commonAttack.name", "kind": "Attack", "weight": 2, "power": 90, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_broken_scale_acolyte", "archetype": "Collector", "phases": [],
+      "actions": [
+        { "id": "acolyte.false_balance", "nameKey": "enemy.action.acolyteFalseBalance.name", "kind": "Debt", "weight": 4, "power": 1, "unique": true },
+        { "id": "acolyte.weighted_verdict", "nameKey": "enemy.action.acolyteWeightedVerdict.name", "kind": "DebtAttack", "weight": 5, "power": 115, "unique": true },
+        { "id": "common.guard", "nameKey": "enemy.action.commonGuard.name", "kind": "Guard", "weight": 2, "power": 90, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_rift_lamprey", "archetype": "Attack", "phases": [],
+      "actions": [
+        { "id": "lamprey.drain", "nameKey": "enemy.action.lampreyDrain.name", "kind": "AttackHeal", "weight": 5, "power": 95, "unique": true },
+        { "id": "lamprey.rift_frenzy", "nameKey": "enemy.action.lampreyRiftFrenzy.name", "kind": "MultiAttack", "weight": 4, "power": 65, "unique": true },
+        { "id": "common.attack", "nameKey": "enemy.action.commonAttack.name", "kind": "Attack", "weight": 2, "power": 85, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_contract_marionette", "archetype": "Disruptor", "phases": [],
+      "actions": [
+        { "id": "marionette.cut_string", "nameKey": "enemy.action.marionetteCutString.name", "kind": "ActionDrain", "weight": 4, "power": 1, "unique": true },
+        { "id": "marionette.forced_step", "nameKey": "enemy.action.marionetteForcedStep.name", "kind": "Discard", "weight": 4, "power": 1, "unique": true },
+        { "id": "common.attack", "nameKey": "enemy.action.commonAttack.name", "kind": "Attack", "weight": 3, "power": 100, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_oath_candle_revenant", "archetype": "Regenerator", "phases": [],
+      "actions": [
+        { "id": "revenant.oath_flame", "nameKey": "enemy.action.revenantOathFlame.name", "kind": "Regenerate", "weight": 4, "power": 10, "unique": true },
+        { "id": "revenant.last_vow", "nameKey": "enemy.action.revenantLastVow.name", "kind": "LowHealthAttack", "weight": 5, "power": 125, "unique": true },
+        { "id": "common.guard", "nameKey": "enemy.action.commonGuard.name", "kind": "Guard", "weight": 2, "power": 90, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_void_tax_scribe", "archetype": "Collector", "phases": [],
+      "actions": [
+        { "id": "scribe.assess", "nameKey": "enemy.action.scribeAssess.name", "kind": "GoldDebt", "weight": 4, "power": 1, "unique": true },
+        { "id": "scribe.audit", "nameKey": "enemy.action.scribeAudit.name", "kind": "DebtAttack", "weight": 5, "power": 110, "unique": true },
+        { "id": "common.guard", "nameKey": "enemy.action.commonGuard.name", "kind": "Guard", "weight": 3, "power": 110, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_debt_pit_bruiser", "archetype": "Attack", "phases": [],
+      "actions": [
+        { "id": "bruiser.pit_slam", "nameKey": "enemy.action.bruiserPitSlam.name", "kind": "AttackVulnerable", "weight": 5, "power": 120, "unique": true },
+        { "id": "bruiser.chain_combo", "nameKey": "enemy.action.bruiserChainCombo.name", "kind": "MultiAttack", "weight": 4, "power": 70, "unique": true },
+        { "id": "common.guard", "nameKey": "enemy.action.commonGuard.name", "kind": "Guard", "weight": 2, "power": 100, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "monster_doorless_penitent", "archetype": "Regenerator", "phases": [],
+      "actions": [
+        { "id": "penitent.confession", "nameKey": "enemy.action.penitentConfession.name", "kind": "Regenerate", "weight": 4, "power": 12, "unique": true },
+        { "id": "penitent.denial", "nameKey": "enemy.action.penitentDenial.name", "kind": "GuardAttack", "weight": 5, "power": 120, "unique": true },
+        { "id": "common.debt", "nameKey": "enemy.action.commonDebt.name", "kind": "Debt", "weight": 2, "power": 1, "unique": false }
+      ]
+    },
+    {
+      "enemyId": "boss_gatekeeper_third_door", "archetype": "Guard",
+      "actions": [
+        { "id": "gatekeeper.key_test", "nameKey": "enemy.action.gatekeeperKeyTest.name", "kind": "Guard", "weight": 4, "power": 120, "unique": true },
+        { "id": "gatekeeper.threshold_blow", "nameKey": "enemy.action.gatekeeperThresholdBlow.name", "kind": "GuardAttack", "weight": 5, "power": 110, "unique": true },
+        { "id": "gatekeeper.third_lock", "nameKey": "enemy.action.gatekeeperThirdLock.name", "kind": "ActionDrain", "weight": 4, "power": 1, "unique": true },
+        { "id": "gatekeeper.open_end", "nameKey": "enemy.action.gatekeeperOpenEnd.name", "kind": "LowHealthAttack", "weight": 6, "power": 135, "unique": true }
+      ],
+      "phases": [
+        { "maximumHealthPercent": 100, "actionIds": ["gatekeeper.key_test", "gatekeeper.threshold_blow"] },
+        { "maximumHealthPercent": 70, "actionIds": ["gatekeeper.threshold_blow", "gatekeeper.third_lock"] },
+        { "maximumHealthPercent": 35, "actionIds": ["gatekeeper.third_lock", "gatekeeper.open_end"] }
+      ]
+    },
+    {
+      "enemyId": "boss_debt_adjudicator_normal", "archetype": "Collector",
+      "actions": [
+        { "id": "adjudicator.filing", "nameKey": "enemy.action.adjudicatorFiling.name", "kind": "Debt", "weight": 4, "power": 1, "unique": true },
+        { "id": "adjudicator.ruling", "nameKey": "enemy.action.adjudicatorRuling.name", "kind": "DebtAttack", "weight": 5, "power": 110, "unique": true },
+        { "id": "adjudicator.appeal_denied", "nameKey": "enemy.action.adjudicatorAppealDenied.name", "kind": "GuardAttack", "weight": 5, "power": 120, "unique": true },
+        { "id": "adjudicator.final_sentence", "nameKey": "enemy.action.adjudicatorFinalSentence.name", "kind": "LowHealthAttack", "weight": 6, "power": 140, "unique": true }
+      ],
+      "phases": [
+        { "maximumHealthPercent": 100, "actionIds": ["adjudicator.filing", "adjudicator.ruling"] },
+        { "maximumHealthPercent": 70, "actionIds": ["adjudicator.ruling", "adjudicator.appeal_denied"] },
+        { "maximumHealthPercent": 35, "actionIds": ["adjudicator.appeal_denied", "adjudicator.final_sentence"] }
+      ]
+    },
+    {
+      "enemyId": "boss_usurer_of_the_abyss_hard", "archetype": "Collector",
+      "actions": [
+        { "id": "usurer.interest", "nameKey": "enemy.action.usurerInterest.name", "kind": "Debt", "weight": 4, "power": 2, "unique": true },
+        { "id": "usurer.collateral", "nameKey": "enemy.action.usurerCollateral.name", "kind": "GoldDebt", "weight": 4, "power": 1, "unique": true },
+        { "id": "usurer.foreclose", "nameKey": "enemy.action.usurerForeclose.name", "kind": "DebtAttack", "weight": 6, "power": 125, "unique": true },
+        { "id": "usurer.bottomless_due", "nameKey": "enemy.action.usurerBottomlessDue.name", "kind": "LowHealthAttack", "weight": 7, "power": 150, "unique": true }
+      ],
+      "phases": [
+        { "maximumHealthPercent": 100, "actionIds": ["usurer.interest", "usurer.collateral"] },
+        { "maximumHealthPercent": 70, "actionIds": ["usurer.collateral", "usurer.foreclose"] },
+        { "maximumHealthPercent": 35, "actionIds": ["usurer.foreclose", "usurer.bottomless_due"] }
+      ]
+    },
+    {
+      "enemyId": "boss_bottomless_creditor_special", "archetype": "Regenerator",
+      "actions": [
+        { "id": "creditor.old_claim", "nameKey": "enemy.action.creditorOldClaim.name", "kind": "Debt", "weight": 4, "power": 2, "unique": true },
+        { "id": "creditor.repossess", "nameKey": "enemy.action.creditorRepossess.name", "kind": "DebtAttack", "weight": 5, "power": 120, "unique": true },
+        { "id": "creditor.endless_account", "nameKey": "enemy.action.creditorEndlessAccount.name", "kind": "Regenerate", "weight": 5, "power": 16, "unique": true },
+        { "id": "creditor.final_collection", "nameKey": "enemy.action.creditorFinalCollection.name", "kind": "LowHealthAttack", "weight": 7, "power": 155, "unique": true }
+      ],
+      "phases": [
+        { "maximumHealthPercent": 100, "actionIds": ["creditor.old_claim", "creditor.repossess"] },
+        { "maximumHealthPercent": 70, "actionIds": ["creditor.repossess", "creditor.endless_account"] },
+        { "maximumHealthPercent": 35, "actionIds": ["creditor.endless_account", "creditor.final_collection"] }
+      ]
+    }
+  ]
+}

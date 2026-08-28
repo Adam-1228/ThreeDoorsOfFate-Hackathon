@@ -11,6 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd -P)"
 WORKSPACE_ROOT="$(cd "$PROJECT_ROOT/.." && pwd -P)"
 BUILD_ROOT="$WORKSPACE_ROOT/Builds"
+COCOAPODS_RUNNER="$SCRIPT_DIR/run_cocoapods.sh"
 DEFAULT_UNITY_APP="/Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app"
 TARGET="${1:-all}"
 
@@ -129,6 +130,10 @@ ensure_python() {
         || fail "python3 is required. Install Xcode command-line tools or Python 3."
 }
 
+run_cocoapods() {
+    bash "$COCOAPODS_RUNNER" "$@"
+}
+
 run_doctor() {
     resolve_unity_paths
     verify_unity_version
@@ -145,7 +150,7 @@ run_doctor() {
     xcrun simctl list runtimes available | grep -q 'iOS' \
         || fail "No available iOS Simulator runtime was found."
     command -v pod >/dev/null 2>&1 || fail "CocoaPods is missing."
-    pod --version
+    run_cocoapods --version
     printf 'Apple release doctor passed.\n'
 }
 
@@ -173,9 +178,9 @@ resolve_pods() {
     fi
     command -v pod >/dev/null 2>&1 || fail "CocoaPods is required for this Xcode export."
     if [[ -f "$xcode_root/Podfile.lock" ]]; then
-        (cd "$xcode_root" && pod install --deployment)
+        (cd "$xcode_root" && run_cocoapods install --deployment)
     else
-        (cd "$xcode_root" && pod install)
+        (cd "$xcode_root" && run_cocoapods install)
     fi
 }
 
@@ -503,4 +508,6 @@ main() {
     esac
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi

@@ -60,6 +60,25 @@ WINDOWS_HANDOFF_PATH = (
     PROJECT_ROOT
     / "docs/release/three-doors-of-fate-1.0.3-windows-verification.md"
 )
+V140_DATA_ROOT = PROJECT_ROOT / "Assets/Resources/GameData/V140"
+V140_CATALOG_PATHS = (
+    V140_DATA_ROOT / "starter_contracts.json",
+    V140_DATA_ROOT / "events.json",
+    V140_DATA_ROOT / "enemy_behaviors.json",
+    V140_DATA_ROOT / "endless_mutations.json",
+)
+V140_PARTIAL_PATHS = tuple(
+    PROJECT_ROOT / "Assets/Scripts/Game" / f"ThreeDoorsGameController.{suffix}.cs"
+    for suffix in (
+        "Contracts140",
+        "Inspection140",
+        "Checkpoint140",
+        "Events140",
+        "Encounter140",
+        "Endless140",
+        "History140",
+    )
+)
 
 
 def placeholders(value: str) -> set[str]:
@@ -281,6 +300,16 @@ def iter_json_strings(value: object):
             yield from iter_json_strings(item)
 
 
+def _iter_json_items(value: object):
+    if isinstance(value, dict):
+        for key, item in value.items():
+            yield key, item
+            yield from _iter_json_items(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from _iter_json_items(item)
+
+
 class LocalizationContractTests(unittest.TestCase):
     def assert_file_exists(self, path: Path) -> None:
         self.assertTrue(path.is_file(), f"required file is missing: {path}")
@@ -308,6 +337,31 @@ class LocalizationContractTests(unittest.TestCase):
                     placeholders(entry["ko"]),
                     placeholders(entry["en"]),
                 )
+
+    def test_v140_catalog_and_partial_localization_keys_exist(self) -> None:
+        catalog = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
+        known_keys = {entry["key"] for entry in catalog["entries"]}
+        referenced: set[str] = set()
+
+        for path in V140_CATALOG_PATHS:
+            with self.subTest(path=path):
+                self.assert_file_exists(path)
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            for key, value in _iter_json_items(payload):
+                if key.endswith("Key") and isinstance(value, str):
+                    referenced.add(value)
+
+        literal_key_pattern = re.compile(
+            r"\b(?:L|LF|AddLocalizedText)\(\s*\"([^\"]+)\""
+        )
+        for path in V140_PARTIAL_PATHS:
+            with self.subTest(path=path):
+                self.assert_file_exists(path)
+            referenced.update(
+                literal_key_pattern.findall(path.read_text(encoding="utf-8"))
+            )
+
+        self.assertEqual([], sorted(referenced - known_keys))
 
     def test_language_policy_has_saved_override_and_korean_only_system_default(self) -> None:
         self.assert_file_exists(LANGUAGE_PATH)
@@ -910,9 +964,14 @@ class LocalizationContractTests(unittest.TestCase):
             source_blob_parts.append(source)
             source_values.update(extract_csharp_string_values(source))
 
-        for path in sorted((PROJECT_ROOT / "Assets/Data").rglob("*.json")):
-            data = json.loads(path.read_text(encoding="utf-8"))
-            source_values.update(iter_json_strings(data))
+        runtime_data_roots = (
+            PROJECT_ROOT / "Assets/Data",
+            PROJECT_ROOT / "Assets/Resources/GameData",
+        )
+        for data_root in runtime_data_roots:
+            for path in sorted(data_root.rglob("*.json")):
+                data = json.loads(path.read_text(encoding="utf-8"))
+                source_values.update(iter_json_strings(data))
 
         source_blob = "\n".join(source_blob_parts)
         reserved_keys = set(payload.get("reservedKeys", []))
@@ -920,6 +979,7 @@ class LocalizationContractTests(unittest.TestCase):
             entry["key"]
             for entry in payload["entries"]
             if entry["key"] not in source_blob
+            and entry["key"] not in source_values
             and entry["ko"] not in source_values
             and entry["ko"] not in source_blob
             and entry["key"] not in reserved_keys
@@ -1000,21 +1060,29 @@ class LocalizationContractTests(unittest.TestCase):
             self.assertNotIn("GameLanguagePolicy.PreferenceKey", method)
             self.assertNotRegex(method, re.compile(r'Language[}".]'))
 
-    def test_release_version_matches_ios_1_3_0_defaults(self) -> None:
+    def test_release_configuration_matches_project_settings(self) -> None:
         project_settings = PROJECT_SETTINGS_PATH.read_text(encoding="utf-8")
         release_configuration = IOS_RELEASE_CONFIGURATION_PATH.read_text(
             encoding="utf-8"
         )
-        self.assertRegex(
+        version_match = re.search(
+            r"(?m)^  bundleVersion: (\d+\.\d+\.\d+)$",
             project_settings,
-            re.compile(r"(?m)^  bundleVersion: 1\.3\.0$"),
         )
-        self.assertRegex(
+        build_match = re.search(
+            r"(?m)^    iPhone: (\d+)$",
             project_settings,
-            re.compile(r"(?m)^    iPhone: 13001$"),
         )
-        self.assertIn('DefaultVersion = "1.3.0"', release_configuration)
-        self.assertIn('DefaultBuildNumber = "13001"', release_configuration)
+        self.assertIsNotNone(version_match)
+        self.assertIsNotNone(build_match)
+        self.assertIn(
+            f'DefaultVersion = "{version_match.group(1)}"',
+            release_configuration,
+        )
+        self.assertIn(
+            f'DefaultBuildNumber = "{build_match.group(1)}"',
+            release_configuration,
+        )
 
     def test_windows_verification_handoff_covers_external_release_boundary(self) -> None:
         self.assert_file_exists(WINDOWS_HANDOFF_PATH)

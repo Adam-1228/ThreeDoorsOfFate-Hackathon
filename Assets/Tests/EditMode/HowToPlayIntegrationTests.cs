@@ -136,19 +136,19 @@ namespace ThreeDoorsOfFate.Tests
             RectTransform guide = FindRequired("플레이 방법");
             Assert.That(guide.GetComponent<Button>(), Is.Not.Null);
 
-            Rect[] desktopRects = Enumerable.Range(0, 5)
+            Rect[] desktopRects = Enumerable.Range(0, 6)
+                .Select(index => InvokeStaticRect(
+                    "GetMainMenuButtonRect",
+                    index,
+                    6))
+                .ToArray();
+            AssertNonOverlappingInsideScreen(desktopRects);
+
+            Rect[] mobileRects = Enumerable.Range(0, 5)
                 .Select(index => InvokeStaticRect(
                     "GetMainMenuButtonRect",
                     index,
                     5))
-                .ToArray();
-            AssertNonOverlappingInsideScreen(desktopRects);
-
-            Rect[] mobileRects = Enumerable.Range(0, 4)
-                .Select(index => InvokeStaticRect(
-                    "GetMainMenuButtonRect",
-                    index,
-                    4))
                 .ToArray();
             AssertNonOverlappingInsideScreen(mobileRects);
 

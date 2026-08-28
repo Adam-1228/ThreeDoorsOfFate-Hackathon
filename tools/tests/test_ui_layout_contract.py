@@ -22,6 +22,22 @@ FONT_PATH = PROJECT_ROOT / "Assets/Fonts/GowunBatang-Regular.ttf"
 LOCALIZATION_PATH = (
     PROJECT_ROOT / "Assets/Resources/Localization/game_text.json"
 )
+GAME_CONTROLLER_ROOT = PROJECT_ROOT / "Assets/Scripts/Game"
+HISTORY_CONTROLLER_PATH = (
+    GAME_CONTROLLER_ROOT / "ThreeDoorsGameController.History140.cs"
+)
+HOW_TO_PLAY_QA_PATH = PROJECT_ROOT / "Assets/Editor/HowToPlaySourceQACapture.cs"
+QUALITY_QA_PATH = PROJECT_ROOT / "Assets/Editor/Quality104QACapture.cs"
+
+V140_PARTIAL_SUFFIXES = {
+    "Contracts140",
+    "Inspection140",
+    "Checkpoint140",
+    "Events140",
+    "Encounter140",
+    "Endless140",
+    "History140",
+}
 
 
 def extract_method(source: str, method_name: str) -> str:
@@ -76,6 +92,22 @@ def parse_anchor_y_pair(method_body: str, rect_name: str) -> tuple[float, float]
     return tuple(float(value) for value in match.groups())
 
 
+def parse_content_box_bounds(
+    method_body: str, rect_name: str
+) -> tuple[float, float, float, float]:
+    pattern = re.compile(
+        rf"RectTransform\s+{re.escape(rect_name)}\s*=\s*"
+        r"AddRunStatusContentBox\(.*?"
+        r"new Vector2\(([0-9.]+)f,\s*([0-9.]+)f\)\s*,\s*"
+        r"new Vector2\(([0-9.]+)f,\s*([0-9.]+)f\)",
+        re.DOTALL,
+    )
+    match = pattern.search(method_body)
+    if match is None:
+        raise AssertionError(f"content-box bounds not found for: {rect_name}")
+    return tuple(float(value) for value in match.groups())
+
+
 def parse_class_choice_anchor_pair(
     method_body: str, character_class: str
 ) -> tuple[float, float, float, float]:
@@ -111,6 +143,130 @@ def read_font_line_height_ratio(path: Path) -> float:
 
 
 class UiLayoutContractTests(unittest.TestCase):
+    def test_v140_controller_is_split_into_focused_partials(self) -> None:
+        for suffix in V140_PARTIAL_SUFFIXES:
+            path = GAME_CONTROLLER_ROOT / f"ThreeDoorsGameController.{suffix}.cs"
+            with self.subTest(path=path):
+                self.assertTrue(path.is_file(), f"missing v1.4.0 partial: {path}")
+
+    def test_v140_main_menu_fits_five_and_six_safe_buttons(self) -> None:
+        source = CONTROLLER_PATH.read_text(encoding="utf-8")
+        menu = extract_method(source, "ShowMainMenu")
+        placement = extract_method(source, "GetMainMenuButtonRect")
+
+        self.assertIn("supportsDesktopWindowControls ? 6 : 5", menu)
+        self.assertIn('"menu.runHistory"', menu)
+        self.assertIn("Mathf.Clamp(count, 1, 6)", placement)
+        for count, width, gap in ((5, 0.16, 0.025), (6, 0.135, 0.018)):
+            with self.subTest(count=count):
+                total = count * width + (count - 1) * gap
+                self.assertLessEqual(total, 0.90)
+                self.assertGreaterEqual(0.5 - total * 0.5, 0.05 - 1e-6)
+                self.assertLessEqual(0.5 + total * 0.5, 0.95 + 1e-6)
+
+    def test_mobile_qa_captures_reflow_all_five_menu_routes(self) -> None:
+        expected_names = (
+            '"게임시작"',
+            '"플레이 방법"',
+            '"운명 기록"',
+            '"업적"',
+            '"설정"',
+        )
+        for path in (HOW_TO_PLAY_QA_PATH, QUALITY_QA_PATH):
+            source = path.read_text(encoding="utf-8")
+            body = extract_method(source, "ConfigureMobileMainMenuButtons")
+            with self.subTest(path=path):
+                for name in expected_names:
+                    self.assertIn(name, body)
+                self.assertIn("new object[] { button, index, 5 }", body)
+                self.assertIn('FindDescendant(contentRoot, "게임종료")', body)
+
+    def test_v140_release_qa_captures_required_surfaces_at_three_aspect_ratios(self) -> None:
+        source = QUALITY_QA_PATH.read_text(encoding="utf-8")
+        start_known_run = extract_method(source, "StartKnownRun")
+        capture_state = extract_method(source, "CaptureState")
+
+        for marker in (
+            'new("16x9", 1920, 1080',
+            '"iphone14_pro_max_landscape"',
+            'new("4x3", 2048, 1536',
+            '"starter_contracts"',
+            '"run_status"',
+            '"shop"',
+            '"run_history"',
+            '"run_history_detail"',
+            '"TDOF_140_QA_DIR"',
+            'RunHistoryStore.GetStorageKey(qaRunHistoryPrefix)',
+            'qaRunHistoryPrefix + "HardRunSave"',
+            'qaHardRunSaveKey + ".DeletedRunIds"',
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, source)
+
+        self.assertIn("HideRunStatusPanelImmediately(", start_known_run)
+        self.assertIn("RefreshLocalizedBindings(canvas);", capture_state)
+
+    def test_v140_history_qa_has_narrow_recheck_entrypoint(self) -> None:
+        source = QUALITY_QA_PATH.read_text(encoding="utf-8")
+        history_capture = extract_method(source, "CaptureHistoryLanguage")
+
+        self.assertIn("CaptureHistoryMatrix", source)
+        for marker in ('"game_over"', '"run_history"', '"run_history_detail"'):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, history_capture)
+        self.assertIn("CaptureState(", history_capture)
+
+    def test_shop_cards_require_inspection_before_purchase(self) -> None:
+        source = CONTROLLER_PATH.read_text(encoding="utf-8")
+        shop = extract_method(source, "ShowShop")
+        self.assertIn("CardInspectionMode.ShopBuy", shop)
+        self.assertIn("cardButton.onClick.AddListener(inspectPurchase);", shop)
+        self.assertIn("buy.onClick.AddListener(inspectPurchase);", shop)
+        self.assertNotIn("cardButton.onClick.AddListener(purchase);", shop)
+        self.assertNotIn("buy.onClick.AddListener(purchase);", shop)
+
+    def test_run_history_frames_and_columns_stay_in_normalized_bounds(self) -> None:
+        source = HISTORY_CONTROLLER_PATH.read_text(encoding="utf-8")
+        history = extract_method(source, "RenderRunHistoryLayout")
+        selection = extract_method(source, "PopulateRunHistorySelectionSummary")
+        stat_box = extract_method(source, "AddRunHistoryStatBox")
+        detail = extract_method(source, "ShowRunHistoryDetail")
+
+        outer = parse_anchor_pair(history, "outer")
+        safe_root = parse_anchor_pair(history, "historySafeRoot")
+        list_panel = parse_content_box_bounds(history, "listPanel")
+        selection_summary = parse_content_box_bounds(history, "summaryPanel")
+        detail_outer = parse_anchor_pair(detail, "outer")
+        summary = parse_content_box_bounds(detail, "summaryPanel")
+        loadout = parse_content_box_bounds(detail, "loadoutPanel")
+        for rect in (
+            outer,
+            safe_root,
+            list_panel,
+            selection_summary,
+            detail_outer,
+            summary,
+            loadout,
+        ):
+            with self.subTest(rect=rect):
+                self.assertLess(rect[0], rect[2])
+                self.assertLess(rect[1], rect[3])
+                for value in rect:
+                    self.assertGreaterEqual(value, 0.0)
+                    self.assertLessEqual(value, 1.0)
+        self.assertGreaterEqual(selection_summary[0] - list_panel[2], 0.012)
+        self.assertLessEqual(summary[2], loadout[0])
+        self.assertIn('"운명 기록 안전영역"', history)
+        self.assertIn('"운명 기록 목록 패널"', history)
+        self.assertIn('"운명 기록 선택 요약"', history)
+        self.assertIn("statusInnerPanelFrameSprite", history)
+        self.assertIn("statusInnerHeaderFrameSprite", selection)
+        self.assertIn("AddRunHistoryStatBox(", selection)
+        self.assertIn("statusItemSlotFrameSprite", stat_box)
+        self.assertIn('"운명 기록 상세 안전영역"', detail)
+        self.assertIn("PcUiLayoutPolicy.StatusDetailBody", detail)
+        self.assertGreaterEqual(detail.count("statusInnerPanelFrameSprite"), 2)
+
     def test_main_menu_settings_icon_and_label_use_separate_readable_columns(self) -> None:
         source = LOCALIZATION_CONTROLLER_PATH.read_text(encoding="utf-8")
         body = extract_method(source, "AddMainMenuIconButton")

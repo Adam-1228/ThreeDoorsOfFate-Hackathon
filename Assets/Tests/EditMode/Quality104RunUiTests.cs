@@ -173,23 +173,24 @@ namespace ThreeDoorsOfFate.Tests
         }
 
         [Test]
-        public void Event_ShowsCurrentStateAndBothProjectedOutcomes()
+        public void EventCatalog_ShowsCurrentStateAndBothProjectedOutcomes()
         {
+            SetField("pendingRunEventId", "event.forgotten_altar");
             Invoke("ShowEvent");
             Canvas.ForceUpdateCanvases();
 
             Text context = FindRequired("선택 현재 상태").GetComponent<Text>();
-            string bloodLabel = FindRequired("피의 거래")
+            string restoreLabel = FindRequired("사건 선택 1")
                 .GetComponentInChildren<Text>(true).text;
-            string fateLabel = FindRequired("운명 읽기")
+            string endureLabel = FindRequired("사건 선택 2")
                 .GetComponentInChildren<Text>(true).text;
 
             Assert.That(context.text, Does.Contain("HP 40/60"));
             Assert.That(context.text, Does.Contain("Gold 20"));
             Assert.That(context.text, Does.Contain("Debt 2"));
-            Assert.That(bloodLabel, Does.Contain("34/60"));
-            Assert.That(bloodLabel, Does.Contain("75"));
-            Assert.That(fateLabel, Does.Contain("3"));
+            Assert.That(restoreLabel, Does.Contain("40/60 → 54/60"));
+            Assert.That(restoreLabel, Does.Contain("20 → 8"));
+            Assert.That(endureLabel, Does.Contain("40/60 → 32/64"));
         }
 
         private RectTransform FindRequired(string objectName)

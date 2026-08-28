@@ -21,6 +21,25 @@ namespace ThreeDoorsOfFate.Platform
 
             StringBuilder canonical = new();
             canonical.Append("schema:").Append(snapshot.schemaVersion).Append('\n');
+            AppendToken(canonical, "active-run-id", "runId", snapshot.activeRunId ?? string.Empty);
+            AppendToken(
+                canonical,
+                "active-run-schema",
+                "version",
+                snapshot.activeRunSchemaVersion.ToString());
+            AppendToken(
+                canonical,
+                "active-run-cursor",
+                "cursor",
+                snapshot.activeRunRandomCursor.ToString());
+            foreach (string runId in (snapshot.deletedRunIds ?? new List<string>())
+                .Where(runId => !string.IsNullOrWhiteSpace(runId))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(runId => runId, StringComparer.Ordinal))
+            {
+                AppendToken(canonical, "deleted-run", "runId", runId);
+            }
+
             foreach (ProgressIntValue entry in (snapshot.integers ?? new List<ProgressIntValue>())
                 .Where(entry => entry != null && !string.IsNullOrWhiteSpace(entry.key))
                 .OrderBy(entry => entry.key, StringComparer.Ordinal))

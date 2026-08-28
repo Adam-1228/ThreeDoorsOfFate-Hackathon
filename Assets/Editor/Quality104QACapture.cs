@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using ThreeDoorsOfFate.Cards;
+using ThreeDoorsOfFate.Game.V140;
 using ThreeDoorsOfFate.Localization;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -29,23 +30,28 @@ namespace ThreeDoorsOfFate.Editor
                 1290,
                 new Vector2(0.064f, 0.030f),
                 new Vector2(0.936f, 0.970f)),
-            new(
-                "narrow_safe_area",
-                1920,
-                1080,
-                new Vector2(0.100f, 0.060f),
-                new Vector2(0.900f, 0.940f))
+            new("4x3", 2048, 1536, Vector2.zero, Vector2.one)
         };
 
         public static void CaptureReleaseMatrix()
         {
+            CaptureMatrix(false);
+        }
+
+        public static void CaptureHistoryMatrix()
+        {
+            CaptureMatrix(true);
+        }
+
+        private static void CaptureMatrix(bool historyOnly)
+        {
             string outputDirectory = Environment.GetEnvironmentVariable(
-                "TDOF_104_QA_DIR");
+                "TDOF_140_QA_DIR");
             if (string.IsNullOrWhiteSpace(outputDirectory))
             {
                 outputDirectory = Path.GetFullPath(Path.Combine(
                     Application.dataPath,
-                    "../../Builds/QA/1.0.4"));
+                    "../../Builds/QA/1.4.0"));
             }
 
             Directory.CreateDirectory(outputDirectory);
@@ -78,6 +84,38 @@ namespace ThreeDoorsOfFate.Editor
                 GameLanguagePolicy.PreferenceKey,
                 string.Empty);
             UnityEngine.Random.State previousRandomState = UnityEngine.Random.state;
+            string previousRunHistoryPrefix = GetField<string>(
+                controllerType,
+                controller,
+                "runHistoryKeyPrefix");
+            string previousHardRunSaveKey = GetField<string>(
+                controllerType,
+                controller,
+                "hardRunSaveKey");
+            string previousHardRunSaveBackupKey = GetField<string>(
+                controllerType,
+                controller,
+                "hardRunSaveBackupKey");
+            string qaRunHistoryPrefix =
+                $"ThreeDoorsOfFate.QA.V140.{Guid.NewGuid():N}.";
+            string qaHardRunSaveKey = qaRunHistoryPrefix + "HardRunSave";
+            string qaHardRunSaveBackupKey =
+                qaRunHistoryPrefix + "HardRunSave.BackupV1";
+            SetField(
+                controllerType,
+                controller,
+                "runHistoryKeyPrefix",
+                qaRunHistoryPrefix);
+            SetField(
+                controllerType,
+                controller,
+                "hardRunSaveKey",
+                qaHardRunSaveKey);
+            SetField(
+                controllerType,
+                controller,
+                "hardRunSaveBackupKey",
+                qaHardRunSaveBackupKey);
             List<string> manifest = new()
             {
                 "language,state,layout,width,height,file"
@@ -85,24 +123,48 @@ namespace ThreeDoorsOfFate.Editor
 
             try
             {
-                CaptureLanguage(
-                    GameLanguage.Korean,
-                    "ko",
-                    controllerType,
-                    controller,
-                    canvas,
-                    safeAreaRoot,
-                    outputDirectory,
-                    manifest);
-                CaptureLanguage(
-                    GameLanguage.English,
-                    "en",
-                    controllerType,
-                    controller,
-                    canvas,
-                    safeAreaRoot,
-                    outputDirectory,
-                    manifest);
+                if (historyOnly)
+                {
+                    CaptureHistoryLanguage(
+                        GameLanguage.Korean,
+                        "ko",
+                        controllerType,
+                        controller,
+                        canvas,
+                        safeAreaRoot,
+                        outputDirectory,
+                        manifest);
+                    CaptureHistoryLanguage(
+                        GameLanguage.English,
+                        "en",
+                        controllerType,
+                        controller,
+                        canvas,
+                        safeAreaRoot,
+                        outputDirectory,
+                        manifest);
+                }
+                else
+                {
+                    CaptureLanguage(
+                        GameLanguage.Korean,
+                        "ko",
+                        controllerType,
+                        controller,
+                        canvas,
+                        safeAreaRoot,
+                        outputDirectory,
+                        manifest);
+                    CaptureLanguage(
+                        GameLanguage.English,
+                        "en",
+                        controllerType,
+                        controller,
+                        canvas,
+                        safeAreaRoot,
+                        outputDirectory,
+                        manifest);
+                }
 
                 File.WriteAllLines(
                     Path.Combine(outputDirectory, "capture_manifest.csv"),
@@ -116,6 +178,26 @@ namespace ThreeDoorsOfFate.Editor
             finally
             {
                 UnityEngine.Random.state = previousRandomState;
+                PlayerPrefs.DeleteKey(
+                    RunHistoryStore.GetStorageKey(qaRunHistoryPrefix));
+                PlayerPrefs.DeleteKey(qaHardRunSaveKey);
+                PlayerPrefs.DeleteKey(qaHardRunSaveBackupKey);
+                PlayerPrefs.DeleteKey(qaHardRunSaveKey + ".DeletedRunIds");
+                SetField(
+                    controllerType,
+                    controller,
+                    "runHistoryKeyPrefix",
+                    previousRunHistoryPrefix);
+                SetField(
+                    controllerType,
+                    controller,
+                    "hardRunSaveKey",
+                    previousHardRunSaveKey);
+                SetField(
+                    controllerType,
+                    controller,
+                    "hardRunSaveBackupKey",
+                    previousHardRunSaveBackupKey);
                 if (hadLanguagePreference)
                 {
                     PlayerPrefs.SetString(
@@ -132,7 +214,80 @@ namespace ThreeDoorsOfFate.Editor
                 ApplySafeArea(safeAreaRoot, Vector2.zero, Vector2.one);
             }
 
-            Debug.Log($"1.0.4 QA release matrix written: {outputDirectory}");
+            Debug.Log(
+                $"1.4.0 QA {(historyOnly ? "history" : "release")} matrix written: {outputDirectory}");
+        }
+
+        private static void CaptureHistoryLanguage(
+            GameLanguage language,
+            string languageCode,
+            Type controllerType,
+            Component controller,
+            Canvas canvas,
+            RectTransform safeAreaRoot,
+            string outputDirectory,
+            List<string> manifest)
+        {
+            GameLocalization.SetLanguage(language);
+            UnityEngine.Random.InitState(
+                language == GameLanguage.English ? 104 : 410);
+            HideRunStatusPanelImmediately(controllerType, controller);
+
+            StartKnownRun(controllerType, controller);
+            SetField(controllerType, controller, "roomsCleared", 7);
+            SetField(
+                controllerType,
+                controller,
+                "combatEncountersCompleted",
+                4);
+            SetField(controllerType, controller, "playerHealth", 0);
+            SetField(controllerType, controller, "playerMaxHealth", 60);
+            SetField(controllerType, controller, "gold", 123);
+            SetField(controllerType, controller, "debt", 5);
+            SetField(controllerType, controller, "hiddenGameOverChance", 0f);
+            object finalEnemy = Invoke(
+                controllerType,
+                controller,
+                "CreateEnemy",
+                false,
+                false);
+            SetField(controllerType, controller, "enemy", finalEnemy);
+            Invoke(
+                controllerType,
+                controller,
+                "ShowGameOver",
+                false,
+                GameLocalization.Text("gameOver.default"));
+            CaptureState(
+                languageCode,
+                "game_over",
+                controllerType,
+                controller,
+                canvas,
+                safeAreaRoot,
+                outputDirectory,
+                manifest);
+
+            Invoke(controllerType, controller, "ShowRunHistory");
+            CaptureState(
+                languageCode,
+                "run_history",
+                controllerType,
+                controller,
+                canvas,
+                safeAreaRoot,
+                outputDirectory,
+                manifest);
+            Invoke(controllerType, controller, "ShowRunHistoryDetail", 0);
+            CaptureState(
+                languageCode,
+                "run_history_detail",
+                controllerType,
+                controller,
+                canvas,
+                safeAreaRoot,
+                outputDirectory,
+                manifest);
         }
 
         private static void CaptureLanguage(
@@ -147,12 +302,28 @@ namespace ThreeDoorsOfFate.Editor
         {
             GameLocalization.SetLanguage(language);
             UnityEngine.Random.InitState(language == GameLanguage.English ? 104 : 410);
+            HideRunStatusPanelImmediately(controllerType, controller);
 
             Invoke(controllerType, controller, "ShowMainMenu");
             ConfigureMobileMainMenuButtons(controllerType, controller);
             CaptureState(
                 languageCode,
                 "main_menu_settings_icon",
+                controllerType,
+                controller,
+                canvas,
+                safeAreaRoot,
+                outputDirectory,
+                manifest);
+
+            Invoke(
+                controllerType,
+                controller,
+                "ShowStarterContractSelection",
+                CharacterClass.Gambler);
+            CaptureState(
+                languageCode,
+                "starter_contracts",
                 controllerType,
                 controller,
                 canvas,
@@ -212,6 +383,32 @@ namespace ThreeDoorsOfFate.Editor
             CaptureState(
                 languageCode,
                 "doors_forced",
+                controllerType,
+                controller,
+                canvas,
+                safeAreaRoot,
+                outputDirectory,
+                manifest);
+
+            StartKnownRun(controllerType, controller);
+            SetKnownDecisionState(controllerType, controller);
+            Invoke(controllerType, controller, "ShowRunStatusPanel");
+            CaptureState(
+                languageCode,
+                "run_status",
+                controllerType,
+                controller,
+                canvas,
+                safeAreaRoot,
+                outputDirectory,
+                manifest);
+
+            StartKnownRun(controllerType, controller);
+            SetField(controllerType, controller, "gold", 999);
+            Invoke(controllerType, controller, "ShowShop");
+            CaptureState(
+                languageCode,
+                "shop",
                 controllerType,
                 controller,
                 canvas,
@@ -336,10 +533,31 @@ namespace ThreeDoorsOfFate.Editor
                 controller,
                 "ShowGameOver",
                 false,
-                "동굴이 또 하나의 이름을 삼켰습니다.");
+                GameLocalization.Text("gameOver.default"));
             CaptureState(
                 languageCode,
                 "game_over",
+                controllerType,
+                controller,
+                canvas,
+                safeAreaRoot,
+                outputDirectory,
+                manifest);
+
+            Invoke(controllerType, controller, "ShowRunHistory");
+            CaptureState(
+                languageCode,
+                "run_history",
+                controllerType,
+                controller,
+                canvas,
+                safeAreaRoot,
+                outputDirectory,
+                manifest);
+            Invoke(controllerType, controller, "ShowRunHistoryDetail", 0);
+            CaptureState(
+                languageCode,
+                "run_history_detail",
                 controllerType,
                 controller,
                 canvas,
@@ -350,6 +568,7 @@ namespace ThreeDoorsOfFate.Editor
 
         private static void StartKnownRun(Type controllerType, Component controller)
         {
+            HideRunStatusPanelImmediately(controllerType, controller);
             Invoke(controllerType, controller, "HideHowToPlay");
             Invoke(controllerType, controller, "HideAchievements");
             Invoke(controllerType, controller, "HideSettingsPanel");
@@ -386,6 +605,21 @@ namespace ThreeDoorsOfFate.Editor
             }
         }
 
+        private static void HideRunStatusPanelImmediately(
+            Type controllerType,
+            Component controller)
+        {
+            RectTransform panel = GetField<RectTransform>(
+                controllerType,
+                controller,
+                "runStatusPanel");
+            Invoke(controllerType, controller, "HideRunStatusPanel");
+            if (panel != null)
+            {
+                UnityEngine.Object.DestroyImmediate(panel.gameObject);
+            }
+        }
+
         private static void ConfigureMobileMainMenuButtons(
             Type controllerType,
             Component controller)
@@ -395,7 +629,14 @@ namespace ThreeDoorsOfFate.Editor
                 controller,
                 "contentRoot")
                 ?? throw new InvalidOperationException("Main-menu content root is missing.");
-            string[] buttonNames = { "게임시작", "플레이 방법", "업적", "설정" };
+            string[] buttonNames =
+            {
+                "게임시작",
+                "플레이 방법",
+                "운명 기록",
+                "업적",
+                "설정"
+            };
             MethodInfo placementMethod = controllerType.GetMethod(
                 "SetMainMenuButtonPlacement",
                 BindingFlags.Static | BindingFlags.NonPublic)
@@ -412,7 +653,7 @@ namespace ThreeDoorsOfFate.Editor
                 Button button = buttonRoot.GetComponent<Button>()
                     ?? throw new InvalidOperationException(
                         $"Main-menu object is not a button: {buttonNames[index]}");
-                placementMethod.Invoke(null, new object[] { button, index, 4 });
+                placementMethod.Invoke(null, new object[] { button, index, 5 });
             }
 
             RectTransform quitButton = FindDescendant(contentRoot, "게임종료");
@@ -458,6 +699,7 @@ namespace ThreeDoorsOfFate.Editor
             string outputDirectory,
             List<string> manifest)
         {
+            RefreshLocalizedBindings(canvas);
             WriteVisibleTextAudit(
                 languageCode,
                 stateName,
@@ -485,6 +727,25 @@ namespace ThreeDoorsOfFate.Editor
             }
 
             ApplySafeArea(safeAreaRoot, Vector2.zero, Vector2.one);
+        }
+
+        private static void RefreshLocalizedBindings(Canvas canvas)
+        {
+            MethodInfo lateUpdate = typeof(LocalizedTextBinding).GetMethod(
+                "LateUpdate",
+                BindingFlags.Instance | BindingFlags.NonPublic)
+                ?? throw new InvalidOperationException(
+                    "LocalizedTextBinding.LateUpdate was not found.");
+            foreach (LocalizedTextBinding binding in
+                canvas.GetComponentsInChildren<LocalizedTextBinding>(true))
+            {
+                if (binding != null && binding.gameObject.activeInHierarchy)
+                {
+                    lateUpdate.Invoke(binding, null);
+                }
+            }
+
+            Canvas.ForceUpdateCanvases();
         }
 
         private static void WriteVisibleTextAudit(
@@ -527,7 +788,7 @@ namespace ThreeDoorsOfFate.Editor
             int width,
             int height)
         {
-            GameObject cameraObject = new("1.0.4 QA Camera", typeof(Camera));
+            GameObject cameraObject = new("1.4.0 QA Camera", typeof(Camera));
             Camera camera = cameraObject.GetComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = Color.black;

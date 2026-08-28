@@ -5,6 +5,7 @@ using System.Linq;
 using ThreeDoorsOfFate.Ads;
 using ThreeDoorsOfFate.Audio;
 using ThreeDoorsOfFate.Cards;
+using ThreeDoorsOfFate.Game.V140;
 using ThreeDoorsOfFate.Localization;
 using ThreeDoorsOfFate.Platform;
 using ThreeDoorsOfFate.UI;
@@ -88,7 +89,12 @@ namespace ThreeDoorsOfFate.Game
         private const string EndlessRecordSeenKey = "ThreeDoorsOfFate.EndlessRecord.Seen";
         private const string SurvivorTitleUnlockPrefix = "ThreeDoorsOfFate.SurvivorTitle.";
         private const string HardRunSaveKey = "ThreeDoorsOfFate.HardRunSave";
-        private const int HardRunSaveVersion = 1;
+        private const string HardRunSaveBackupKey =
+            "ThreeDoorsOfFate.HardRunSave.BackupV1";
+        private const int LegacyRunSaveVersion = 1;
+        private const int HardRunSaveVersion = 2;
+        private string hardRunSaveKey = HardRunSaveKey;
+        private string hardRunSaveBackupKey = HardRunSaveBackupKey;
         private const string EquippedItemKeyPrefix = "ThreeDoorsOfFate.EquippedItems.";
         private const string DiscoveredItemKeyPrefix = "ThreeDoorsOfFate.DiscoveredItems.";
         private const string RunItemUnlockKeyPrefix = "ThreeDoorsOfFate.RunItemUnlock.";
@@ -226,6 +232,7 @@ namespace ThreeDoorsOfFate.Game
         [SerializeField] private Sprite statusInnerPanelFrameSprite;
         [SerializeField] private Sprite statusInnerHeaderFrameSprite;
         [SerializeField] private Sprite statusItemSlotFrameSprite;
+        [SerializeField] private Sprite contractInfoFrameSprite;
         [SerializeField] private Sprite shopCombinationPanelFrameSprite;
         [SerializeField] private Sprite buttonIdleSprite;
         [SerializeField] private Sprite buttonHoverSprite;
@@ -386,6 +393,8 @@ namespace ThreeDoorsOfFate.Game
 
         private CharacterClass selectedClass = CharacterClass.Gambler;
         private RunDifficulty currentDifficulty = RunDifficulty.Easy;
+        private int runSeed;
+        private SeededRunRandom runRandom;
         private JourneyEndingKind currentJourneyEndingKind = JourneyEndingKind.Return;
         private bool endlessModeActive;
         private int nextEndlessBossRoom;
@@ -460,6 +469,7 @@ namespace ThreeDoorsOfFate.Game
             MainMenu,
             ClassSelection,
             ClassDetails,
+            ContractSelection,
             DoorSelection,
             Combat,
             Reward,
@@ -498,7 +508,12 @@ namespace ThreeDoorsOfFate.Game
             GatekeeperSeal,
             DebtAdjudication,
             AbyssUsury,
-            BottomlessAudit
+            BottomlessAudit,
+            PlayerVulnerable,
+            LuckDown,
+            DrawPenalty,
+            ActionDrain,
+            GoldLoss
         }
 
         private enum RunItemType
@@ -790,7 +805,7 @@ namespace ThreeDoorsOfFate.Game
             AddMainMenuEndlessRecordBox();
 
             bool supportsDesktopWindowControls = SupportsDesktopWindowControls(Application.platform);
-            int buttonCount = supportsDesktopWindowControls ? 5 : 4;
+            int buttonCount = supportsDesktopWindowControls ? 6 : 5;
 
             Button startButton = AddLocalizedMainMenuButton(contentRoot, "게임시작", "menu.start", 30);
             SetMainMenuButtonPlacement(startButton, 0, buttonCount);
@@ -800,8 +815,16 @@ namespace ThreeDoorsOfFate.Game
             SetMainMenuButtonPlacement(guideButton, 1, buttonCount);
             guideButton.onClick.AddListener(ShowHowToPlay);
 
+            Button historyButton = AddLocalizedMainMenuButton(
+                contentRoot,
+                "운명 기록",
+                "menu.runHistory",
+                28);
+            SetMainMenuButtonPlacement(historyButton, 2, buttonCount);
+            historyButton.onClick.AddListener(ShowRunHistory);
+
             Button achievementButton = AddLocalizedMainMenuButton(contentRoot, "업적", "menu.achievements", 30);
-            SetMainMenuButtonPlacement(achievementButton, 2, buttonCount);
+            SetMainMenuButtonPlacement(achievementButton, 3, buttonCount);
             achievementButton.onClick.AddListener(ShowAchievements);
 
             Button optionsButton = AddMainMenuIconButton(
@@ -810,23 +833,35 @@ namespace ThreeDoorsOfFate.Game
                 "menu.settings",
                 settingsIconSprite,
                 27);
-            SetMainMenuButtonPlacement(optionsButton, 3, buttonCount);
+            SetMainMenuButtonPlacement(optionsButton, 4, buttonCount);
             optionsButton.onClick.AddListener(ShowSettingsPanel);
 
             if (supportsDesktopWindowControls)
             {
                 Button quitButton = AddLocalizedMainMenuButton(contentRoot, "게임종료", "menu.quit", 30);
-                SetMainMenuButtonPlacement(quitButton, 4, buttonCount);
+                SetMainMenuButtonPlacement(quitButton, 5, buttonCount);
                 quitButton.onClick.AddListener(QuitGame);
             }
         }
 
         private static Rect GetMainMenuButtonRect(int index, int count)
         {
-            int safeCount = Mathf.Clamp(count, 1, 5);
+            int safeCount = Mathf.Clamp(count, 1, 6);
             int safeIndex = Mathf.Clamp(index, 0, safeCount - 1);
-            float width = safeCount == 5 ? 0.16f : safeCount == 4 ? 0.19f : 0.20f;
-            float gap = safeCount == 5 ? 0.025f : safeCount == 4 ? 0.04f : 0.03f;
+            float width = safeCount == 6
+                ? 0.135f
+                : safeCount == 5
+                    ? 0.16f
+                    : safeCount == 4
+                        ? 0.19f
+                        : 0.20f;
+            float gap = safeCount == 6
+                ? 0.018f
+                : safeCount == 5
+                    ? 0.025f
+                    : safeCount == 4
+                        ? 0.04f
+                        : 0.03f;
             float totalWidth = safeCount * width + (safeCount - 1) * gap;
             float minX = 0.5f - totalWidth * 0.5f + safeIndex * (width + gap);
             return new Rect(minX, 0.055f, width, 0.085f);
@@ -1636,7 +1671,8 @@ namespace ThreeDoorsOfFate.Game
                 classConfirmButtonSprite,
                 GameSfxCue.ImportantConfirm);
             SetAnchors(confirmButton.GetComponent<RectTransform>(), new Vector2(0.705f, 0.120f), new Vector2(0.985f, 0.880f));
-            confirmButton.onClick.AddListener(() => StartRun(characterClass));
+            confirmButton.onClick.AddListener(
+                () => ShowStarterContractSelection(characterClass));
 
             primaryButton.gameObject.SetActive(false);
         }
@@ -2012,11 +2048,47 @@ namespace ThreeDoorsOfFate.Game
             };
         }
 
+        private void ResetRunRandom(int seed)
+        {
+            runSeed = seed;
+            runRandom = new SeededRunRandom(seed);
+        }
+
+        private int RunRange(int minimumInclusive, int maximumExclusive)
+        {
+            if (runRandom == null)
+            {
+                ResetRunRandom(runSeed == 0 ? 1 : runSeed);
+            }
+
+            return runRandom.Range(minimumInclusive, maximumExclusive);
+        }
+
+        private float RunValue()
+        {
+            if (runRandom == null)
+            {
+                ResetRunRandom(runSeed == 0 ? 1 : runSeed);
+            }
+
+            return runRandom.Value();
+        }
+
         private void StartRun(CharacterClass characterClass)
+        {
+            StartRun(characterClass, GetDefaultStarterContractId(characterClass));
+        }
+
+        private void StartRun(
+            CharacterClass characterClass,
+            string contractId)
         {
             EnsureSelectedDifficultyIsUnlocked();
             PlayGameSfx(GameSfxCue.RunStart);
             selectedClass = characterClass;
+            ResetRunRandom(unchecked(Environment.TickCount ^ Guid.NewGuid().GetHashCode()));
+            ResetCheckpointStateForNewRun();
+            ResetRunHistoryTracking();
             newlyCompletedAchievementNames.Clear();
             playerMaxHealth = characterClass switch
             {
@@ -2050,12 +2122,27 @@ namespace ThreeDoorsOfFate.Game
             combatLog.Clear();
             runItemBottleHealthBonusApplied = false;
             predictedBossRunItemRewardId = string.Empty;
+            cardsRemovedThisRun = 0;
+            currentShopRemovalUsed = false;
+            deckRemovalPage = 0;
+            StarterContractDefinition starterContract =
+                GetSelectedStarterContract(characterClass, contractId);
+            bool contractDeckReady = starterContract != null
+                && TryInitializeStarterContractDeck(characterClass, starterContract.Id);
+            if (contractDeckReady)
+            {
+                ApplyStarterContractResources(starterContract);
+            }
+            else
+            {
+                selectedStarterContractId = string.Empty;
+                InitializeStartingDeck(characterClass);
+            }
+
             LoadDiscoveredRunItemsForSelectedClass();
             LoadEquippedRunItemsForSelectedClass();
             EnsureEquippedRunItemsAreDiscovered();
             ApplyRunItemRunStartBonuses();
-
-            InitializeStartingDeck(characterClass);
 
             topBar.gameObject.SetActive(true);
             SetLogVisible(true);
@@ -2065,6 +2152,12 @@ namespace ThreeDoorsOfFate.Game
             BindLocalizedText(titleText, "app.title");
             AddLog($"{GetClassName(selectedClass)}의 {GetDifficultyName(currentDifficulty)} 런을 시작했습니다.");
             AddLog(GetDifficultyDescription(currentDifficulty));
+            if (starterContract != null && contractDeckReady)
+            {
+                AddLog(LF(
+                    "log.contract.selected",
+                    L(starterContract.NameKey)));
+            }
             AddLog(equippedRunItemIds.Count > 0
                 ? $"장착 아이템 {equippedRunItemIds.Count}/{GetRunItemSlotLimit()}: {GetEquippedRunItemNames()}"
                 : $"장착 아이템 없음. 현재 난이도에서는 최대 {GetRunItemSlotLimit()}개까지 장착할 수 있습니다.");
@@ -2155,7 +2248,7 @@ namespace ThreeDoorsOfFate.Game
         {
             for (int i = 0; i < count && candidates.Count > 0; i += 1)
             {
-                deck.Add(candidates[Random.Range(0, candidates.Count)]);
+                deck.Add(candidates[RunRange(0, candidates.Count)]);
             }
         }
 
@@ -2163,6 +2256,13 @@ namespace ThreeDoorsOfFate.Game
         {
             PlayMainMenuMusic();
             phase = GamePhase.DoorSelection;
+            checkpointResumePhase = GamePhase.DoorSelection;
+            pendingEndlessCheckpoint = false;
+            pendingResolvedDoorTypeId = NoPendingDoorType;
+            pendingRewardCardIds.Clear();
+            pendingRunEventId = string.Empty;
+            restoredRunCheckpoint = null;
+            currentEncounterSeed = 0;
             SetBackground(classSelectBackground);
             ClearContent();
             primaryButton.gameObject.SetActive(true);
@@ -2195,9 +2295,18 @@ namespace ThreeDoorsOfFate.Game
             BindLocalizedText(subtitleText, subtitleKey);
             SetSubtitleBoxVisible(true);
 
-            List<DoorOption> options = bossDoorReady
-                ? new List<DoorOption> { CreateBossDoorOption() }
-                : GenerateDoorOptions();
+            List<DoorOption> options;
+            if (pendingDoorTypes.Count > 0)
+            {
+                options = pendingDoorTypes.Select(CreateDoorOption).ToList();
+            }
+            else
+            {
+                options = bossDoorReady
+                    ? new List<DoorOption> { CreateBossDoorOption() }
+                    : GenerateDoorOptions();
+                pendingDoorTypes.AddRange(options.Select(option => option.Type));
+            }
 
             if (bossDoorReady)
             {
@@ -2495,6 +2604,8 @@ namespace ThreeDoorsOfFate.Game
                 new Vector2(0.955f, 0.985f),
                 HideRunStatusPanel,
                 18);
+
+            AddEndlessMutationStatusButton(runStatusMainPanel);
 
             AddRunStatusLabelBox(
                 runStatusMainPanel,
@@ -3445,12 +3556,12 @@ namespace ThreeDoorsOfFate.Game
                     .Where(candidate => IsNonCombatChoice(candidate.Type))
                     .ToArray();
                 DoorType safeType = PickWeightedDoorType(safePool);
-                selectedTypes[Random.Range(0, selectedTypes.Count)] = safeType;
+                selectedTypes[RunRange(0, selectedTypes.Count)] = safeType;
             }
 
             for (int index = selectedTypes.Count - 1; index > 0; index -= 1)
             {
-                int swapIndex = Random.Range(0, index + 1);
+                int swapIndex = RunRange(0, index + 1);
                 (selectedTypes[index], selectedTypes[swapIndex]) =
                     (selectedTypes[swapIndex], selectedTypes[index]);
             }
@@ -3493,10 +3604,10 @@ namespace ThreeDoorsOfFate.Game
             return Mathf.Clamp01(Mathf.Max(0, debt) * DebtDoorPressurePerDebt);
         }
 
-        private static DoorType PickWeightedDoorType(IReadOnlyList<WeightedDoorType> pool)
+        private DoorType PickWeightedDoorType(IReadOnlyList<WeightedDoorType> pool)
         {
             float totalWeight = pool.Sum(candidate => Mathf.Max(0.001f, candidate.Weight));
-            float roll = Random.value * totalWeight;
+            float roll = RunValue() * totalWeight;
             foreach (WeightedDoorType candidate in pool)
             {
                 roll -= Mathf.Max(0.001f, candidate.Weight);
@@ -3580,7 +3691,12 @@ namespace ThreeDoorsOfFate.Game
                 itemBonus += 1;
             }
 
-            return Mathf.Clamp(Mathf.Max(doorInsightLevel, GetBaseDoorInsightLevel()) + itemBonus, 0, 3);
+            return Mathf.Clamp(
+                Mathf.Max(doorInsightLevel, GetBaseDoorInsightLevel())
+                    + itemBonus
+                    + GetEndlessDoorInsightBonus(),
+                0,
+                3);
         }
 
         private void ResetDoorInsightAfterChoice()
@@ -3667,7 +3783,7 @@ namespace ThreeDoorsOfFate.Game
                     <= 0 => "속삭임이 균열을 타고 흐릅니다.",
                     1 => "선택형 계약 이벤트입니다.",
                     2 => "예언: 사건. 보상과 대가 중 하나를 선택합니다.",
-                    _ => "예언 선명: 체력 6을 잃고 금화 55를 받거나, 카드 1장을 받고 빚 +1을 선택합니다."
+                    _ => "예언 선명: 직업, 빚, 이전 선택에 따라 다른 운명 사건이 기다립니다."
                 },
                 DoorType.Rest => insightLevel switch
                 {
@@ -3757,13 +3873,16 @@ namespace ThreeDoorsOfFate.Game
 
         private int GetCurseDoorDebtGain()
         {
-            return Mathf.Max(0, 1 - curseReduction);
+            return GetEndlessAdjustedDebtGain(
+                Mathf.Max(0, 1 - curseReduction));
         }
 
         private void ResolveDoor(DoorOption option)
         {
             PlayGameSfx(GameSfxCue.DoorOpen);
             ResetDoorInsightAfterChoice();
+            pendingDoorTypes.Clear();
+            pendingResolvedDoorTypeId = (int)option.Type;
             if (option.Type != DoorType.Boss)
             {
                 roomsCleared += 1;
@@ -3776,6 +3895,8 @@ namespace ThreeDoorsOfFate.Game
                     consecutiveNonCombatDoors += 1;
                 }
             }
+
+            SaveRunCheckpointAtResolvedSurface();
 
             switch (option.Type)
             {
@@ -3821,7 +3942,7 @@ namespace ThreeDoorsOfFate.Game
                 ? BaseEnemyTemplates.Concat(HardModeEnemyTemplates).ToArray()
                 : BaseEnemyTemplates;
             int index = IsHardModeFeatureActive()
-                ? Random.Range(0, templates.Length)
+                ? RunRange(0, templates.Length)
                 : Mathf.Clamp(roomsCleared - 1, 0, templates.Length - 1);
             EnemyTemplate template = templates[index];
             int health = template.Health + (elite ? 16 : 0);
@@ -3906,6 +4027,9 @@ namespace ThreeDoorsOfFate.Game
                 healthScale *= 1.15f;
             }
 
+            attackScale *= GetEndlessEnemyAttackMultiplier();
+            blockScale *= GetEndlessEnemyBlockMultiplier();
+
             int scaledHealth = Mathf.Max(boss ? 48 : 16, Mathf.RoundToInt(health * healthScale));
             int scaledAttack = Mathf.Max(1, Mathf.RoundToInt(attack * attackScale));
             int scaledBlock = Mathf.Max(0, Mathf.RoundToInt(block * blockScale));
@@ -3938,6 +4062,26 @@ namespace ThreeDoorsOfFate.Game
             StopCombatVictorySequence();
             phase = GamePhase.Combat;
             enemy = newEnemy;
+            bool resumingCapturedEncounter = restoredRunCheckpoint != null
+                && checkpointResumePhase == GamePhase.Combat
+                && string.Equals(
+                    restoredRunCheckpoint.encounterEnemyId,
+                    newEnemy.Id,
+                    StringComparison.Ordinal);
+            if (!resumingCapturedEncounter || currentEncounterSeed == 0)
+            {
+                int randomCursor = runRandom?.Capture().Cursor ?? 0;
+                currentEncounterSeed = unchecked(runSeed ^ (randomCursor + 1) * 397);
+                if (currentEncounterSeed == 0)
+                {
+                    currentEncounterSeed = 1;
+                }
+            }
+
+            checkpointResumePhase = GamePhase.Combat;
+            pendingResolvedDoorTypeId = NoPendingDoorType;
+            SaveRunCheckpointAtResolvedSurface();
+            restoredRunCheckpoint = null;
             SetLogVisible(true);
             topBar.gameObject.SetActive(true);
             SetBackground(enemy.IsBoss ? bossBackground : battleBackground);
@@ -3970,6 +4114,7 @@ namespace ThreeDoorsOfFate.Game
             exileHardFatalOathTriggeredThisCombat = false;
             bossNoAttackHandSmoothingUsedThisCombat = false;
             ResetExplicitRerollProgress();
+            InitializeEncounterBehavior(newEnemy);
             runItemSkillDiscountsRemaining = HasRunItem("blessing_silver_feather") ? 1 : 0;
             cardsPlayedThisTurn.Clear();
             cardsPlayedThisCombat.Clear();
@@ -3998,7 +4143,8 @@ namespace ThreeDoorsOfFate.Game
             drawPile.AddRange(deck);
             Shuffle(drawPile);
             RollLuckForTurn();
-            DrawUpToHandSize();
+            DrawOpeningHandWithEndlessMutation();
+            ApplyEndlessCombatStartBonuses();
             TrySmoothBossNoAttackHand();
             combatDrawDiscardCount = 0;
             ApplyBuildCombatStartBonuses();
@@ -4097,6 +4243,7 @@ namespace ThreeDoorsOfFate.Game
             RectTransform handPanel = AddPanel(contentRoot, "손패", new Color(1f, 1f, 1f, 0f));
             SetAnchors(handPanel, new Vector2(0.145f, 0.040f), new Vector2(1.000f, 0.550f));
 
+            combatHandCardButtons.Clear();
             for (int i = 0; i < hand.Count; i += 1)
             {
                 CardData card = hand[i];
@@ -4112,6 +4259,7 @@ namespace ThreeDoorsOfFate.Game
                 cardButton.onClick.AddListener(
                     () => SelectCombatCardForPreview(index, card));
                 cardButton.interactable = CanPlay(card);
+                combatHandCardButtons.Add(cardButton);
             }
 
             CreateDrawAnimationGhosts();
@@ -4815,8 +4963,14 @@ namespace ThreeDoorsOfFate.Game
         {
             EventTrigger trigger = target.AddComponent<EventTrigger>();
             RectTransform previewTarget = target.GetComponent<RectTransform>();
-            AddEventTrigger(trigger, EventTriggerType.PointerEnter, _ => ShowCardPreview(card, previewTarget));
-            AddEventTrigger(trigger, EventTriggerType.PointerExit, _ => HideCardPreview());
+            AddEventTrigger(
+                trigger,
+                EventTriggerType.PointerEnter,
+                _ => ShowHoverCardPreview(card, previewTarget));
+            AddEventTrigger(
+                trigger,
+                EventTriggerType.PointerExit,
+                _ => HideHoverCardPreview(previewTarget));
         }
 
         private static void AddEventTrigger(EventTrigger trigger, EventTriggerType eventType, UnityAction<BaseEventData> callback)
@@ -4832,25 +4986,14 @@ namespace ThreeDoorsOfFate.Game
         private void ShowCardPreview(CardData card, RectTransform previewTarget)
         {
             Sprite sprite = GetLocalizedCardFullSprite(card);
-            if (sprite == null || phase == GamePhase.GameOver)
+            if (sprite == null
+                || phase == GamePhase.GameOver
+                || (cardInspectionActive && previewTarget != null))
             {
                 return;
             }
 
-            if (cardPreviewImage == null)
-            {
-                cardPreviewImage = AddImage(root, "카드 확대 프리뷰", Color.white);
-                cardPreviewImage.preserveAspect = true;
-                SetAnchors(cardPreviewImage.rectTransform, new Vector2(0.390f, 0.300f), new Vector2(0.610f, 0.850f));
-
-                Button previewDismissButton = AddSfxButton(
-                    cardPreviewImage.gameObject,
-                    GameSfxCue.None);
-                previewDismissButton.transition = Selectable.Transition.None;
-                previewDismissButton.targetGraphic = cardPreviewImage;
-                previewDismissButton.colors = CreateStaticButtonColors();
-                previewDismissButton.onClick.AddListener(HideCardPreview);
-            }
+            EnsureCardInspectionOverlay();
 
             cardPreviewImage.sprite = sprite;
             cardPreviewImage.color = Color.white;
@@ -4882,41 +5025,16 @@ namespace ThreeDoorsOfFate.Game
 
             EnsureCombatCardPreviewControls();
             selectedCombatCardIndex = handIndex;
-            ShowCardPreview(card, null);
-            cardPreviewCancelButton.interactable = true;
-            cardPreviewUseButton.gameObject.SetActive(true);
-            cardPreviewUseButton.transform.SetAsLastSibling();
+            ShowCardInspection(
+                card,
+                CardInspectionMode.CombatUse,
+                "사용",
+                UseSelectedCombatCard);
         }
 
         private void EnsureCombatCardPreviewControls()
         {
-            if (cardPreviewCancelButton == null)
-            {
-                cardPreviewCancelButton = AddSfxButton(root.gameObject, GameSfxCue.None);
-                cardPreviewCancelButton.transition = Selectable.Transition.None;
-                cardPreviewCancelButton.targetGraphic = null;
-                Navigation navigation = cardPreviewCancelButton.navigation;
-                navigation.mode = Navigation.Mode.None;
-                cardPreviewCancelButton.navigation = navigation;
-                cardPreviewCancelButton.onClick.AddListener(HideCardPreview);
-                cardPreviewCancelButton.interactable = false;
-            }
-
-            if (cardPreviewUseButton == null)
-            {
-                cardPreviewUseButton = AddSettingsMenuButton(
-                    root,
-                    "카드 사용",
-                    "사용",
-                    24,
-                    GameSfxCue.None);
-                SetAnchors(
-                    cardPreviewUseButton.GetComponent<RectTransform>(),
-                    new Vector2(0.425f, 0.200f),
-                    new Vector2(0.575f, 0.265f));
-                cardPreviewUseButton.onClick.AddListener(UseSelectedCombatCard);
-                cardPreviewUseButton.gameObject.SetActive(false);
-            }
+            EnsureCardInspectionOverlay();
         }
 
         private void UseSelectedCombatCard()
@@ -4974,23 +5092,7 @@ namespace ThreeDoorsOfFate.Game
 
         private void HideCardPreview()
         {
-            if (cardPreviewImage != null)
-            {
-                cardPreviewImage.gameObject.SetActive(false);
-            }
-
-            if (cardPreviewUseButton != null)
-            {
-                cardPreviewUseButton.gameObject.SetActive(false);
-            }
-
-            if (cardPreviewCancelButton != null)
-            {
-                cardPreviewCancelButton.interactable = false;
-            }
-
-            selectedCombatCardIndex = -1;
-            cardPreviewTarget = null;
+            HideCardInspection();
         }
 
         private bool CanPlay(CardData card)
@@ -5068,6 +5170,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             PlayGameSfx(GameSfxCue.CardPlay);
+            RecordRunCardPlayed();
             int costBeforeTrait = GetCardCostBeforeTrait(card);
             int traitCostReduction = GetTraitCostReduction(costBeforeTrait);
             int costAfterTrait = Mathf.Max(0, costBeforeTrait - traitCostReduction);
@@ -5699,7 +5802,7 @@ namespace ThreeDoorsOfFate.Game
 
         private int GetRunItemReducedDebtGain(int amount)
         {
-            int addedDebt = Mathf.Max(0, amount);
+            int addedDebt = GetEndlessAdjustedDebtGain(amount);
             if (phase == GamePhase.Combat
                 && addedDebt > 0
                 && HasRunItem("blessing_purified_chain")
@@ -5740,7 +5843,10 @@ namespace ThreeDoorsOfFate.Game
                 reward += 25;
             }
 
-            return reward;
+            return Mathf.Max(
+                0,
+                Mathf.RoundToInt(
+                    reward * GetEndlessCombatGoldMultiplier()));
         }
 
         private void ApplyRunItemVictorySideEffects(bool bossVictory)
@@ -5810,7 +5916,7 @@ namespace ThreeDoorsOfFate.Game
         private int GetRunItemRewardChoiceCount(int baseCount, bool eliteReward)
         {
             int count = Mathf.Max(1, baseCount);
-            if (HasRunItem("blessing_star_compass") && Random.value <= 0.20f)
+            if (HasRunItem("blessing_star_compass") && RunValue() <= 0.20f)
             {
                 count += 1;
                 AddLog("아이템 효과: 보상 선택지 +1.");
@@ -5833,7 +5939,10 @@ namespace ThreeDoorsOfFate.Game
                 price = Mathf.CeilToInt(price * 1.15f);
             }
 
-            return price;
+            return Mathf.Max(
+                0,
+                Mathf.RoundToInt(
+                    price * GetEndlessShopPriceMultiplier()));
         }
 
         private int GetRestHealAmount()
@@ -5844,7 +5953,10 @@ namespace ThreeDoorsOfFate.Game
                 amount = Mathf.FloorToInt(amount * 0.70f);
             }
 
-            return Mathf.Max(1, amount);
+            return Mathf.Max(
+                1,
+                Mathf.FloorToInt(
+                    amount * GetEndlessRestHealingMultiplier()));
         }
 
         private void ApplyPostPlayCombinationEffects(CardData card, int debtBeforePlay)
@@ -6149,6 +6261,7 @@ namespace ThreeDoorsOfFate.Game
 
         private void DealDamage(int amount)
         {
+            int enemyHealthBefore = enemy.Health;
             int buildBonus = GetBuildDamageBonus();
             int combinationBonus = GetCombinationDamageBonus(activeCard) + GetRunItemDamageBonus(activeCard);
             int boostedAmount = amount + buildBonus + combinationBonus;
@@ -6157,6 +6270,8 @@ namespace ThreeDoorsOfFate.Game
             enemy.Block -= blocked;
             int damage = Mathf.Max(0, rawDamage - blocked);
             enemy.Health = Mathf.Max(0, enemy.Health - damage);
+            RecordRunDamageDealt(
+                Mathf.Max(0, enemyHealthBefore - enemy.Health));
             if (damage > 0)
             {
                 bool criticalHit = enemy.Vulnerable > 0 || buildBonus > 0 || combinationBonus > 0;
@@ -6841,6 +6956,7 @@ namespace ThreeDoorsOfFate.Game
             int rewardGold = GetRunItemAdjustedCombatGoldReward(baseRewardGold, enemy.IsBoss);
             if (enemy.IsBoss)
             {
+                RecordRunBossDefeated();
                 PlayBossVictorySfx();
                 if (IsDebtClearBoss(enemy))
                 {
@@ -6878,7 +6994,7 @@ namespace ThreeDoorsOfFate.Game
             ApplyRunItemVictorySideEffects(false);
             AddLog($"전투 승리. 금화 +{rewardGold}. 보스 전 전투 {combatEncountersCompleted}/{MinimumPreBossCombats}.");
             int rewardChoiceCount = 3;
-            if (IsCombinationComplete("third_answer") && Random.value <= 0.20f)
+            if (IsCombinationComplete("third_answer") && RunValue() <= 0.20f)
             {
                 rewardChoiceCount = 4;
                 TriggerCombinationImpact("third_answer");
@@ -6938,7 +7054,7 @@ namespace ThreeDoorsOfFate.Game
                 DoorType.Curse => CurseDoorRunItemDiscoveryChance,
                 _ => 0f
             };
-            if (chance <= 0f || Random.value > chance)
+            if (chance <= 0f || RunValue() > chance)
             {
                 return false;
             }
@@ -7005,7 +7121,7 @@ namespace ThreeDoorsOfFate.Game
                 .Where(item => !IsRunItemDiscoveredForSelectedClass(item))
                 .ToList();
             List<RunItemDefinition> pool = undiscovered.Count > 0 ? undiscovered : candidates;
-            return pool[Random.Range(0, pool.Count)];
+            return pool[RunRange(0, pool.Count)];
         }
 
         private static RunItemType GetBossRewardItemType(RunDifficulty difficulty)
@@ -7870,6 +7986,8 @@ namespace ThreeDoorsOfFate.Game
                 debt = 0;
             }
 
+            pendingEndlessCheckpoint = false;
+
             AddLog("모든 빚을 청산하려는 순간, 마지막 채권자가 문 너머에서 모습을 드러냅니다.");
             RefreshTopBar();
             StartCombat(CreateDebtClearBoss());
@@ -7905,13 +8023,21 @@ namespace ThreeDoorsOfFate.Game
             AddLog($"심연의 고리대금업자 격파. 금화 +{rewardGold}. 무한 기록 {roomsCleared}문.");
             RecordEndlessProgress();
             nextEndlessBossRoom = roomsCleared + EndlessBossInterval;
-            ShowEndlessCheckpoint();
+            ShowEndlessMutationSelection();
         }
 
         private void ShowEndlessCheckpoint()
         {
             PlayNonCombatMusic();
             phase = GamePhase.Reward;
+            checkpointResumePhase = GamePhase.DoorSelection;
+            pendingEndlessCheckpoint = true;
+            pendingResolvedDoorTypeId = NoPendingDoorType;
+            pendingEndlessMutationChoices =
+                Array.Empty<EndlessMutationDefinition>();
+            pendingRewardCardIds.Clear();
+            restoredRunCheckpoint = null;
+            SaveRunCheckpointAtResolvedSurface();
             SetBackground(rewardBackground != null ? rewardBackground : bossBackground);
             ClearContent();
             SetLogVisible(false);
@@ -7930,16 +8056,41 @@ namespace ThreeDoorsOfFate.Game
                 0.290f,
                 0.710f);
 
-            Text detail = AddText(panel, "무한 체크포인트 설명", $"최고 기록 {GetEndlessRecord()}문 / 다음 심연 보스 {nextEndlessBossRoom}문 / 현재 빚 {debt}", 22, TextAnchor.MiddleCenter, new Color(0.88f, 0.84f, 0.76f, 1f));
-            SetAnchors(detail.rectTransform, new Vector2(0.10f, 0.610f), new Vector2(0.90f, 0.720f));
+            Text detail = AddText(
+                panel,
+                "무한 체크포인트 설명",
+                LF(
+                    "endlessMutation.checkpoint.summary",
+                    GetEndlessRecord(),
+                    nextEndlessBossRoom,
+                    debt,
+                    BuildActiveEndlessMutationNameSummary()),
+                20,
+                TextAnchor.MiddleCenter,
+                new Color(0.88f, 0.84f, 0.76f, 1f));
+            detail.resizeTextForBestFit = true;
+            detail.resizeTextMinSize = 13;
+            detail.resizeTextMaxSize = 20;
+            detail.lineSpacing = 0.94f;
+            SetAnchors(
+                detail.rectTransform,
+                new Vector2(0.10f, 0.595f),
+                new Vector2(0.90f, 0.735f));
 
-            AddPostTenChoice(panel, "계속 내려간다", "기록을 이어갑니다. 적은 더 강해지고 보상도 조금씩 커집니다.", new Vector2(0.070f, 0.405f), new Vector2(0.930f, 0.575f), ShowDoors, true);
+            AddPostTenChoice(panel, "계속 내려간다", "기록을 이어갑니다. 적은 더 강해지고 보상도 조금씩 커집니다.", new Vector2(0.070f, 0.405f), new Vector2(0.930f, 0.575f), ContinueFromEndlessCheckpoint, true);
             AddPostTenChoice(panel, "기록하고 귀환한다", "현재 무한 기록을 보존하고 런을 성공으로 마무리합니다.", new Vector2(0.070f, 0.220f), new Vector2(0.930f, 0.390f), CompleteEndlessReturnEnding, true);
             AddPostTenChoice(panel, "빚을 청산한다", GetDebtClearCost() > 0 ? $"금화 {GetDebtClearCost()}로 마지막 채권자에게 도전합니다." : "빚 없이 마지막 채권자에게 도전합니다.", new Vector2(0.070f, 0.035f), new Vector2(0.930f, 0.205f), BeginDebtClearBossBattle, CanClearDebt());
         }
 
+        private void ContinueFromEndlessCheckpoint()
+        {
+            pendingEndlessCheckpoint = false;
+            ShowDoors();
+        }
+
         private void CompleteEndlessReturnEnding()
         {
+            pendingEndlessCheckpoint = false;
             RecordEndlessProgress();
             UnlockNextDifficultyFromCurrentRun();
             currentJourneyEndingKind = JourneyEndingKind.EndlessReturn;
@@ -8072,6 +8223,14 @@ namespace ThreeDoorsOfFate.Game
             PlayNonCombatMusic();
             PlayGameSfx(GameSfxCue.RewardReveal);
             phase = GamePhase.Reward;
+            checkpointResumePhase = GamePhase.Reward;
+            pendingResolvedDoorTypeId = NoPendingDoorType;
+            pendingRewardCardIds.Clear();
+            pendingRewardCardIds.AddRange(rewards
+                .Where(card => card != null && !string.IsNullOrWhiteSpace(card.CardId))
+                .Select(card => card.CardId));
+            restoredRunCheckpoint = null;
+            SaveRunCheckpointAtResolvedSurface();
             SetBackground(rewardBackground);
             ClearContent();
             SetDefaultContentRootPlacement();
@@ -8110,7 +8269,7 @@ namespace ThreeDoorsOfFate.Game
 
                 Button button = CreateCardButton(slot, card, 0, 1, false, false);
                 Stretch(button.GetComponent<RectTransform>());
-                button.onClick.AddListener(() =>
+                UnityAction takeCard = () =>
                 {
                     if (TryAddCardToDeck(card, "카드 보상"))
                     {
@@ -8120,7 +8279,12 @@ namespace ThreeDoorsOfFate.Game
                     }
 
                     ShowDoors();
-                });
+                };
+                button.onClick.AddListener(() => ShowCardInspection(
+                    card,
+                    CardInspectionMode.RewardTake,
+                    "획득",
+                    takeCard));
             }
 
             RefreshTopBar();
@@ -8160,7 +8324,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             List<CardData> cards = PickWeightedCards(count, sources);
-            if (IsHardModeFeatureActive() && Random.value <= 0.45f)
+            if (IsHardModeFeatureActive() && RunValue() <= 0.45f)
             {
                 EnsureHardReward(cards);
             }
@@ -8218,7 +8382,7 @@ namespace ThreeDoorsOfFate.Game
 
             List<CardData> picks = new();
             BuildRecipe recipe = GetCurrentBuildRecipe();
-            foreach (string cardId in recipe.RequiredCardIds.OrderBy(_ => Random.value))
+            foreach (string cardId in recipe.RequiredCardIds.OrderBy(_ => RunValue()))
             {
                 if (picks.Count >= count || HasDeckCard(cardId))
                 {
@@ -8226,7 +8390,7 @@ namespace ThreeDoorsOfFate.Game
                 }
 
                 CardData buildCard = candidates.FirstOrDefault(card => card.CardId == cardId);
-                if (buildCard != null && Random.value <= 0.74f)
+                if (buildCard != null && RunValue() <= 0.74f)
                 {
                     picks.Add(buildCard);
                 }
@@ -8280,7 +8444,7 @@ namespace ThreeDoorsOfFate.Game
             }
 
             int totalWeight = weighted.Sum(entry => entry.Weight);
-            int roll = Random.Range(0, totalWeight);
+            int roll = RunRange(0, totalWeight);
             foreach ((CardData card, int weight) in weighted)
             {
                 if (roll < weight)
@@ -8318,6 +8482,12 @@ namespace ThreeDoorsOfFate.Game
 
             IReadOnlyList<BuildTag> preferredTags = GetPreferredBuildTags(recipe.Id);
             weight += card.BuildTags.Count(tag => preferredTags.Contains(tag));
+            if (card.Rarity == CardRarity.Rare)
+            {
+                weight = Mathf.CeilToInt(
+                    weight * GetEndlessRareCardWeightMultiplier());
+            }
+
             return Mathf.Max(1, weight);
         }
 
@@ -8326,6 +8496,10 @@ namespace ThreeDoorsOfFate.Game
             EnsureCurrentShopOffers();
             PlayNonCombatMusic();
             phase = GamePhase.Shop;
+            checkpointResumePhase = GamePhase.Shop;
+            pendingResolvedDoorTypeId = NoPendingDoorType;
+            restoredRunCheckpoint = null;
+            SaveRunCheckpointAtResolvedSurface();
             SetBackground(shopBackground);
             ClearContent();
             SetDefaultContentRootPlacement();
@@ -8386,19 +8560,24 @@ namespace ThreeDoorsOfFate.Game
                 Button cardButton = CreateCardButton(slot, card, 0, 1);
                 SetAnchors(cardButton.GetComponent<RectTransform>(), new Vector2(0.000f, 0.165f), new Vector2(1.000f, 1.000f));
                 cardButton.onClick.RemoveAllListeners();
-                cardButton.onClick.AddListener(purchase);
+                UnityAction inspectPurchase = () => ShowCardInspection(
+                    card,
+                    CardInspectionMode.ShopBuy,
+                    $"구매 {price}금",
+                    purchase);
+                cardButton.onClick.AddListener(inspectPurchase);
 
                 Button buy = AddShopActionButton(slot, "구매", $"구매 {price}금", 16);
                 SetAnchors(buy.GetComponent<RectTransform>(), new Vector2(0.050f, 0.018f), new Vector2(0.950f, 0.165f));
                 bool canBuyCard = gold >= price && CanAddCardToDeck();
                 cardButton.interactable = CanAddCardToDeck();
                 buy.interactable = canBuyCard;
-                buy.onClick.AddListener(purchase);
+                buy.onClick.AddListener(inspectPurchase);
             }
 
             if (!string.IsNullOrWhiteSpace(currentShopRunItemId))
             {
-                int itemSlotIndex = Mathf.Clamp(currentShopCards.Count, 0, 2);
+                int itemSlotIndex = Mathf.Clamp(currentShopCards.Count, 0, 3);
                 if (currentShopRunItemPurchased)
                 {
                     AddShopSoldSlot(itemSlotIndex, "구매 완료", "이미 획득한 아이템입니다.");
@@ -8420,13 +8599,17 @@ namespace ThreeDoorsOfFate.Game
                 return;
             }
 
+            RecordRunShopVisit();
             currentShopCards.Clear();
             purchasedShopCardSlots.Clear();
             currentShopRunItemId = string.Empty;
             currentShopRunItemPurchased = false;
+            currentShopRemovalUsed = false;
 
             RunItemDefinition shopRunItem = PickShopRunItemOffer();
-            currentShopCards.AddRange(PickShopCards(shopRunItem == null ? 3 : 2));
+            int cardOfferCount = (shopRunItem == null ? 3 : 2)
+                + GetEndlessShopOfferBonus();
+            currentShopCards.AddRange(PickShopCards(cardOfferCount));
             currentShopRunItemId = shopRunItem?.Id ?? string.Empty;
             currentShopOffersReady = true;
         }
@@ -8437,6 +8620,7 @@ namespace ThreeDoorsOfFate.Game
             purchasedShopCardSlots.Clear();
             currentShopRunItemId = string.Empty;
             currentShopRunItemPurchased = false;
+            currentShopRemovalUsed = false;
             currentShopOffersReady = false;
         }
 
@@ -8444,9 +8628,18 @@ namespace ThreeDoorsOfFate.Game
         {
             RectTransform slot = AddPanel(contentRoot, name, new Color(1f, 1f, 1f, 0f));
             slot.GetComponent<Image>().raycastTarget = false;
-            const float cardSlotWidth = 0.240f;
+            int offerCount = currentShopCards.Count
+                + (string.IsNullOrWhiteSpace(currentShopRunItemId) ? 0 : 1);
+            offerCount = Mathf.Clamp(offerCount, 1, 4);
+            const float offerAreaLeft = 0.255f;
+            const float offerAreaRight = 0.995f;
             const float cardSlotGap = 0.008f;
-            float slotLeft = 0.255f + slotIndex * (cardSlotWidth + cardSlotGap);
+            float cardSlotWidth = (
+                offerAreaRight
+                - offerAreaLeft
+                - cardSlotGap * (offerCount - 1)) / offerCount;
+            float slotLeft = offerAreaLeft
+                + slotIndex * (cardSlotWidth + cardSlotGap);
             SetAnchors(slot, new Vector2(slotLeft, 0.052f), new Vector2(slotLeft + cardSlotWidth, 0.885f));
             return slot;
         }
@@ -8478,7 +8671,7 @@ namespace ThreeDoorsOfFate.Game
 
         private RunItemDefinition PickShopRunItemOffer()
         {
-            if (Random.value > ShopRunItemOfferChance)
+            if (RunValue() > ShopRunItemOfferChance)
             {
                 return null;
             }
@@ -8671,6 +8864,8 @@ namespace ThreeDoorsOfFate.Game
                 AddLog($"{recipe.Name} 강화 {currentLevel + 1}단계.");
                 ShowShop();
             });
+
+            AddShopDeckRemovalService(panel);
         }
 
         private void ShowShopCombinationGuide()
@@ -8783,7 +8978,7 @@ namespace ThreeDoorsOfFate.Game
             SetBackground(treasureBackground != null ? treasureBackground : rewardBackground);
             ClearContent();
             SetDefaultContentRootPlacement();
-            int rewardGold = Random.Range(24, 43);
+            int rewardGold = RunRange(24, 43);
             gold += rewardGold;
             CardData card = PickTreasureCard();
             subtitleText.text = string.Empty;
@@ -8807,7 +9002,7 @@ namespace ThreeDoorsOfFate.Game
             return GameLocalization.TextFromSource(source);
         }
 
-        private void ShowEvent()
+        private void ShowLegacyEvent()
         {
             PlayNonCombatMusic();
             phase = GamePhase.Event;
@@ -8871,14 +9066,23 @@ namespace ThreeDoorsOfFate.Game
                     return;
                 }
 
-                if (TryAddCardToDeck(card, "이벤트"))
+                UnityAction takeEventCard = () =>
                 {
-                    debt += Mathf.Max(0, 1 - curseReduction);
-                    AddLog($"{card.DisplayName} 획득. 빚 증가.");
-                    CheckBuildUnlocks();
-                }
+                    if (TryAddCardToDeck(card, "이벤트"))
+                    {
+                        debt += GetEndlessAdjustedDebtGain(
+                            Mathf.Max(0, 1 - curseReduction));
+                        AddLog($"{card.DisplayName} 획득. 빚 증가.");
+                        CheckBuildUnlocks();
+                    }
 
-                ShowDoors();
+                    ShowDoors();
+                };
+                ShowCardInspection(
+                    card,
+                    CardInspectionMode.RewardTake,
+                    "획득",
+                    takeEventCard);
             });
 
             AddDecisionStateSummary();
@@ -8905,7 +9109,7 @@ namespace ThreeDoorsOfFate.Game
                 BuildRestChoiceLabel(restHealAmount),
                 21,
                 GameSfxCue.ImportantConfirm);
-            SetAnchors(heal.GetComponent<RectTransform>(), new Vector2(0.16f, 0.12f), new Vector2(0.45f, 0.23f));
+            SetAnchors(heal.GetComponent<RectTransform>(), new Vector2(0.08f, 0.12f), new Vector2(0.33f, 0.23f));
             ConfigureDecisionChoiceButton(heal);
             heal.onClick.AddListener(() =>
             {
@@ -8919,7 +9123,7 @@ namespace ThreeDoorsOfFate.Game
                 "금화 30 획득",
                 21,
                 GameSfxCue.ImportantConfirm);
-            SetAnchors(purse.GetComponent<RectTransform>(), new Vector2(0.55f, 0.12f), new Vector2(0.84f, 0.23f));
+            SetAnchors(purse.GetComponent<RectTransform>(), new Vector2(0.375f, 0.12f), new Vector2(0.625f, 0.23f));
             ConfigureDecisionChoiceButton(purse);
             purse.onClick.AddListener(() =>
             {
@@ -8927,6 +9131,22 @@ namespace ThreeDoorsOfFate.Game
                 AddLog("휴식에서 금화를 선택했습니다.");
                 ShowDoors();
             });
+
+            Button removeCard = AddLocalizedSettingsMenuButton(
+                contentRoot,
+                "휴식 카드 제거",
+                "deckRemoval.rest.choice",
+                20,
+                GameSfxCue.ImportantConfirm);
+            SetAnchors(
+                removeCard.GetComponent<RectTransform>(),
+                new Vector2(0.67f, 0.12f),
+                new Vector2(0.92f, 0.23f));
+            ConfigureDecisionChoiceButton(removeCard);
+            removeCard.interactable = deck.Any(CanRemoveDeckCard);
+            removeCard.onClick.AddListener(() => ShowDeckRemovalSelection(
+                DeckRemovalSource.Rest,
+                0));
 
             AddDecisionStateSummary();
             RefreshTopBar();
@@ -9023,7 +9243,7 @@ namespace ThreeDoorsOfFate.Game
             gamblerHardLowLuckDefenseUsedThisTurn = false;
             oracleHardLuckHeldThisTurn = false;
             RollLuckForTurn();
-            DrawUpToHandSize();
+            ApplyEnemyTurnStartPenaltiesAndDraw();
             TrySmoothBossNoAttackHand();
             ApplyRunItemTurnStartBonuses();
             if (phase == GamePhase.GameOver)
@@ -9037,6 +9257,8 @@ namespace ThreeDoorsOfFate.Game
 
         private void ResolveEnemyIntent()
         {
+            bool consumedVulnerability = playerVulnerableTurns > 0
+                && enemy.IntentAttack > 0;
             if (enemy.IntentHeal > 0)
             {
                 int before = enemy.Health;
@@ -9082,6 +9304,11 @@ namespace ThreeDoorsOfFate.Game
                 }
 
                 AddLog(addedDebt > 0 ? $"{enemy.Name}가 빚 +{addedDebt}를 새겼습니다." : "빚 저항으로 빚을 막았습니다.");
+            }
+
+            if (consumedVulnerability)
+            {
+                playerVulnerableTurns = Mathf.Max(0, playerVulnerableTurns - 1);
             }
 
             ResolveEnemySpecialIntent();
@@ -9140,6 +9367,15 @@ namespace ThreeDoorsOfFate.Game
                     enemy.Health = Mathf.Min(enemy.MaxHealth, enemy.Health + heal);
                     AddLog($"{enemy.Name}의 무저갱 감사가 체력 {auditDamage}을 거두고 {enemy.Health - before} 회복했습니다.");
                     break;
+                case EnemySpecialEffect.PlayerVulnerable:
+                case EnemySpecialEffect.LuckDown:
+                case EnemySpecialEffect.DrawPenalty:
+                case EnemySpecialEffect.ActionDrain:
+                case EnemySpecialEffect.GoldLoss:
+                    ResolveEnemyBehaviorSpecial(
+                        enemy.IntentSpecialEffect,
+                        amount);
+                    break;
             }
         }
 
@@ -9154,6 +9390,11 @@ namespace ThreeDoorsOfFate.Game
             enemy.IntentSpecialLabel = string.Empty;
             enemy.IntentCardName = string.Empty;
             enemy.CandidateLabel = string.Empty;
+
+            if (TryPrepareCatalogEnemyIntent())
+            {
+                return;
+            }
 
             List<EnemyCardDefinition> candidates = DrawEnemyCandidateCards(enemy);
             EnemyCardDefinition selected = candidates[0];
@@ -9189,7 +9430,7 @@ namespace ThreeDoorsOfFate.Game
             List<EnemyCardDefinition> candidates = new(drawCount);
             for (int i = 0; i < drawCount; i += 1)
             {
-                candidates.Add(pool[Random.Range(0, pool.Count)]);
+                candidates.Add(pool[RunRange(0, pool.Count)]);
             }
 
             return candidates;
@@ -9303,7 +9544,7 @@ namespace ThreeDoorsOfFate.Game
 
         private float ScoreEnemyCard(EnemyCardDefinition card)
         {
-            float score = Random.Range(0f, 2.5f);
+            float score = RunValue() * 2.5f;
             if (card.Attacks)
             {
                 int attack = Mathf.Max(0, enemy.BaseAttack + card.AttackBonus);
@@ -9505,11 +9746,16 @@ namespace ThreeDoorsOfFate.Game
             }
 
             luck = RollLuck();
+            RecordRunLowLuckRoll(luck);
             StartDiceRollAnimation();
             if (selectedClass == CharacterClass.Gambler && luck <= 2)
             {
-                debt += 1;
-                AddLog($"낮은 행운 {luck}. 빚 +1.");
+                int addedDebt = GetEndlessAdjustedDebtGain(1);
+                debt += addedDebt;
+                AddLog(LF(
+                    "log.luck.lowDebt",
+                    luck,
+                    addedDebt));
             }
             else
             {
@@ -9524,10 +9770,10 @@ namespace ThreeDoorsOfFate.Game
                 gamblerLoadedDiceRollsRemaining -= 1;
                 TriggerCombinationImpact("trait_gambler_card_reading");
                 AddLog($"패 읽기: 강화 주사위 사용. 남은 횟수 {gamblerLoadedDiceRollsRemaining}.");
-                return Random.value < 0.90f ? Random.Range(4, 7) : Random.Range(1, 4);
+                return RunValue() < 0.90f ? RunRange(4, 7) : RunRange(1, 4);
             }
 
-            return Random.Range(1, 7);
+            return RunRange(1, 7);
         }
 
         private void Heal(int amount)
@@ -9543,6 +9789,7 @@ namespace ThreeDoorsOfFate.Game
 
         private void LoseHealth(int amount, bool direct)
         {
+            int healthBefore = playerHealth;
             int damage = amount;
             int blocked = 0;
             if (!direct)
@@ -9601,6 +9848,8 @@ namespace ThreeDoorsOfFate.Game
 
                 TriggerCombinationImpact("hard_trait_exile_endless_atonement");
                 AddLog("어려움 특성: 치명적인 피해를 버티고 체력 1로 남았습니다.");
+                RecordRunDamageTaken(
+                    Mathf.Max(0, healthBefore - playerHealth));
                 return;
             }
 
@@ -9609,10 +9858,14 @@ namespace ThreeDoorsOfFate.Game
                 playerHealth = 1;
                 preventDeathThisTurn = false;
                 AddLog("불굴로 죽음을 버텼습니다.");
+                RecordRunDamageTaken(
+                    Mathf.Max(0, healthBefore - playerHealth));
                 return;
             }
 
             playerHealth = Mathf.Max(0, playerHealth - damage);
+            RecordRunDamageTaken(
+                Mathf.Max(0, healthBefore - playerHealth));
             if (direct)
             {
                 AddLog($"체력 {damage} 잃음.");
@@ -9715,7 +9968,7 @@ namespace ThreeDoorsOfFate.Game
                     break;
                 }
 
-                int index = Random.Range(0, eligibleCount);
+                int index = RunRange(0, eligibleCount);
                 if (protectedIndex >= 0 && index >= protectedIndex)
                 {
                     index += 1;
@@ -9746,10 +9999,8 @@ namespace ThreeDoorsOfFate.Game
 
         private void ShowGameOver(bool victory, string message)
         {
-            if (CanUseRunSaveSystem())
-            {
-                ClearHardRunSave();
-            }
+            RecordGameOverRunHistory(victory, message);
+            ClearHardRunSave();
 
             if (!victory && endlessModeActive)
             {
@@ -9940,10 +10191,8 @@ namespace ThreeDoorsOfFate.Game
 
         private void ShowJourneyEnding()
         {
-            if (CanUseRunSaveSystem())
-            {
-                ClearHardRunSave();
-            }
+            RecordJourneyRunHistory();
+            ClearHardRunSave();
 
             PlayGameSfx(GameSfxCue.Ending);
             PlayMainMenuMusic();
@@ -11048,7 +11297,7 @@ namespace ThreeDoorsOfFate.Game
             BuildRecipe recipe = GetCurrentBuildRecipe();
             return string.Join("\n", new[]
             {
-                $"{profile.Name} | {profile.Role}",
+                $"{GetClassName(selectedClass)} | {GetClassRole(selectedClass)}",
                 profile.Tagline,
                 IsHardModeFeatureActive() ? $"어려움 이상 특성 활성: {GetHardClassTraitName(selectedClass)}" : $"어려움 이상 특성 잠김: {GetHardClassTraitName(selectedClass)}",
                 $"직업 조합: {recipe.Name}"
@@ -11060,7 +11309,7 @@ namespace ThreeDoorsOfFate.Game
             ClassProfile profile = GetClassProfile(selectedClass);
             return string.Join("\n\n", new[]
             {
-                $"{profile.Name} | {profile.Role}",
+                $"{GetClassName(selectedClass)} | {GetClassRole(selectedClass)}",
                 profile.Tagline,
                 profile.Lore,
                 $"기능\n{profile.Features}",
@@ -11108,7 +11357,7 @@ namespace ThreeDoorsOfFate.Game
             {
                 "직업 특성 발동 가능",
                 "카드 시너지 조합 발동",
-                $"{profile.Name}: {profile.Role}"
+                $"{GetClassName(selectedClass)}: {GetClassRole(selectedClass)}"
             });
         }
 
@@ -11272,6 +11521,17 @@ namespace ThreeDoorsOfFate.Game
                 CharacterClass.Oracle => L("class.oracle.name"),
                 CharacterClass.Exile => L("class.exile.name"),
                 _ => L("class.wanderer.name")
+            };
+        }
+
+        private static string GetClassRole(CharacterClass characterClass)
+        {
+            return characterClass switch
+            {
+                CharacterClass.Gambler => L("class.gambler.role"),
+                CharacterClass.Oracle => L("class.oracle.role"),
+                CharacterClass.Exile => L("class.exile.role"),
+                _ => string.Empty
             };
         }
 
@@ -11728,11 +11988,11 @@ namespace ThreeDoorsOfFate.Game
             return colors;
         }
 
-        private static void Shuffle<T>(IList<T> list)
+        private void Shuffle<T>(IList<T> list)
         {
             for (int i = list.Count - 1; i > 0; i -= 1)
             {
-                int j = Random.Range(0, i + 1);
+                int j = RunRange(0, i + 1);
                 (list[i], list[j]) = (list[j], list[i]);
             }
         }
@@ -11951,7 +12211,7 @@ namespace ThreeDoorsOfFate.Game
         }
 
         [Serializable]
-        private sealed class RunSaveData
+        private sealed class RunSaveDataV1
         {
             public int version;
             public int selectedClass;

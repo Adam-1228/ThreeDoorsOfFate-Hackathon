@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ThreeDoorsOfFate.Audio;
 using ThreeDoorsOfFate.Cards;
+using ThreeDoorsOfFate.Platform;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +11,6 @@ namespace ThreeDoorsOfFate.Game
 {
     public sealed partial class ThreeDoorsGameController
     {
-
         private void AddHardRunSaveLoadControls(RectTransform modal)
         {
             if (phase == GamePhase.MainMenu)
@@ -20,8 +20,15 @@ namespace ThreeDoorsOfFate.Game
                     return;
                 }
 
-                Button loadSavedRunButton = AddSettingsMenuButton(modal, "저장된 런 불러오기", "불러오기", 20);
-                SetAnchors(loadSavedRunButton.GetComponent<RectTransform>(), new Vector2(0.35f, 0.245f), new Vector2(0.65f, 0.315f));
+                Button loadSavedRunButton = AddSettingsMenuButton(
+                    modal,
+                    L("save.savedRun"),
+                    L("save.load"),
+                    20);
+                SetAnchors(
+                    loadSavedRunButton.GetComponent<RectTransform>(),
+                    new Vector2(0.35f, 0.245f),
+                    new Vector2(0.65f, 0.315f));
                 loadSavedRunButton.onClick.AddListener(ContinueSavedRunFromSettings);
                 return;
             }
@@ -32,14 +39,30 @@ namespace ThreeDoorsOfFate.Game
                 return;
             }
 
-            string saveLabel = phase == GamePhase.DoorSelection ? "저장하기" : "다음 문에서 저장";
-            Button saveButton = AddSettingsMenuButton(modal, "런 저장", saveLabel, 19);
-            SetAnchors(saveButton.GetComponent<RectTransform>(), new Vector2(0.185f, 0.245f), new Vector2(0.455f, 0.315f));
+            string saveLabel = phase == GamePhase.DoorSelection
+                ? L("save.now")
+                : L("save.atNextDoor");
+            Button saveButton = AddSettingsMenuButton(
+                modal,
+                L("save.run"),
+                saveLabel,
+                19);
+            SetAnchors(
+                saveButton.GetComponent<RectTransform>(),
+                new Vector2(0.185f, 0.245f),
+                new Vector2(0.455f, 0.315f));
             saveButton.onClick.AddListener(SaveRunFromSettingsPanel);
 
             bool hasSave = HasRestorableRunSave();
-            Button loadButton = AddSettingsMenuButton(modal, "런 불러오기", hasSave ? "불러오기" : "불러오기 없음", 19);
-            SetAnchors(loadButton.GetComponent<RectTransform>(), new Vector2(0.545f, 0.245f), new Vector2(0.815f, 0.315f));
+            Button loadButton = AddSettingsMenuButton(
+                modal,
+                L("save.run.load"),
+                hasSave ? L("save.load") : L("save.none"),
+                19);
+            SetAnchors(
+                loadButton.GetComponent<RectTransform>(),
+                new Vector2(0.545f, 0.245f),
+                new Vector2(0.815f, 0.315f));
             loadButton.interactable = hasSave;
             if (hasSave)
             {
@@ -47,13 +70,11 @@ namespace ThreeDoorsOfFate.Game
             }
         }
 
-
         private void ContinueSavedRunFromSettings()
         {
             HideSettingsPanel();
             ContinueSavedRun();
         }
-
 
         private void SaveRunFromSettingsPanel()
         {
@@ -65,7 +86,7 @@ namespace ThreeDoorsOfFate.Game
             if (phase != GamePhase.DoorSelection)
             {
                 PlayGameSfx(GameSfxCue.SaveFailure);
-                AddLog("저장은 다음 문 선택 화면에 도착하면 자동으로 진행됩니다.");
+                AddLog(L("save.log.deferred"));
                 HideSettingsPanel();
                 RefreshLog();
                 return;
@@ -73,27 +94,32 @@ namespace ThreeDoorsOfFate.Game
 
             bool saved = SaveRunCheckpoint();
             PlayGameSfx(saved ? GameSfxCue.SaveSuccess : GameSfxCue.SaveFailure);
-            AddLog(saved ? "현재 런을 저장했습니다." : "저장할 카드 데이터가 부족해 현재 런을 저장하지 못했습니다.");
+            AddLog(L(saved ? "save.log.success" : "save.log.failure"));
             HideSettingsPanel();
             RefreshTopBar();
             RefreshLog();
         }
 
-
         private bool CanUseRunSaveSystem()
         {
-            return IsHardModeFeatureActive();
+            return playerHealth > 0
+                && phase != GamePhase.MainMenu
+                && phase != GamePhase.ClassSelection
+                && phase != GamePhase.ClassDetails
+                && phase != GamePhase.ContractSelection
+                && phase != GamePhase.GameOver;
         }
-
 
         private bool CanSaveRunCheckpoint()
         {
-            return phase == GamePhase.DoorSelection
-                && CanUseRunSaveSystem()
-                && playerHealth > 0
-                && deck.Count > 0;
+            return CanUseRunSaveSystem()
+                && deck.Count > 0
+                && phase is GamePhase.DoorSelection
+                    or GamePhase.Shop
+                    or GamePhase.Reward
+                    or GamePhase.Rest
+                    or GamePhase.Curse;
         }
-
 
         private void AutoSaveRunIfAllowed()
         {
@@ -103,7 +129,6 @@ namespace ThreeDoorsOfFate.Game
             }
         }
 
-
         private void OnApplicationPause(bool isPaused)
         {
             if (isPaused)
@@ -112,57 +137,28 @@ namespace ThreeDoorsOfFate.Game
             }
         }
 
-
         private bool SaveRunCheckpoint()
         {
-            List<string> deckCardIds = deck
-                .Where(card => card != null && !string.IsNullOrWhiteSpace(card.CardId))
-                .Select(card => card.CardId)
-                .ToList();
-            if (deckCardIds.Count == 0)
+            return CanSaveRunCheckpoint() && PersistRunCheckpointV2();
+        }
+
+        private bool SaveRunCheckpointAtResolvedSurface()
+        {
+            return playerHealth > 0 && deck.Count > 0 && PersistRunCheckpointV2();
+        }
+
+        private bool PersistRunCheckpointV2()
+        {
+            string json = CaptureRunCheckpointV2();
+            if (string.IsNullOrWhiteSpace(json))
             {
                 return false;
             }
 
-            int logStart = Mathf.Max(0, combatLog.Count - 24);
-            RunSaveData saveData = new()
-            {
-                version = HardRunSaveVersion,
-                selectedClass = (int)selectedClass,
-                currentDifficulty = (int)currentDifficulty,
-                currentJourneyEndingKind = (int)currentJourneyEndingKind,
-                endlessModeActive = endlessModeActive,
-                nextEndlessBossRoom = nextEndlessBossRoom,
-                endlessBossesDefeated = endlessBossesDefeated,
-                playerMaxHealth = playerMaxHealth,
-                playerHealth = playerHealth,
-                playerBlock = playerBlock,
-                action = action,
-                luck = luck,
-                gold = gold,
-                debt = debt,
-                roomsCleared = roomsCleared,
-                combatEncountersCompleted = combatEncountersCompleted,
-                consecutiveNonCombatDoors = consecutiveNonCombatDoors,
-                storedLuck = storedLuck,
-                curseReduction = curseReduction,
-                hasStoredLuck = hasStoredLuck,
-                keepLuckNextTurn = keepLuckNextTurn,
-                doorInsightLevel = doorInsightLevel,
-                retainBlockNextTurn = retainBlockNextTurn,
-                deckCardIds = deckCardIds,
-                equippedItemIds = equippedRunItemIds.Take(GetRunItemSlotLimit()).ToList(),
-                combatLog = combatLog.Skip(logStart).ToList(),
-                buildUpgradeLevels = buildUpgradeLevels
-                    .Select(pair => new RunSaveBuildUpgrade { id = pair.Key, level = pair.Value })
-                    .ToList()
-            };
-
-            PlayerPrefs.SetString(HardRunSaveKey, JsonUtility.ToJson(saveData));
+            PlayerPrefs.SetString(hardRunSaveKey, json);
             PlayerPrefs.Save();
             return true;
         }
-
 
         private void ContinueSavedRun()
         {
@@ -171,198 +167,111 @@ namespace ThreeDoorsOfFate.Game
                 PlayGameSfx(GameSfxCue.LoadSuccess);
                 topBar.gameObject.SetActive(true);
                 SetLogVisible(true);
-                AddLog("저장된 런을 이어갑니다.");
-                ShowDoors();
+                AddLog(L("save.log.continued"));
+                ResumeRestoredRunCheckpoint();
                 return;
             }
 
             PlayGameSfx(GameSfxCue.LoadFailure);
-            ClearHardRunSave();
+            string failureMessage = GetRunRestoreFailureMessage();
+            Debug.LogWarning(
+                $"Run checkpoint restore failed: {lastRunRestoreErrorKey} "
+                + $"({lastRunRestoreErrorDetail})");
             ShowMainMenu();
+            AddLog(failureMessage);
+            if (subtitleText != null)
+            {
+                subtitleText.text = failureMessage;
+                SetSubtitleBoxVisible(true);
+            }
         }
-
 
         private bool TryLoadHardRunSave()
         {
-            string json = PlayerPrefs.GetString(HardRunSaveKey, string.Empty);
-            if (string.IsNullOrWhiteSpace(json))
+            string originalJson = PlayerPrefs.GetString(hardRunSaveKey, string.Empty);
+            if (string.IsNullOrWhiteSpace(originalJson))
             {
-                return false;
+                return FailRunRestore("save.restore.error.none", "empty");
             }
 
-            RunSaveData saveData;
+            RunSaveVersionProbe version;
             try
             {
-                saveData = JsonUtility.FromJson<RunSaveData>(json);
+                version = JsonUtility.FromJson<RunSaveVersionProbe>(originalJson);
             }
             catch (ArgumentException)
             {
-                return false;
+                return FailRunRestore("save.restore.error.corrupt", "version-json");
             }
 
-            if (!IsValidRunSave(saveData))
+            if (version == null)
+            {
+                return FailRunRestore("save.restore.error.corrupt", "version-null");
+            }
+
+            if (version.version == HardRunSaveVersion)
+            {
+                return TryRestoreRunCheckpointV2(originalJson);
+            }
+
+            if (version.version != LegacyRunSaveVersion
+                || !TryMigrateRunCheckpointV1(originalJson, out RunSaveDataV2 migrated))
+            {
+                return FailRunRestore(
+                    "save.restore.error.unsupported",
+                    $"version-{version.version}");
+            }
+
+            PlayerPrefs.SetString(hardRunSaveBackupKey, originalJson);
+            PlayerPrefs.Save();
+            string migratedJson = JsonUtility.ToJson(migrated);
+            if (!TryRestoreRunCheckpointV2(migratedJson))
             {
                 return false;
             }
 
-            List<CardData> restoredDeck = new();
-            if (!TryRestoreDeck(saveData.deckCardIds, restoredDeck))
-            {
-                return false;
-            }
-
-            StopCombatVictorySequence();
-            selectedClass = (CharacterClass)saveData.selectedClass;
-            LoadDiscoveredRunItemsForSelectedClass();
-            currentDifficulty = (RunDifficulty)saveData.currentDifficulty;
-            currentJourneyEndingKind = (JourneyEndingKind)saveData.currentJourneyEndingKind;
-            endlessModeActive = saveData.endlessModeActive;
-            nextEndlessBossRoom = Mathf.Max(0, saveData.nextEndlessBossRoom);
-            endlessBossesDefeated = Mathf.Max(0, saveData.endlessBossesDefeated);
-            playerMaxHealth = Mathf.Max(1, saveData.playerMaxHealth);
-            playerHealth = Mathf.Clamp(saveData.playerHealth, 1, playerMaxHealth);
-            playerBlock = Mathf.Max(0, saveData.playerBlock);
-            action = StartingAction;
-            luck = Mathf.Clamp(saveData.luck, 1, 6);
-            gold = Mathf.Max(0, saveData.gold);
-            debt = Mathf.Max(0, saveData.debt);
-            roomsCleared = Mathf.Max(0, saveData.roomsCleared);
-            combatEncountersCompleted = Mathf.Max(0, saveData.combatEncountersCompleted);
-            consecutiveNonCombatDoors = Mathf.Max(0, saveData.consecutiveNonCombatDoors);
-            storedLuck = Mathf.Clamp(saveData.storedLuck, 0, 6);
-            reflectedDamage = 0;
-            curseReduction = Mathf.Max(0, saveData.curseReduction);
-            pendingDamageReduction = 0;
-            hasStoredLuck = saveData.hasStoredLuck;
-            keepLuckNextTurn = saveData.keepLuckNextTurn;
-            doorInsightLevel = Mathf.Clamp(saveData.doorInsightLevel, 0, 3);
-            predictedBossRunItemRewardId = string.Empty;
-            retainBlockNextTurn = saveData.retainBlockNextTurn;
-            preventDeathThisTurn = false;
-            combatVictorySequenceActive = false;
-            enemy = null;
-            phase = GamePhase.DoorSelection;
-
-            deck.Clear();
-            deck.AddRange(restoredDeck.Take(GetMaxDeckSize()));
-            equippedRunItemIds.Clear();
-            runItemBottleHealthBonusApplied = false;
-            if (saveData.equippedItemIds == null || saveData.equippedItemIds.Count == 0)
-            {
-                LoadEquippedRunItemsForSelectedClass();
-            }
-            else
-            {
-                foreach (string itemId in saveData.equippedItemIds)
-                {
-                    if (equippedRunItemIds.Count >= GetRunItemSlotLimit())
-                    {
-                        break;
-                    }
-
-                    RunItemDefinition item = GetRunItemDefinition(itemId);
-                    if (!string.IsNullOrWhiteSpace(itemId)
-                        && item != null
-                        && IsRunItemTypeSlotUnlocked(item.Type)
-                        && !equippedRunItemIds.Contains(itemId))
-                    {
-                        equippedRunItemIds.Add(itemId);
-                    }
-                }
-
-                SaveEquippedRunItemsForSelectedClass();
-            }
-            EnsureEquippedRunItemsAreDiscovered();
-            runItemBottleHealthBonusApplied = HasRunItem("blessing_bottle_of_light");
-
-            hand.Clear();
-            drawPile.Clear();
-            discardPile.Clear();
-            oncePerCombatUsed.Clear();
-            cardsPlayedThisTurn.Clear();
-            cardsPlayedThisCombat.Clear();
-            combinationTriggersThisTurn.Clear();
-            combinationTriggersThisCombat.Clear();
-            runItemTriggersThisCombat.Clear();
-            runItemSkillDiscountsRemaining = 0;
-            activeCard = null;
-            activeCardHandIndex = -1;
-            activeCardDamageBonusApplied = false;
-            activeCardBlockBonusApplied = false;
-            activeCardRunItemDamageBonusApplied = false;
-            activeCardRunItemBlockBonusApplied = false;
-            forbiddenCycleActiveThisTurn = false;
-            pendingCombinationDamageBonus = 0;
-            pendingCombinationDamageBonusSourceId = string.Empty;
-
-            buildUpgradeLevels.Clear();
-            if (saveData.buildUpgradeLevels != null)
-            {
-                foreach (RunSaveBuildUpgrade upgrade in saveData.buildUpgradeLevels)
-                {
-                    if (!string.IsNullOrWhiteSpace(upgrade.id) && upgrade.level > 0)
-                    {
-                        buildUpgradeLevels[upgrade.id] = upgrade.level;
-                    }
-                }
-            }
-
-            TryCompletePersistentAchievements();
-
-            combatLog.Clear();
-            if (saveData.combatLog != null)
-            {
-                foreach (string entry in saveData.combatLog)
-                {
-                    if (!string.IsNullOrWhiteSpace(entry))
-                    {
-                        AddLog(entry);
-                    }
-                }
-            }
-
+            PlayerPrefs.SetString(hardRunSaveKey, migratedJson);
+            PlayerPrefs.DeleteKey(hardRunSaveBackupKey);
+            PlayerPrefs.Save();
             return true;
         }
 
-
         private bool HasRestorableRunSave()
         {
-            string json = PlayerPrefs.GetString(HardRunSaveKey, string.Empty);
+            string json = PlayerPrefs.GetString(hardRunSaveKey, string.Empty);
             if (string.IsNullOrWhiteSpace(json))
             {
                 return false;
             }
 
+            RunSaveVersionProbe version;
             try
             {
-                return IsValidRunSave(JsonUtility.FromJson<RunSaveData>(json));
+                version = JsonUtility.FromJson<RunSaveVersionProbe>(json);
             }
             catch (ArgumentException)
             {
                 return false;
             }
+
+            if (version == null)
+            {
+                return false;
+            }
+
+            if (version.version == HardRunSaveVersion)
+            {
+                return CanRestoreRunCheckpointV2(json);
+            }
+
+            return version.version == LegacyRunSaveVersion
+                && TryMigrateRunCheckpointV1(json, out RunSaveDataV2 migrated)
+                && CanRestoreRunCheckpointV2(JsonUtility.ToJson(migrated));
         }
 
-
-        private static bool IsValidRunSave(RunSaveData saveData)
-        {
-            return saveData != null
-                && saveData.version == HardRunSaveVersion
-                && saveData.selectedClass >= (int)CharacterClass.Gambler
-                && saveData.selectedClass <= (int)CharacterClass.Exile
-                && saveData.currentDifficulty >= (int)RunDifficulty.Easy
-                && saveData.currentDifficulty <= (int)RunDifficulty.Hard
-                && saveData.currentJourneyEndingKind >= (int)JourneyEndingKind.Return
-                && saveData.currentJourneyEndingKind <= (int)JourneyEndingKind.EndlessReturn
-                && (saveData.currentDifficulty == (int)RunDifficulty.Hard || saveData.endlessModeActive)
-                && saveData.deckCardIds != null
-                && saveData.deckCardIds.Count > 0
-                && saveData.playerMaxHealth > 0
-                && saveData.playerHealth > 0;
-        }
-
-
-        private bool TryRestoreDeck(IReadOnlyList<string> cardIds, List<CardData> restoredDeck)
+        private bool TryRestoreDeck(
+            IReadOnlyList<string> cardIds,
+            List<CardData> restoredDeck)
         {
             if (cardIds == null || cardIds.Count == 0)
             {
@@ -375,7 +284,8 @@ namespace ThreeDoorsOfFate.Game
                 .ToDictionary(group => group.Key, group => group.First());
             foreach (string cardId in cardIds)
             {
-                if (string.IsNullOrWhiteSpace(cardId) || !cardsById.TryGetValue(cardId, out CardData card))
+                if (string.IsNullOrWhiteSpace(cardId)
+                    || !cardsById.TryGetValue(cardId, out CardData card))
                 {
                     return false;
                 }
@@ -386,16 +296,33 @@ namespace ThreeDoorsOfFate.Game
             return true;
         }
 
-
-        private static void ClearHardRunSave()
+        private void BackfillAchievementsAfterCheckpointRestore()
         {
-            if (!PlayerPrefs.HasKey(HardRunSaveKey))
+            TryCompletePersistentAchievements();
+        }
+
+        private void ClearHardRunSave()
+        {
+            PlayerPrefsProgressStore.RecordDeletedRun(
+                hardRunSaveKey,
+                activeRunId);
+            bool changed = false;
+            if (PlayerPrefs.HasKey(hardRunSaveKey))
             {
-                return;
+                PlayerPrefs.DeleteKey(hardRunSaveKey);
+                changed = true;
             }
 
-            PlayerPrefs.DeleteKey(HardRunSaveKey);
-            PlayerPrefs.Save();
+            if (PlayerPrefs.HasKey(hardRunSaveBackupKey))
+            {
+                PlayerPrefs.DeleteKey(hardRunSaveBackupKey);
+                changed = true;
+            }
+
+            if (changed)
+            {
+                PlayerPrefs.Save();
+            }
         }
     }
 }

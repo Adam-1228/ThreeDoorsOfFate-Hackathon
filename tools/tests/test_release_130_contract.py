@@ -44,30 +44,22 @@ class Release130ContractTests(unittest.TestCase):
         if marker not in source:
             self.fail(f"missing version 1.3.0 release marker: {marker}")
 
-    def test_project_and_upload_defaults_are_1_3_0_build_13001(self) -> None:
-        project = (ROOT / "ProjectSettings/ProjectSettings.asset").read_text(
+    def test_historical_1_3_0_release_identity_remains_immutable(self) -> None:
+        for locale in ("ko-KR", "en-US"):
+            metadata = json.loads(
+                (SUBMISSION / f"metadata-1.3.0.{locale}.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            with self.subTest(locale=locale):
+                self.assertEqual(metadata["version"]["version_string"], "1.3.0")
+                self.assertEqual(metadata["version"]["build_string"], "13001")
+
+        release_notes = (ROOT / "docs/releases/v1.3.0.md").read_text(
             encoding="utf-8"
         )
-        release = (
-            ROOT / "Assets/Scripts/Platform/IOSReleaseConfiguration.cs"
-        ).read_text(encoding="utf-8")
-        upload = (ROOT / "tools/upload_testflight.sh").read_text(encoding="utf-8")
-        validator = (
-            ROOT / "tools/validate_app_store_submission.py"
-        ).read_text(encoding="utf-8")
-
-        for marker, source in (
-            ("bundleVersion: 1.3.0", project),
-            ("iPhone: 13001", project),
-            ('DefaultVersion = "1.3.0"', release),
-            ('DefaultBuildNumber = "13001"', release),
-            ('EXPECTED_VERSION="${TDOF_EXPECTED_VERSION:-1.3.0}"', upload),
-            ('EXPECTED_BUILD="${TDOF_EXPECTED_BUILD:-13001}"', upload),
-            ('ACTIVE_VERSION = "1.3.0"', validator),
-            ('ACTIVE_BUILD = "13001"', validator),
-        ):
-            with self.subTest(marker=marker):
-                self.require(marker, source)
+        self.require("Marketing version: `1.3.0`", release_notes)
+        self.require("iOS build number: `13001`", release_notes)
 
     def test_bilingual_metadata_and_review_notes_are_release_scoped(self) -> None:
         for locale in ("ko-KR", "en-US"):

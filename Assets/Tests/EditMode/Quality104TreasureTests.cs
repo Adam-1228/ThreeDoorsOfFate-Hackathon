@@ -143,8 +143,9 @@ namespace ThreeDoorsOfFate.Tests
 
             Image preview = FindRequired("Treasure Card Preview").GetComponent<Image>();
             Assert.That(preview.sprite, Is.SameAs(expectedEnglish));
-            Assert.That(preview.raycastTarget, Is.False);
-            Assert.That(preview.GetComponent<Button>(), Is.Null);
+            Assert.That(preview.raycastTarget, Is.True);
+            Button previewButton = preview.GetComponent<Button>();
+            Assert.That(previewButton, Is.Not.Null);
             Assert.That(
                 FindRequired("Treasure Card Name").GetComponent<Text>().text,
                 Is.EqualTo("Absolute Barrier"));
@@ -162,6 +163,14 @@ namespace ThreeDoorsOfFate.Tests
 
             Assert.That(GetField<int>("gold"), Is.EqualTo(10));
             Assert.That(GetField<IList>("deck"), Is.Empty);
+
+            previewButton.onClick.Invoke();
+            Assert.That(GetField<IList>("deck"), Is.Empty);
+            Image inspection = GetField<Image>("cardPreviewImage");
+            Assert.That(inspection.gameObject.activeSelf, Is.True);
+            Assert.That(inspection.sprite, Is.SameAs(expectedEnglish));
+            GetField<Button>("cardPreviewCancelButton").onClick.Invoke();
+            Assert.That(inspection.gameObject.activeSelf, Is.False);
 
             Assert.That(
                 InvokeValue<bool>("TryResolveTreasureCardChoice", card, true),

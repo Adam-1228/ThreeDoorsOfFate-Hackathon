@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "app_record": {
+    "platform": "iOS",
+    "name": "Three Doors of Fate",
+    "primary_language": "ko-KR",
+    "bundle_id": "com.adam.threedoorsfate",
+    "sku": "TDOF-IOS-2026"
+  },
+  "version": {
+    "version_string": "1.4.0",
+    "build_string": "14000",
+    "localization": "en-US",
+    "subtitle": "Dark Fantasy Card RPG",
+    "promotional_text": "Every pact with fate has a price. Choose one of three doors, build with cards and relics, and test your luck to reach the end.",
+    "description": "Standing before three doors, you make a pact with fate.\n\nThree Doors of Fate is a single-player dark fantasy, turn-based card RPG about surviving the battles, rewards, shops, rests, and events beyond each door. Choose the Gambler, Oracle, or Exile, then combine Attack, Defense, and Special cards to shape a different journey every run.\n\nThe Fate Rework gives every class a deterministic 24-card starter deck and three distinct starting contracts, nine in total. A contract changes cards and opening resources while showing both its benefit and its price before you commit. Playing, taking, buying, and removing cards now requires confirmation from one shared detail view, preventing accidental choices.\n\nEasy, Normal, Hard, and Endless runs can all resume from stable checkpoints. Confirmed doors, enemies, shops, and rewards are restored exactly, so closing and reopening the app cannot reroll them. Eight fate events, distinct behavior profiles and boss phases, and six Abyss mutations with paired risks and rewards add new decisions across repeated journeys.\n\nFate History stores the latest ten runs locally. Review the class, contract, difficulty, furthest door, outcome, and collected rewards, together with one of seven comic fate epithets. Existing collectibles, unlocks, achievements, and Game Center records remain intact.\n\nNo account is required and the game remains playable offline. Optional Game Center sign-in enables achievements, the Endless leaderboard, and iCloud progress synchronization. Ads are limited to optional rewarded relic ads chosen by the player. There are no automatic or banner ads, in-app purchases, or subscriptions.",
+    "keywords": "card game,roguelike,dark fantasy,strategy,turn based,RPG,deckbuilding,single player",
+    "support_url": "https://adam-1228.github.io/three-doors-of-fate/support/",
+    "marketing_url": "https://adam-1228.github.io/three-doors-of-fate/",
+    "privacy_policy_url": "https://adam-1228.github.io/three-doors-of-fate/privacy/",
+    "privacy_choices_url": "https://adam-1228.github.io/three-doors-of-fate/privacy/",
+    "copyright": "2026 ADAM",
+    "whats_new": "Added deterministic 24-card starter decks and nine class contracts, with explicit confirmation for playing, taking, buying, and removing cards. Runs resume consistently on every difficulty, alongside eight fate events, distinct enemy behaviors and boss phases, six risk/reward Abyss mutations, and local history for the latest ten runs."
+  },
+  "classification": {
+    "primary_category": "Games",
+    "game_subcategories": [
+      "Card",
+      "Role Playing"
+    ],
+    "content_rights_confirmed_from": "docs/submission/asset-attribution.md"
+  },
+  "commercial": {
+    "price": "free",
+    "distribution_method": "public",
+    "territories": [
+      "KR",
+      "AT",
+      "BE",
+      "BG",
+      "HR",
+      "CY",
+      "CZ",
+      "DK",
+      "EE",
+      "FI",
+      "FR",
+      "DE",
+      "GR",
+      "HU",
+      "IE",
+      "IT",
+      "LV",
+      "LT",
+      "LU",
+      "MT",
+      "NL",
+      "PL",
+      "PT",
+      "RO",
+      "SK",
+      "SI",
+      "ES",
+      "SE",
+      "US"
+    ],
+    "release_method": "automatic",
+    "release_timing": "immediate_after_approval",
+    "phased_release": false,
+    "preorder": false,
+    "in_app_purchases": [],
+    "subscriptions": []
+  },
+  "review": {
+    "sign_in_required": false,
+    "review_notes_file": "docs/submission/app-store/review-notes-1.4.0.en-US.md",
+    "contact_source": "Use and verify the authenticated App Store Connect account contact fields; do not invent values."
+  },
+  "build": {
+    "uses_non_exempt_encryption": false,
+    "game_center": true,
+    "icloud": true,
+    "rewarded_ads_only": true,
+    "production_ads_required": true
+  },
+  "submission": {
+    "status": "release_candidate",
+    "approved_for_submission": true,
+    "build_upload_started": true,
+    "app_store_connect_submission_started": true,
+    "app_store_connect_status": "waiting_for_review",
+    "submitted_on": "2026-08-28",
+    "approval_gate": "Owner explicitly approved the 1.4.0 App Review submission on 2026-08-28."
+  }
+}

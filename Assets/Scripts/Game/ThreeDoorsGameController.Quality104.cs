@@ -4,6 +4,7 @@ using ThreeDoorsOfFate.Audio;
 using ThreeDoorsOfFate.Cards;
 using ThreeDoorsOfFate.Localization;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace ThreeDoorsOfFate.Game
@@ -142,6 +143,14 @@ namespace ThreeDoorsOfFate.Game
                 lines.Add(LF("gameOver.summary.achievements", names));
             }
 
+            string epithets = BuildCurrentRunHistoryEpithetText();
+            if (!string.IsNullOrWhiteSpace(epithets))
+            {
+                lines.Add(LF(
+                    "gameOver.summary.epithets",
+                    epithets));
+            }
+
             return string.Join("\n", lines);
         }
 
@@ -235,6 +244,13 @@ namespace ThreeDoorsOfFate.Game
                 return;
             }
 
+            UnityAction takeTreasureCard = () =>
+            {
+                bool cardAdded = TryResolveTreasureCardChoice(card, true);
+                AddLog(BuildTreasureLog(rewardGold, card, cardAdded));
+                ShowDoors();
+            };
+
             RectTransform resultRoot = AddPanel(
                 contentRoot,
                 "Treasure Card Result",
@@ -273,12 +289,22 @@ namespace ThreeDoorsOfFate.Game
                 Color.white);
             preview.sprite = GetLocalizedCardFullSprite(card);
             preview.preserveAspect = true;
-            preview.raycastTarget = false;
+            preview.raycastTarget = true;
             SetAnchors(
                 preview.rectTransform,
                 new Vector2(0.080f, 0.165f),
                 new Vector2(0.410f, 0.805f));
             BindLocalizedCardSprite(preview, card);
+            Button previewButton = AddSfxButton(
+                preview.gameObject,
+                GameSfxCue.UiAccept);
+            previewButton.targetGraphic = preview;
+            previewButton.colors = CreateStaticButtonColors();
+            previewButton.onClick.AddListener(() => ShowCardInspection(
+                card,
+                CardInspectionMode.TreasureTake,
+                L("treasure.action.takeCard"),
+                takeTreasureCard));
 
             RectTransform details = AddPanel(
                 resultRoot,
@@ -359,12 +385,11 @@ namespace ThreeDoorsOfFate.Game
                 new Vector2(0.440f, 0.050f),
                 new Vector2(0.675f, 0.160f));
             ConfigureDecisionChoiceButton(takeCard);
-            takeCard.onClick.AddListener(() =>
-            {
-                bool cardAdded = TryResolveTreasureCardChoice(card, true);
-                AddLog(BuildTreasureLog(rewardGold, card, cardAdded));
-                ShowDoors();
-            });
+            takeCard.onClick.AddListener(() => ShowCardInspection(
+                card,
+                CardInspectionMode.TreasureTake,
+                L("treasure.action.takeCard"),
+                takeTreasureCard));
 
             Button skipCard = AddLocalizedSettingsMenuButton(
                 resultRoot,
